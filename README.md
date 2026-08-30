@@ -1,7 +1,7 @@
 # Hydraulic Bottle Jack: Interactive Cross Section and Laboratory Materials
 
 [![verify](https://github.com/alibulentkoc/hydraulic-bottle-jack/actions/workflows/verify.yml/badge.svg)](https://github.com/alibulentkoc/hydraulic-bottle-jack/actions/workflows/verify.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22181634.svg)](https://doi.org/10.5281/zenodo.22181634)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22181633.svg)](https://doi.org/10.5281/zenodo.22181633)
 [![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
 [![License: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-green.svg)](LICENSE-CONTENT.md)
 
@@ -144,7 +144,7 @@ version, rather than a single version DOI:
 > Laboratory Materials* [Software]. Zenodo.
 > https://doi.org/10.5281/zenodo.22181633
 
-Version 1.0.0: [10.5281/zenodo.22181634](https://doi.org/10.5281/zenodo.22181634)
+Version 1.0.0: [10.5281/zenodo.22181633](https://doi.org/10.5281/zenodo.22181633)
 
 See `CITATION.cff`, or use the "Cite this repository" button on GitHub.
 
