@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydraulic Bottle Jack - Interactive Cross Section and Lab Materials</title>
+<style>
+  :root{
+    --paper:#fbfaf7; --ink:#1b2128; --ink-2:#4a545e; --ink-3:#7c8791;
+    --rule:#d6d2c8; --rule-2:#b9b3a5; --accent:#14794c; --accent-bg:#eaf5ef;
+    --mono: ui-monospace,"SFMono-Regular","Cascadia Mono","Consolas","Liberation Mono",monospace;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#eceae4;color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55}
+  .wrap{max-width:780px;margin:0 auto;background:var(--paper);padding:38px 44px 52px;
+        box-shadow:0 0 0 1px var(--rule);min-height:100vh}
+  header{border-bottom:2.5px solid var(--ink);padding-bottom:15px;margin-bottom:22px}
+  h1{font-family:var(--serif);font-size:28px;font-weight:600;margin:0 0 5px;letter-spacing:-.01em}
+  .sub{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+  p.lead{font-family:var(--serif);font-size:16.5px;margin:0 0 26px}
+  a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--rule-2);
+    border-left:4px solid var(--accent);border-radius:3px;padding:15px 18px;margin-bottom:13px;background:#fff}
+  a.card:hover{background:var(--accent-bg)}
+  a.card b{font-family:var(--serif);font-size:17px;font-weight:600;display:block;margin-bottom:3px}
+  a.card span{font-size:13.5px;color:var(--ink-2)}
+  a.card em{font-family:var(--mono);font-style:normal;font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--accent);display:block;margin-top:6px}
+  h2{font-family:var(--mono);font-size:11px;letter-spacing:.19em;text-transform:uppercase;
+    border-bottom:1.5px solid var(--ink);padding-bottom:6px;margin:34px 0 12px}
+  .meta{font-size:13.5px;color:var(--ink-2)}
+  .meta a{color:var(--accent)}
+  code{font-family:var(--mono);font-size:12.5px;background:#f1eee7;padding:1px 5px;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Hydraulic Bottle Jack</h1>
+  <div class="sub">Interactive cross section and laboratory materials</div>
+</header>
+
+<p class="lead">A bottle jack is the smallest complete fluid power system in common use: reservoir,
+pump, check valves, directional control, actuator, and passages, performing a full hydraulic cycle in
+a device you can hold in one hand.</p>
+
+<a class="card" href="simulator/hydraulic-bottle-jack.html">
+  <b>Interactive cross section</b>
+  <span>Pump the handle and watch oil move through the circuit. Every dimension is editable, and the
+  ram rises only by the volume the pump actually delivers.</span>
+  <em>Open the simulator</em>
+</a>
+
+<a class="card" href="lab/bottle-jack-lab-handout.html">
+  <b>Student handout</b>
+  <span>Objectives, eight core principles, safety, measurement procedure ordered for jacks that hold
+  no oil, data tables, and questions 2 through 15.</span>
+  <em>Open and print</em>
+</a>
+
+<a class="card" href="lab/bottle-jack-lab-answer-sheet.html">
+  <b>Instructor answer sheet</b>
+  <span>Enter the measured geometry and every formula, substitution, and result recomputes.</span>
+  <em>Open and print</em>
+</a>
+
+<h2>About</h2>
+<p class="meta">All three files run entirely in the browser and work offline once loaded. Source and
+verification suite: <a href="https://github.com/alibulentkoc/hydraulic-bottle-jack">github.com/alibulentkoc/hydraulic-bottle-jack</a>.
+Archived at <a href="https://doi.org/10.5281/zenodo.22181634">doi.org/10.5281/zenodo.22181634</a>.
+Code under MIT, instructional content under CC BY 4.0.</p>
+
+</div>
+</body>
+</html>
