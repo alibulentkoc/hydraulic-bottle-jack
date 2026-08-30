@@ -1,9 +1,9 @@
 # Hydraulic Bottle Jack: Interactive Cross Section and Laboratory Materials
 
-[![verify](https://github.com/USERNAME/bottle-jack-lab/actions/workflows/verify.yml/badge.svg)](https://github.com/USERNAME/bottle-jack-lab/actions/workflows/verify.yml)
-<!-- Add after the first Zenodo release:
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
--->
+[![verify](https://github.com/alibulentkoc/hydraulic-bottle-jack/actions/workflows/verify.yml/badge.svg)](https://github.com/alibulentkoc/hydraulic-bottle-jack/actions/workflows/verify.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22181634.svg)](https://doi.org/10.5281/zenodo.22181634)
+[![License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
+[![License: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-green.svg)](LICENSE-CONTENT.md)
 
 A hydraulic bottle jack is the smallest complete fluid power system in common use.
 It contains a reservoir, a positive-displacement pump, two check valves, a
@@ -51,6 +51,20 @@ The drawing is schematic and not to scale, because a ram five times the diameter
 of the plunger cannot be drawn at true relative size and still show the pump.
 Screen scaling is kept entirely separate from the hydraulic calculation, which
 always uses the dimensions as entered.
+
+### Using it with a class
+
+- **Pre-lab.** Students run the default jack and predict how many strokes reach
+  full extension, then answer one question: if the ram diameter doubles, does the
+  ram rise more or less per stroke, and does hand force go up or down?
+- **During the lab.** Keep it closed. It shows the answers, and groups will read
+  numbers off it instead of their calipers.
+- **Post-lab.** Students enter their own measured geometry and check their hand
+  calculations against it. Disagreement means an arithmetic error, since both use
+  the same ideal model.
+- **Demonstration.** Double the ram diameter and watch rise per stroke fall to a
+  quarter while hand force falls to a quarter. That is the force-distance trade in
+  about ten seconds.
 
 ## The laboratory activity
 
@@ -104,6 +118,11 @@ npm test
 
 The suite runs on every push through GitHub Actions.
 
+`tests/extract.js` pulls the runnable modules out of the single-file HTML using
+the section-banner comments in the source. Those comments are the contract between
+the artifacts and the suite: if one is renamed, extraction fails with an explicit
+error rather than silently testing nothing.
+
 ## Limitations
 
 The model is ideal and quasi-static: no friction, no leakage past the check
@@ -118,12 +137,25 @@ and the handout says so.
 
 ## Citation
 
-If you use these materials, please cite the archived release. See `CITATION.cff`,
-or use the "Cite this repository" button on GitHub.
+Archived on Zenodo. Cite the concept DOI, which always resolves to the current
+version, rather than a single version DOI:
+
+> Koc, A. B. (2026). *Interactive Hydraulic Bottle Jack Cross Section and
+> Laboratory Materials* [Software]. Zenodo.
+> https://doi.org/10.5281/zenodo.22181634
+
+Version 1.0.0: [10.5281/zenodo.22181634](https://doi.org/10.5281/zenodo.22181634)
+
+See `CITATION.cff`, or use the "Cite this repository" button on GitHub.
 
 ## License
 
 Code is released under the MIT License (`LICENSE`). Instructional content, meaning
 the handout and answer sheet and the text within them, is released under CC BY 4.0
 (`LICENSE-CONTENT.md`).
-"# hydraulic-bottle-jack" 
+
+## Contributing
+
+Issues and pull requests are welcome, particularly from instructors adapting the
+activity to different equipment or constraints. Run `npm test` before opening a
+pull request; the same suite runs in CI.
