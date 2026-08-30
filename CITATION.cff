@@ -16,11 +16,11 @@ authors:
     affiliation: "Agricultural Sciences Department, Agricultural Mechanization and Business Program, Clemson University"
 version: 1.0.0
 date-released: "2026-08-30"
-doi: "10.5281/zenodo.22181634"
+doi: "10.5281/zenodo.22181633"
+url: "https://doi.org/10.5281/zenodo.22181633"
 license: MIT
 license-url: "https://opensource.org/licenses/MIT"
 repository-code: "https://github.com/alibulentkoc/hydraulic-bottle-jack"
-url: "https://doi.org/10.5281/zenodo.22181634"
 keywords:
   - fluid power
   - hydraulics
