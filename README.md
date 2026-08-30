@@ -142,7 +142,7 @@ version, rather than a single version DOI:
 
 > Koc, A. B. (2026). *Interactive Hydraulic Bottle Jack Cross Section and
 > Laboratory Materials* [Software]. Zenodo.
-> https://doi.org/10.5281/zenodo.22181634
+> https://doi.org/10.5281/zenodo.22181633
 
 Version 1.0.0: [10.5281/zenodo.22181634](https://doi.org/10.5281/zenodo.22181634)
 
