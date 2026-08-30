@@ -1,0 +1,13 @@
+{
+  "name": "bottle-jack-lab",
+  "version": "1.0.0",
+  "description": "Interactive hydraulic bottle jack cross section and supporting laboratory materials",
+  "private": true,
+  "scripts": {
+    "test": "node tests/run.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  },
+  "license": "MIT"
+}

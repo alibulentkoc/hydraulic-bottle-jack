@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydraulic Bottle Jack - Student Lab Handout</title>
+<style>
+  :root{
+    --paper:#fbfaf7; --ink:#1b2128; --ink-2:#4a545e; --ink-3:#7c8791;
+    --rule:#d6d2c8; --rule-2:#b9b3a5;
+    --accent:#14794c; --accent-bg:#eaf5ef;
+    --warn:#8f231d; --warn-bg:#fbeeed;
+    --note-bg:#f3f1ea;
+    --mono: ui-monospace,"SFMono-Regular","Cascadia Mono","Consolas","Liberation Mono",monospace;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#eceae4;color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.52}
+  .sheet{max-width:920px;margin:0 auto;background:var(--paper);padding:34px 44px 60px;box-shadow:0 0 0 1px var(--rule)}
+
+  header{border-bottom:2.5px solid var(--ink);padding-bottom:14px}
+  header h1{font-family:var(--serif);font-size:27px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+  header .sub{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+  .idline{display:flex;gap:24px;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+  .idline span{flex:1 1 auto;border-bottom:1px solid var(--rule-2);padding-bottom:3px}
+
+  h2.band{font-family:var(--mono);font-size:11px;letter-spacing:.19em;text-transform:uppercase;color:var(--ink);
+    border-bottom:1.5px solid var(--ink);padding-bottom:6px;margin:32px 0 14px}
+  h3.part{font-family:var(--serif);font-size:18px;font-weight:600;margin:24px 0 4px}
+  h3.part em{font-family:var(--mono);font-style:normal;font-size:12px;color:var(--ink-3);
+    letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:2px}
+  h4{font-family:var(--sans);font-size:14px;font-weight:600;margin:16px 0 5px}
+
+  ol.obj{counter-reset:o;list-style:none;padding:0;margin:0}
+  ol.obj li{counter-increment:o;position:relative;padding:0 0 8px 40px;margin:0}
+  ol.obj li::before{content:counter(o,decimal-leading-zero);position:absolute;left:0;top:1px;
+    font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600}
+
+  .principle{border-left:3px solid var(--accent);background:var(--accent-bg);padding:11px 15px;margin:0 0 10px}
+  .principle b{display:block;font-family:var(--serif);font-size:15.5px;margin-bottom:2px}
+  .principle .eq{font-family:var(--mono);font-size:12.5px;color:var(--accent);margin-top:4px}
+
+  .warn{border:1.5px solid var(--warn);background:var(--warn-bg);padding:12px 16px;margin:14px 0}
+  .warn b{color:var(--warn);font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase}
+  .warn ul{margin:8px 0 0;padding-left:20px}
+  .warn li{margin-bottom:4px;font-size:13.5px}
+
+  .note{background:var(--note-bg);border-left:3px solid var(--rule-2);padding:10px 14px;margin:12px 0;font-size:13.5px;color:var(--ink-2)}
+  .note b{color:var(--ink)}
+
+  ol.steps{padding-left:22px;margin:6px 0 0}
+  ol.steps li{margin-bottom:9px}
+  ol.steps li b{font-weight:600}
+  .tool{font-family:var(--mono);font-size:11.5px;color:var(--accent);
+    border:1px solid var(--accent);border-radius:2px;padding:0 5px;margin-left:5px;white-space:nowrap}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0 6px}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;text-align:left;
+     border-bottom:1.5px solid var(--ink);padding:6px 7px;vertical-align:bottom}
+  td{border-bottom:1px solid var(--rule);padding:0;height:31px}
+  td.lab{padding:6px 7px;border-bottom:1px solid var(--rule)}
+  td.sym{font-family:var(--mono);font-size:12.5px;padding:6px 7px;color:var(--ink-2);white-space:nowrap}
+  td.fill{background:repeating-linear-gradient(90deg,transparent,transparent 4px,#efece4 4px,#efece4 5px)}
+  .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:14px 0 0}
+
+  .q{border-bottom:1px solid var(--rule);padding:0 0 16px;margin:0 0 18px}
+  .q:last-child{border-bottom:0}
+  .q .hd{display:flex;gap:10px;align-items:baseline}
+  .q .num{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);min-width:26px}
+  .q .ttl{font-family:var(--serif);font-size:16px;font-weight:600}
+  .q .ask{font-size:13.5px;color:var(--ink-2);margin:3px 0 8px 36px}
+  .q .give{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px solid var(--rule);
+    border-left:3px solid var(--rule-2);padding:8px 12px;margin:0 0 8px 36px;white-space:pre-wrap}
+  .work{margin-left:36px;height:96px;border:1px solid var(--rule);border-radius:2px;background:
+    repeating-linear-gradient(180deg,#fff,#fff 23px,var(--rule) 23px,var(--rule) 24px)}
+  .work.tall{height:144px}
+  .ansline{margin:8px 0 0 36px;font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+  .ansline span{display:inline-block;border-bottom:1.5px solid var(--ink);min-width:150px;margin:0 6px}
+
+  .toolbar{max-width:920px;margin:16px auto 0;display:flex;gap:9px;justify-content:flex-end}
+  .toolbar button{font-family:var(--mono);font-size:12px;padding:8px 14px;background:#fff;
+    border:1px solid var(--rule-2);border-radius:3px;cursor:pointer;color:var(--ink)}
+  .toolbar button:hover{background:#f3f1ea}
+
+  @media print{
+    body{background:#fff}
+    .sheet{box-shadow:none;max-width:none;padding:0 0 20px}
+    .toolbar{display:none}
+    .q,.principle,.warn,table{break-inside:avoid}
+    h2.band{break-after:avoid}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar"><button onclick="window.print()">Print</button></div>
+
+<div class="sheet">
+
+<header>
+  <h1>Hydraulic Bottle Jack: Disassembly, Measurement, and Analysis</h1>
+  <div class="sub">Fluid Power Systems Engineering - student handout</div>
+  <div class="idline"><span>Name</span><span>Group</span><span>Section</span><span>Date</span></div>
+</header>
+
+<h2 class="band">Why this device</h2>
+<p>A bottle jack is the smallest complete hydraulic power system you will ever hold. It contains a
+reservoir, a positive-displacement pump, two check valves, a directional control element, an actuator,
+and a set of passages, and it performs the full cycle of a hydraulic system: draw fluid, pressurize it,
+do work with it, hold the load, and return the fluid to tank. Everything you will later study in an
+industrial circuit is present here at a scale you can hold in one hand and take apart in one lab period.
+The equations you use on this jack are the same equations used on a 200 ton press.</p>
+
+<div class="note"><b>The jacks in this lab are drained.</b> There is no oil in them and no load will be
+lifted. Every result you produce is a <b>prediction</b> from geometry. That is a real engineering
+activity: you are deriving the performance of a machine from its dimensions. It also means nothing in
+this lab validates the ideal model, so you will report uncertainty in place of measured error.</div>
+
+<h2 class="band">Objectives</h2>
+<p>On completing this laboratory you will be able to:</p>
+<ol class="obj">
+  <li>Identify the functional components of a hydraulic bottle jack and trace the fluid path from
+      reservoir to lifting chamber and back.</li>
+  <li>Select and use the correct instrument for each feature: dial calipers, telescoping gauge,
+      small-hole gauge, micrometer, dial indicator, and angle gauge.</li>
+  <li>Apply conservation of volume to predict the lift produced by one full pump stroke.</li>
+  <li>Apply Pascal's principle to relate load, piston area, and system pressure.</li>
+  <li>Analyze the pump handle as a lever and compute the torque and hand force required at rated load.</li>
+  <li>Compute hydraulic power and linear power, and compare operator input to lifting output.</li>
+  <li>Quantify how measurement uncertainty propagates through squared terms and identify which single
+      measurement dominates the final answer.</li>
+  <li>Explain, with numbers, why force multiplication in any machine is paid for with distance.</li>
+</ol>
+
+<h2 class="band">Core principles</h2>
+<p>These eight ideas are the reason this device is worth a lab period. Every question you answer later
+is one of them with numbers attached.</p>
+
+<div class="principle"><b>1. Pressure is created by the load, not by the pump.</b>
+The pump moves fluid. The resistance the fluid meets is what raises pressure. A jack with no load on it
+develops almost no pressure no matter how hard you pump.
+<div class="eq">P = F / A</div></div>
+
+<div class="principle"><b>2. Pascal's principle makes the area ratio a force multiplier.</b>
+When the delivery check valve is open, the pump chamber and the lifting chamber are one connected body
+of fluid at one pressure. The same pressure on a larger piston produces a larger force.
+<div class="eq">F_ram / F_pump = A_ram / A_pump</div></div>
+
+<div class="principle"><b>3. Conservation of volume makes the same area ratio a distance divider.</b>
+Oil is treated as incompressible, so the volume that leaves the pump appears under the ram. The larger
+the ram, the less it rises for that volume.
+<div class="eq">A_pump * s_pump = A_ram * s_ram</div></div>
+
+<div class="principle"><b>4. Force multiplication is paid for with distance, so power is not created.</b>
+Principles 2 and 3 use the same ratio in opposite directions. Multiply force by 250 and you divide
+speed by 250. Ideal power in equals ideal power out; a real machine returns less.
+<div class="eq">Power = F * v = P * Q</div></div>
+
+<div class="principle"><b>5. The two multiplications are in series and simply multiply.</b>
+The handle is a lever with its own ratio, ahead of the hydraulics. The total advantage of the jack is
+the product of the two, which is how a 4 lb hand force holds a 1000 lb load.
+<div class="eq">MA_total = (A_ram / A_pump) * (L_handle / L_pivot-to-link)</div></div>
+
+<div class="principle"><b>6. Two check valves turn reciprocating motion into one-way flow.</b>
+The plunger moves back and forth. The valves make the fluid move in one direction only: the inlet ball
+admits on the up stroke and seals on the down stroke, the delivery ball does the reverse. This is the
+defining trick of every positive-displacement pump.</div>
+
+<div class="principle"><b>7. A closed valve holds the load with zero input power.</b>
+Once the delivery ball seats, the trapped fluid column carries the load indefinitely with no energy
+supplied. An electric motor holding the same load consumes power continuously. This static holding
+ability is a principal reason hydraulics is chosen for lifting.</div>
+
+<div class="principle"><b>8. Lowering is metered, not powered.</b>
+The release valve does not push the ram down. The load does. The valve controls the rate at which fluid
+is allowed back to the reservoir, which is throttling, or flow control, in its simplest form.</div>
+
+<h2 class="band">Safety</h2>
+<div class="warn">
+  <b>Read before you begin</b>
+  <ul>
+    <li>Wear eye protection during the entire disassembly. Check balls, springs, and seals can leave a
+        bore under spring tension.</li>
+    <li>The jacks are drained but not dry. Expect residual oil. Wear nitrile gloves, work over absorbent
+        pads, and wash before leaving.</li>
+    <li>Use a magnetic parts tray. Check balls are small, they roll, and a jack is scrap without them.</li>
+    <li>Do not apply a load to any jack in this lab. No jack in this room contains fluid, and a jack that
+        appears to hold will not.</li>
+    <li>Report any tool that is dropped or any gauge that is damaged. A sprung telescoping gauge produces
+        confident wrong numbers, which is worse than an obviously broken one.</li>
+  </ul>
+</div>
+
+<h2 class="band">Equipment</h2>
+<p>Per group: bottle jack, dial calipers, telescoping gauge set, small-hole (split-ball) gauge set,
+0 to 1 in micrometer, dial indicator with magnetic base, digital angle gauge or protractor, steel rule,
+hex and socket wrenches, magnetic parts tray, absorbent pads, nitrile gloves, camera or phone for the
+component photograph.</p>
+
+<div class="note"><b>On instrument choice.</b> A telescoping gauge and a small-hole gauge do not read
+themselves: you transfer the setting to a micrometer. Reading either one with dial calipers is the
+single largest source of error in this lab, and because area depends on diameter squared, that error
+arrives in your answer at double size. The pump bore is near 0.3 in, below the range of most telescoping
+gauge sets, so it requires the small-hole gauge.</div>
+
+<h2 class="band">Procedure</h2>
+<p>The order below is not the order of the questions. Measure in this order, because two of the
+measurements are only available while the jack is assembled and three of them are only available while
+it is apart.</p>
+
+<h3 class="part"><em>Part A</em>Familiarization, jack assembled</h3>
+<ol class="steps">
+  <li>Record the manufacturer, model, and the <b>rated capacity from the nameplate</b> in Table 1. Convert
+      tons to pounds and record both.</li>
+  <li>Operate the handle through several full strokes and open and close the release valve. Note by feel
+      and sound where the plunger reaches each end of its travel and where the release valve seats.</li>
+  <li>Sketch the jack in your notebook and mark where you expect to find the reservoir, the pump bore,
+      the two check valves, the release valve, and the lifting chamber. You will check this sketch
+      against the opened jack in Part C.</li>
+</ol>
+
+<h3 class="part"><em>Part B</em>Kinematic measurements, jack still assembled</h3>
+<div class="note">These two measurements are lost the moment you take the jack apart. Do them first and
+have a second group member verify each reading before you move on.</div>
+<ol class="steps">
+  <li>Mount the <b>dial indicator</b> against the top of the pump plunger. Sweep the handle slowly from
+      its lower stop to its upper stop and record total plunger travel. This is the pump stroke
+      <span class="tool">s_p</span>. Take three readings and record all three in Table 2.</li>
+  <li>With the <b>angle gauge</b> on the handle, record the handle angle at the lower stop and at the
+      upper stop. The difference is the swept angle <span class="tool">theta</span>. Record it on the
+      same stroke you measure, not separately.</li>
+  <li>Measure the perpendicular distance from the handle pivot to the point where the linkage connects
+      to the pump rod <span class="tool">a</span>, and from the pivot to the centre of the operator's
+      grip <span class="tool">b</span>. State where on the grip you measured to; this choice changes
+      your answer to question 7 and must be reported.</li>
+</ol>
+
+<h3 class="part"><em>Part C</em>Disassembly and internal measurements</h3>
+<ol class="steps">
+  <li>Disassemble in a documented order. Photograph each stage and lay parts on the tray in the sequence
+      they came out.</li>
+  <li>Compare the opened jack with your Part A sketch. Correct the sketch and mark the actual flow path:
+      reservoir to inlet check valve to pump chamber to delivery check valve to lifting chamber, and
+      lifting chamber to release valve back to reservoir.</li>
+  <li>Measure the <b>lifting cylinder bore</b> <span class="tool">D_r</span> with the telescoping gauge
+      and micrometer. Take three readings at different depths and two clock positions. A worn jack is
+      oval and tapered, and the spread between your readings is data about the condition of that jack.</li>
+  <li>Measure the <b>pump cylinder bore</b> <span class="tool">d_p</span> with the small-hole gauge and
+      micrometer. Three readings.</li>
+  <li>Measure the <b>reservoir annulus</b>: inside diameter <span class="tool">D_i</span>, which is the
+      outside of the lifting cylinder, and outside diameter <span class="tool">D_o</span>, which is the
+      inside of the jack body. <b>These are available only now.</b> You cannot return for them after
+      reassembly.</li>
+  <li>Measure the <b>full extension</b> of the lifting cylinder <span class="tool">L</span>, from the
+      seated position to the mechanical stop.</li>
+  <li>Inspect and record the condition of the ram seal, the check balls and seats, and the release valve
+      seat. Note scoring, pitting, or debris.</li>
+</ol>
+
+<h3 class="part"><em>Part D</em>Reassembly</h3>
+<ol class="steps">
+  <li>Reassemble in reverse order using your photographs. Confirm both check balls are seated in their
+      bores before closing the base.</li>
+  <li>Operate the handle and the release valve to confirm free movement. Return the jack, tools, and
+      gauges to the positions shown on the bench card.</li>
+</ol>
+
+<h3 class="part"><em>Part E</em>Analysis</h3>
+<p>Complete questions 2 through 15 on the calculation pages. Carry at least four significant figures
+through intermediate steps and round only at the final answer. Show the formula, the substitution with
+units, and the result for every question. An answer with no units is not an answer.</p>
+
+<h2 class="band">Data: Table 1, identification</h2>
+<table>
+  <tr><td class="lab">Manufacturer and model</td><td class="fill"></td>
+      <td class="lab">Rated capacity (ton)</td><td class="fill" style="width:110px"></td></tr>
+  <tr><td class="lab">Serial or lab unit number</td><td class="fill"></td>
+      <td class="lab">Rated load W (lb)</td><td class="fill"></td></tr>
+</table>
+
+<h2 class="band">Data: Table 2, kinematic measurements (jack assembled)</h2>
+<table>
+  <tr><th style="width:36%">Quantity</th><th style="width:12%">Symbol</th>
+      <th>Reading 1</th><th>Reading 2</th><th>Reading 3</th><th>Mean</th><th>Spread</th></tr>
+  <tr><td class="lab">Pump plunger stroke (in)</td><td class="sym">s_p</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+  <tr><td class="lab">Handle swept angle (deg)</td><td class="sym">theta</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+  <tr><td class="lab">Pivot to pump rod end (in)</td><td class="sym">a</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+  <tr><td class="lab">Pivot to operator hand (in)</td><td class="sym">b</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+</table>
+<p class="cap">Note the point on the grip that b was measured to: _______________________________________</p>
+
+<h2 class="band">Data: Table 3, internal measurements (jack disassembled)</h2>
+<table>
+  <tr><th style="width:36%">Quantity</th><th style="width:12%">Symbol</th>
+      <th>Reading 1</th><th>Reading 2</th><th>Reading 3</th><th>Mean</th><th>Spread</th></tr>
+  <tr><td class="lab">Lifting cylinder bore (in)</td><td class="sym">D_r</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+  <tr><td class="lab">Pump cylinder bore (in)</td><td class="sym">d_p</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+  <tr><td class="lab">Reservoir inside dia (in)</td><td class="sym">D_i</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+  <tr><td class="lab">Reservoir outside dia (in)</td><td class="sym">D_o</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+  <tr><td class="lab">Lifting cylinder extension (in)</td><td class="sym">L</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+</table>
+<p class="cap">Condition notes: seals, check balls, seats, bore scoring</p>
+<table><tr><td class="fill" style="height:52px"></td></tr></table>
+
+<h2 class="band">Calculations</h2>
+<p>Use the mean of your three readings for every dimension. Units are US customary throughout:
+inches, pounds, psi, horsepower, with 1 hp = 550 ft-lb/s = 6600 in-lb/s.</p>
+
+<div class="q">
+  <div class="hd"><span class="num">2</span><span class="ttl">Volume displaced per pump stroke</span></div>
+  <p class="ask">Use the pump bore and stroke from Tables 2 and 3 to calculate the volume of fluid
+     displaced per one full stroke of the piston pump.</p>
+  <div class="give">A_p = (pi/4) * d_p^2
+V_p = A_p * s_p</div>
+  <div class="work"></div>
+  <p class="ansline">A_p =<span></span>in^2      V_p =<span></span>in^3</p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">3</span><span class="ttl">Lifting cylinder area and lift per stroke</span></div>
+  <p class="ask">Calculate the cross-sectional area of the lifting cylinder, then use it with your answer
+     to question 2 to determine the lift produced by one full pump stroke.</p>
+  <div class="give">A_r = (pi/4) * D_r^2
+V_p = A_r * h    ->    h = V_p / A_r</div>
+  <div class="work"></div>
+  <p class="ansline">A_r =<span></span>in^2      h =<span></span>in per stroke</p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">4</span><span class="ttl">Pressure required in the lifting cylinder</span></div>
+  <p class="ask">Use the rated load from the nameplate and your measurements to determine the fluid
+     pressure required to lift that load.</p>
+  <div class="give">P = W / A_r</div>
+  <div class="work"></div>
+  <p class="ansline">P =<span></span>lb/in^2</p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">5</span><span class="ttl">Downward force on the pump piston</span></div>
+  <p class="ask">Determine the downward force required on the pump piston to produce that pressure.
+     State which core principle allows you to use the same pressure on both pistons.</p>
+  <div class="give">F_p = P * A_p</div>
+  <div class="work"></div>
+  <p class="ansline">F_p =<span></span>lb</p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">6</span><span class="ttl">Torque required at the handle pivot</span></div>
+  <p class="ask">Using the pump force and the pivot to rod end distance, calculate the torque that must
+     be applied at the handle pivot.</p>
+  <div class="give">T = F_p * a</div>
+  <div class="work"></div>
+  <p class="ansline">T =<span></span>lb-in</p>
+  <div class="note" style="margin-left:36px"><b>Terminology.</b> The quantity here is a torque, also
+    called a moment. It is not a moment of inertia, which carries units of lb-in-s^2 and describes
+    resistance to angular acceleration.</div>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">7</span><span class="ttl">Tangential force at the operator's hand</span></div>
+  <p class="ask">Use the pivot to hand distance to determine the force the operator must apply
+     perpendicular to the handle to produce the required torque.</p>
+  <div class="give">T = F_hand * b    ->    F_hand = T / b
+check:  F_hand = F_p * (a / b)</div>
+  <div class="work"></div>
+  <p class="ansline">F_hand =<span></span>lb</p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">8</span><span class="ttl">Hydraulic power at one cycle per second</span></div>
+  <p class="ask">If you pump at one full cycle per second while lifting the rated load, how much hydraulic
+     power are you generating?</p>
+  <div class="give">Q = V_p * n
+Power = P * Q          [ (lb/in^2)(in^3/s) = in-lb/s ]
+1 hp = 6600 in-lb/s</div>
+  <div class="work"></div>
+  <p class="ansline">Q =<span></span>in^3/s      Power =<span></span>hp</p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">9</span><span class="ttl">Time to full extension</span></div>
+  <p class="ask">Determine how many strokes and how long it takes to extend the lifting cylinder fully
+     at that rate.</p>
+  <div class="give">N = L / h            t = N / n</div>
+  <div class="work"></div>
+  <p class="ansline">N =<span></span>strokes      t =<span></span>s</p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">10</span><span class="ttl">Extension speed and output linear power</span></div>
+  <p class="ask">Calculate the speed of extension, then use it with the rated load to find the linear
+     power delivered to the load.</p>
+  <div class="give">v = L / t
+Power = F * v          (AGM 206: linear power = force x speed)</div>
+  <div class="work"></div>
+  <p class="ansline">v =<span></span>in/s      Power =<span></span>hp</p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">11</span><span class="ttl">Operator input linear power</span></div>
+  <p class="ask">At the same rate, using the hand force and the arc distance the hand travels, determine
+     the linear power exerted by the operator. Neglect the return stroke.</p>
+  <div class="give">d = 2 * pi * b * theta / 360          [theta from Table 2, in degrees]
+Power = F_hand * d * n</div>
+  <div class="work"></div>
+  <p class="ansline">d =<span></span>in      Power =<span></span>hp</p>
+  <div class="note" style="margin-left:36px"><b>Expect a small mismatch.</b> The arc is slightly longer
+    than the straight-line displacement the lever ratio implies, by a factor of theta/sin(theta) with
+    theta in radians, typically 6 to 7 percent. Your input power will come out a few percent above
+    questions 8 and 10. This is a geometry artifact of the arc formula, not a loss and not an error.
+    Say so in question 13.</div>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">12</span><span class="ttl">Reservoir area and drop in fluid level</span></div>
+  <p class="ask">Determine the cross-sectional area of the donut-shaped reservoir, then find the drop in
+     fluid level when the lifting cylinder is fully extended.</p>
+  <div class="give">A_res = (pi/4) * (D_o^2 - D_i^2)
+V_lift = A_r * L
+drop = V_lift / A_res</div>
+  <div class="work"></div>
+  <p class="ansline">A_res =<span></span>in^2      drop =<span></span>in</p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">13</span><span class="ttl">Comparison of input, hydraulic, and output power</span></div>
+  <p class="ask">Compare your answers from questions 8, 10, and 11. Has the jack magnified power? By what
+     factor is force multiplied, and by what factor is speed reduced? Show that the total force factor is
+     the product of the hydraulic ratio and the lever ratio, and account for the mismatch noted in
+     question 11.</p>
+  <div class="give">force factor  = W / F_hand      and      (A_r / A_p) * (b / a)
+speed factor  = hand speed / ram speed</div>
+  <div class="work tall"></div>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">14</span><span class="ttl">Measurement uncertainty</span></div>
+  <p class="ask">Estimate the uncertainty in each measured diameter from the spread of your three
+     readings. Propagate it to the lift per stroke. State which single measurement contributes most to
+     the uncertainty in your answer, and explain why in terms of the exponent on that variable.</p>
+  <div class="give">u(A)/A = 2 * u(D)/D
+u(h)/h = sqrt( (2*u(d_p)/d_p)^2 + (u(s_p)/s_p)^2 + (2*u(D_r)/D_r)^2 )</div>
+  <div class="work tall"></div>
+  <p class="ansline">h =<span></span>+/-<span></span>in      dominant term:<span></span></p>
+</div>
+
+<div class="q">
+  <div class="hd"><span class="num">15</span><span class="ttl">Class data: capacity against area</span></div>
+  <p class="ask">Post your rated load W and lifting cylinder area A_r to the class table. Plot W against
+     A_r for every jack in the room and fit a straight line through the origin. What does the slope
+     represent physically? What does it tell you about how a manufacturer scales a family of jacks? If
+     your point falls far from the line, what is the most likely explanation?</p>
+  <div class="work tall"></div>
+  <p class="ansline">slope =<span></span>lb/in^2      meaning:<span></span></p>
+</div>
+
+<h2 class="band">Report</h2>
+<p>Submit Tables 1 through 3, all calculations with substitutions shown, your corrected flow-path sketch
+from Part C, the class plot from question 15, and a closing paragraph answering this: which of the eight
+core principles could you have confirmed by measurement in this lab, and which had to be taken on the
+authority of the equations because the jacks contain no fluid? Be specific about what an oil-filled jack
+would have let you measure that this one did not.</p>
+
+</div>
+</body>
+</html>

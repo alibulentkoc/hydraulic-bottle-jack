@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: If you use these materials, please cite them as below.
+title: "Interactive Hydraulic Bottle Jack Cross Section and Laboratory Materials"
+abstract: >-
+  A browser-based, offline-capable simulation of a hydraulic bottle jack in
+  cross section, in which the animation is driven by hydraulic state rather
+  than the reverse, together with a student laboratory handout and an
+  instructor answer sheet for a disassembly and measurement activity on
+  drained jacks. Includes a verification suite covering volume conservation,
+  check valve logic, parametric drawing geometry, and interface behaviour.
+type: software
+authors:
+  - family-names: Koc
+    given-names: A. Bulent
+    orcid: "https://orcid.org/0000-0003-3633-1699"
+    affiliation: "Agricultural Sciences Department, Agricultural Mechanization and Business Program, Clemson University"
+version: 1.0.0
+date-released: "2026-08-30"
+doi: "10.5281/zenodo.22181634"
+license: MIT
+license-url: "https://opensource.org/licenses/MIT"
+repository-code: "https://github.com/alibulentkoc/hydraulic-bottle-jack"
+url: "https://doi.org/10.5281/zenodo.22181634"
+keywords:
+  - fluid power
+  - hydraulics
+  - engineering education
+  - laboratory instruction
+  - interactive simulation
+  - measurement uncertainty
+  - Pascal's principle

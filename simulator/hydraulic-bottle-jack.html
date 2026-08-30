@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydraulic Bottle Jack - Interactive Cross Section</title>
+<style>
+  :root{
+    /* Instrument chrome: graphite bench, drawing sheet, machined accents */
+    --bench:      #171b1f;
+    --bench-2:    #1e242a;
+    --rule:       #2e3841;
+    --rule-2:     #3d4a55;
+    --ink:        #e8edf1;
+    --ink-dim:    #9aa8b4;
+    --ink-faint:  #6c7b88;
+    --sheet:      #e9edf1;
+    --sheet-line: #b9c4cd;
+
+    /* Hydraulic convention (fixed meanings) */
+    --oil-low:    #f5c231;   /* reservoir / low pressure oil */
+    --oil-low-d:  #c08f16;
+    --oil-high:   #2fd98a;   /* pressurised lifting oil */
+    --oil-high-d: #1a9c62;
+    --handle:     #d43b33;
+    --handle-d:   #8f231d;
+
+    /* Metals */
+    --body:       #5c666e;
+    --body-d:     #3f484f;
+    --cyl:        #7b858d;
+    --ram:        #c3cbd1;
+    --ram-hi:     #eef2f5;
+    --piston:     #98a2aa;
+    --ball:       #d9a441;
+    --seal:       #24292d;
+
+    --ok:         #35c98a;
+    --warn:       #e8b52a;
+    --stop:       #e0605a;
+
+    --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "Consolas", "Liberation Mono", monospace;
+    --sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bench);color:var(--ink);font-family:var(--sans)}
+  body{font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+
+  .app{max-width:1500px;margin:0 auto;padding:14px 16px 24px}
+
+  /* ---------- header ---------- */
+  header.top{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+    border-bottom:1px solid var(--rule);padding-bottom:10px;margin-bottom:14px;flex-wrap:wrap;
+  }
+  .brand h1{
+    font-family:var(--mono);font-size:19px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;margin:0;
+  }
+  .brand p{margin:3px 0 0;color:var(--ink-dim);font-size:12.5px;max-width:62ch}
+  .unitsw{display:flex;gap:0;border:1px solid var(--rule-2);border-radius:3px;overflow:hidden}
+  .unitsw button{
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:6px 12px;
+    background:transparent;color:var(--ink-dim);border:0;cursor:pointer;
+  }
+  .unitsw button[aria-pressed="true"]{background:var(--rule);color:var(--ink)}
+
+  /* ---------- layout ---------- */
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 356px;gap:16px;align-items:start}
+  @media (max-width:1080px){ .layout{grid-template-columns:minmax(0,1fr)} }
+
+  .card{background:var(--bench-2);border:1px solid var(--rule);border-radius:4px}
+  .card h2{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-faint);margin:0;padding:10px 12px 8px;border-bottom:1px solid var(--rule);
+  }
+  .card .body{padding:12px}
+
+  /* ---------- stage ---------- */
+  .stage{overflow:hidden}
+  .stagebar{
+    display:flex;align-items:center;gap:12px;padding:9px 12px;border-bottom:1px solid var(--rule);
+    flex-wrap:wrap;
+  }
+  .statepill{
+    font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.16em;
+    padding:5px 11px;border-radius:3px;border:1px solid currentColor;white-space:nowrap;
+  }
+  .statetext{color:var(--ink-dim);font-size:12.5px;flex:1 1 260px;min-width:200px}
+  .toggles{display:flex;gap:6px;margin-left:auto}
+  .tgl{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    padding:6px 9px;background:transparent;color:var(--ink-faint);
+    border:1px solid var(--rule-2);border-radius:3px;cursor:pointer;
+  }
+  .tgl[aria-pressed="true"]{background:var(--rule);color:var(--ink);border-color:var(--rule-2)}
+
+  .sheet{background:var(--sheet);position:relative}
+  svg#jack{display:block;width:100%;height:auto;touch-action:none}
+  .notscale{
+    position:absolute;right:10px;bottom:8px;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.1em;color:#7e8b96;text-transform:uppercase;pointer-events:none;
+  }
+
+  .legend{
+    display:flex;flex-wrap:wrap;gap:6px 16px;padding:9px 12px;border-top:1px solid var(--rule);
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--ink-dim);
+  }
+  .legend span{display:flex;align-items:center;gap:6px}
+  .sw{width:11px;height:11px;border-radius:2px;border:1px solid rgba(0,0,0,.45);display:inline-block}
+
+  /* ---------- signature: oil inventory ledger ---------- */
+  .ledger{padding:11px 12px 13px;border-top:1px solid var(--rule)}
+  .ledger .lh{
+    display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:7px;
+  }
+  .bar{display:flex;height:16px;border:1px solid var(--rule-2);border-radius:2px;overflow:hidden;background:#11151a}
+  .bar div{transition:width .12s linear}
+  .barlabels{display:flex;justify-content:space-between;margin-top:6px;font-family:var(--mono);font-size:10.5px;color:var(--ink-dim)}
+  .barlabels b{color:var(--ink);font-weight:600}
+
+  /* ---------- controls ---------- */
+  .controls{display:flex;flex-wrap:wrap;gap:8px;padding:11px 12px;border-top:1px solid var(--rule)}
+  button.act{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+    padding:9px 14px;border-radius:3px;cursor:pointer;
+    background:#28313a;color:var(--ink);border:1px solid var(--rule-2);
+  }
+  button.act:hover{background:#313c46}
+  button.act[aria-pressed="true"]{background:var(--ok);color:#08140e;border-color:var(--ok)}
+  button.act.danger[aria-pressed="true"]{background:var(--stop);color:#1b0605;border-color:var(--stop)}
+  button.act:disabled{opacity:.4;cursor:not-allowed}
+
+  /* ---------- panel ---------- */
+  .panel{display:flex;flex-direction:column;gap:12px}
+  .grp{margin-bottom:14px}
+  .grp:last-child{margin-bottom:0}
+  .grp h3{
+    font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-faint);margin:0 0 9px;padding-bottom:5px;border-bottom:1px dashed var(--rule);
+  }
+  .ctl{margin-bottom:11px}
+  .ctl .row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:4px}
+  .ctl label{font-size:12.5px;color:var(--ink-dim)}
+  .ctl .val{display:flex;align-items:center;gap:4px}
+  .ctl{margin-bottom:8px}
+  .ctl input[type=number]{
+    width:86px;font-family:var(--mono);font-size:13px;text-align:right;
+    background:#11151a;color:var(--ink);border:1px solid var(--rule-2);border-radius:3px;padding:5px 7px;
+  }
+  .ctl input[type=number]:focus{border-color:var(--oil-high);background:#0d1216}
+  .ctl .unit{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);width:32px}
+  .applyrow{display:flex;gap:8px;margin:14px 0 2px}
+  .applyrow button{flex:1 1 auto}
+  .derived{
+    font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+    margin:-4px 0 10px;padding-left:2px;
+  }
+
+  table.dash{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+  table.dash td{padding:3.5px 0;border-bottom:1px solid rgba(255,255,255,.045)}
+  table.dash td:first-child{color:var(--ink-dim);font-family:var(--sans);font-size:12.5px}
+  table.dash td:last-child{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+  table.dash tr.hi td:last-child{color:var(--oil-high);font-weight:600}
+  table.dash tr.warnrow td:last-child{color:var(--warn)}
+
+  .eqs{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);line-height:1.85}
+  .eqs b{color:var(--ink);font-weight:600}
+  .note{font-size:11.5px;color:var(--ink-faint);margin-top:9px}
+
+  .alert{
+    margin-top:10px;padding:8px 10px;border-radius:3px;font-size:12px;
+    background:rgba(224,96,90,.12);border:1px solid rgba(224,96,90,.45);color:#f0a29d;
+  }
+  .alert:empty{display:none}
+
+  :focus-visible{outline:2px solid var(--oil-high);outline-offset:2px}
+  @media (prefers-reduced-motion: reduce){ .bar div{transition:none} }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <h1>Hydraulic Bottle Jack</h1>
+      <p>Interactive cross section. Every motion on the drawing is computed from oil volume conservation, so the ram only rises by the volume the pump actually delivers.</p>
+    </div>
+    <div class="unitsw" role="group" aria-label="Unit system">
+      <button id="uSI" aria-pressed="true">SI: mm, N, MPa</button>
+      <button id="uUS" aria-pressed="false">Customary: in, lbf, psi</button>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ============ STAGE ============ -->
+    <section class="card stage">
+      <div class="stagebar">
+        <span class="statepill" id="statePill">IDLE</span>
+        <span class="statetext" id="stateText">Ready. Drag the red handle, or use Pump once.</span>
+        <div class="toggles">
+          <button class="tgl" id="tDims" aria-pressed="true">Dimensions</button>
+          <button class="tgl" id="tPress" aria-pressed="false">Pressure</button>
+          <button class="tgl" id="tFlow" aria-pressed="true">Flow</button>
+        </div>
+      </div>
+
+      <div class="sheet">
+        <svg id="jack" viewBox="0 0 780 570" role="img"
+             aria-label="Cross section of a hydraulic bottle jack showing reservoir, pump cylinder, check valves and main ram"></svg>
+        <div class="notscale">Schematic - not to scale</div>
+      </div>
+
+      <div class="legend">
+        <span><i class="sw" style="background:#f5c231"></i>Reservoir oil (low pressure). The bottle is annular, so the two yellow columns are one connected volume at one level.</span>
+        <span><i class="sw" style="background:#2fd98a"></i>Lifting oil (high pressure)</span>
+        <span><i class="sw" style="background:#c3cbd1"></i>Ram</span>
+        <span><i class="sw" style="background:#5c666e"></i>Body / structure</span>
+        <span><i class="sw" style="background:#d9a441;border-radius:50%"></i>Check ball</span>
+        <span><i class="sw" style="background:#d43b33"></i>Handle</span>
+      </div>
+
+      <div class="ledger">
+        <div class="lh"><span>Oil inventory</span><span id="ledTotal">total 0 mL</span></div>
+        <div class="bar" id="bar">
+          <div id="barRes" style="background:var(--oil-low);width:70%"></div>
+          <div id="barPump" style="background:var(--oil-low-d);width:2%"></div>
+          <div id="barHp" style="background:var(--oil-high);width:28%"></div>
+        </div>
+        <div class="barlabels">
+          <span>Reservoir <b id="lRes">0</b></span>
+          <span>Pump chamber <b id="lPump">0</b></span>
+          <span>Lifting chamber <b id="lHp">0</b></span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="act" id="bOnce">Pump once</button>
+        <button class="act" id="bAuto" aria-pressed="false">Auto pump</button>
+        <button class="act" id="bPause">Pause</button>
+        <button class="act danger" id="bRel" aria-pressed="false">Release valve: closed</button>
+        <button class="act" id="bReset">Reset</button>
+      </div>
+    </section>
+
+    <!-- ============ PANEL ============ -->
+    <aside class="panel">
+
+      <section class="card">
+        <h2>Dimensions</h2>
+        <div class="body">
+          <div class="grp"><h3>Main ram</h3><div id="grpRam"></div>
+            <div class="derived" id="dRam"></div>
+          </div>
+          <div class="grp"><h3>Pump</h3><div id="grpPump"></div>
+            <div class="derived" id="dPump"></div>
+          </div>
+          <div class="grp"><h3>Handle</h3><div id="grpHandle"></div>
+            <div class="derived" id="dHandle"></div>
+          </div>
+          <div class="grp"><h3>Hydraulic system</h3><div id="grpSys"></div></div>
+          <div class="applyrow">
+            <button class="act" id="bApply">Apply values</button>
+            <button class="act" id="bDefaults">Restore defaults</button>
+          </div>
+          <p class="note">Type a value and press Enter, or edit several fields and use Apply values. Entries outside the allowed range are clamped, and switching unit system converts what is already there.</p>
+          <div class="alert" id="alert"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Live values</h2>
+        <div class="body">
+          <table class="dash"><tbody id="dash"></tbody></table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Governing relationships</h2>
+        <div class="body">
+          <div class="eqs">
+            A = pi * D^2 / 4<br>
+            P = F / A_ram<br>
+            V = A_pump * s_pump<br>
+            A_pump * s_pump = A_ram * s_ram<br>
+            <b>s_ram = s_pump * (A_pump / A_ram)</b><br>
+            MA = L_handle / L_pivot-to-link
+          </div>
+          <p class="note">Force is multiplied by the area ratio and distance is divided by it. Watch the ram rise per stroke shrink as you enlarge the ram: that is the same trade, seen as motion.</p>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   1. DIMENSIONAL MODEL
+   ============================================================ */
+const DEFAULTS = {
+  ramDia:      40,    // mm
+  boreDia:     44,    // mm  (drawing only; sealed ram area uses ramDia)
+  ramStart:     0,    // mm
+  ramStrokeMax:100,   // mm
+  pumpDia:      8,    // mm
+  pumpStroke:  20,    // mm
+  pumpCylLen:  60,    // mm
+  handleLen:  350,    // mm
+  pivotLink:   35,    // mm
+  load:      5000,    // N
+  resFill:    400,    // mL, oil in reservoir at reset
+  deadVol:     20     // mL, dead volume under the ram at zero stroke
+};
+
+const SPECS = {
+  ram: [
+    {k:"ramDia",       lab:"Ram diameter",        min:20, max:110, q:"len"},
+    {k:"boreDia",      lab:"Cylinder bore",       min:22, max:120, q:"len"},
+    {k:"ramStart",     lab:"Initial ram position",min:0,  max:100, q:"len"},
+    {k:"ramStrokeMax", lab:"Maximum ram stroke",  min:20, max:200, q:"len"}
+  ],
+  pump: [
+    {k:"pumpDia",      lab:"Pump piston diameter",min:4,  max:26,  q:"len"},
+    {k:"pumpStroke",   lab:"Pump stroke",         min:5,  max:45,  q:"len"},
+    {k:"pumpCylLen",   lab:"Pump cylinder length",min:30, max:110, q:"len"}
+  ],
+  handle: [
+    {k:"handleLen",    lab:"Handle length",       min:150,max:700, q:"len"},
+    {k:"pivotLink",    lab:"Pivot to link",       min:15, max:80,  q:"len"}
+  ],
+  sys: [
+    {k:"load",         lab:"Load on ram",         min:0,  max:60000, q:"force"},
+    {k:"resFill",      lab:"Reservoir oil",       min:100,max:900,   q:"vol"},
+    {k:"deadVol",      lab:"Dead volume under ram",min:0, max:100,   q:"vol"}
+  ]
+};
+
+const dims = Object.assign({}, DEFAULTS);
+
+/* ============================================================
+   2. DERIVED GEOMETRY AND HYDRAULIC CONSTANTS  (pure)
+   ============================================================ */
+const PI = Math.PI;
+const STEEL = 7.85e-6;      // kg per mm^3
+const G = 9.81;
+const CRACK = 0.15;         // MPa, extra pressure needed to lift a check ball
+const RELIEF_P = 65;        // MPa, overload relief setting
+
+const clamp = (v,a,b)=> v<a?a : v>b?b : v;
+
+function derived(d){
+  const Ar = PI*d.ramDia*d.ramDia/4;          // mm^2
+  const Ap = PI*d.pumpDia*d.pumpDia/4;        // mm^2
+  const ratio = Ar/Ap;
+  // handle angular stroke follows from the linkage: s_pump = L_link * sin(theta_max)
+  const sinMax = clamp(d.pumpStroke/d.pivotLink, 0.02, 0.98);
+  const thetaMax = Math.asin(sinMax);
+  const strokeReal = d.pivotLink*sinMax;      // achievable pump stroke, mm
+  const dispPerStroke = Ap*strokeReal;        // mm^3
+  const risePerStroke = dispPerStroke/Ar;     // mm
+  const MA = d.handleLen/d.pivotLink;
+  const ramLen = d.ramStrokeMax + 60;         // mm, engaged length allowance
+  const ramMass = Ar*ramLen*STEEL;            // kg
+  const ramWeight = ramMass*G;                // N
+  const Phold = (d.load + ramWeight)/Ar;      // MPa (N/mm^2)
+  const Fpump = Phold*Ap;                     // N
+  const Fhand = Fpump/MA;                     // N
+  const strokesToTop = risePerStroke>0 ? d.ramStrokeMax/risePerStroke : Infinity;
+  return {Ar,Ap,ratio,thetaMax,strokeReal,dispPerStroke,risePerStroke,MA,
+          ramLen,ramWeight,Phold,Fpump,Fhand,strokesToTop};
+}
+
+/* ============================================================
+   3. SIMULATION STATE
+   ============================================================ */
+const sim = {
+  theta:0, lift:0, ram:0, vPump:0, vRes:0, vTotal:0,
+  compress:0, strokes:0, halfUp:false,
+  releaseOpen:false, inlet:false, outlet:false, relief:false,
+  mode:"IDLE", pumpP:0, hpP:0, flowRate:0, flowPath:null,
+  drive:"idle", phase:0, paused:false, dragging:false, starved:false, t:0
+};
+
+const DEAD_PUMP = 2;            // mm of pump piston dead length at bottom
+const AUTO_PERIOD = 2.6;        // s per automatic cycle
+
+function resetSim(){
+  const D = derived(dims);
+  sim.theta=0; sim.lift=0;
+  sim.ram = clamp(dims.ramStart, 0, dims.ramStrokeMax);
+  sim.vPump = D.Ap*DEAD_PUMP;
+  const vHp = D.Ar*sim.ram + dims.deadVol*1000;
+  sim.vRes = dims.resFill*1000;
+  sim.vTotal = sim.vRes + sim.vPump + vHp;
+  sim.compress=0; sim.strokes=0; sim.halfUp=false;
+  sim.releaseOpen=false; sim.inlet=false; sim.outlet=false; sim.relief=false;
+  sim.mode="IDLE"; sim.pumpP=0; sim.hpP=0; sim.flowRate=0; sim.flowPath=null;
+  sim.drive="idle"; sim.phase=0; sim.paused=false; sim.starved=false;
+  setPressed(bRel,false); bRel.textContent="Release valve: closed";
+  setPressed(bAuto,false);
+}
+function vHp(){ return derived(dims).Ar*sim.ram + dims.deadVol*1000; }
+
+/* ============================================================
+   4. STATE MACHINE + HYDRAULICS  (physics drives everything)
+   ============================================================ */
+function step(dt){
+  const D = derived(dims);
+
+  /* --- 4a. handle kinematics: driver sets theta --- */
+  if(!sim.dragging){
+    if(sim.drive==="auto" || sim.drive==="once"){
+      sim.phase += dt/AUTO_PERIOD;
+      if(sim.drive==="once" && sim.phase>=1){ sim.phase=1; sim.drive="idle"; }
+      if(sim.drive==="auto" && sim.phase>=1) sim.phase-=1;
+      sim.theta = D.thetaMax*0.5*(1-Math.cos(2*PI*sim.phase));
+    }
+  }
+  sim.theta = clamp(sim.theta, 0, D.thetaMax);
+
+  const lift = dims.pivotLink*Math.sin(sim.theta);   // mm above bottom of stroke
+  const dLift = lift - sim.lift;
+  sim.lift = lift;
+
+  /* --- 4b. valve logic and oil transfer --- */
+  sim.inlet=false; sim.outlet=false; sim.relief=false; sim.starved=false;
+  sim.flowRate=0; sim.flowPath=null;
+  const tol = 1e-4;
+
+  if(dLift > tol){
+    /* SUCTION: chamber grows, inlet ball lifts, oil drawn from reservoir */
+    let want = D.Ap*dLift;
+    if(want > sim.vRes){ want = Math.max(sim.vRes,0); sim.starved = true; }
+    sim.vPump += want;
+    sim.vRes  -= want;
+    sim.inlet = true;
+    sim.compress = 0;
+    sim.mode = "SUCTION";
+    sim.pumpP = -0.02;
+    sim.flowRate = want/Math.max(dt,1e-3);
+    sim.flowPath = "inlet";
+    sim.halfUp = true;
+  } else if(dLift < -tol){
+    /* DOWNSTROKE: compress the trapped oil, then deliver */
+    const dV = D.Ap*(-dLift);
+    const compVol = Math.max(D.Ap*D.strokeReal*0.02, 1e-6);   // compressibility allowance
+    if(sim.compress < 1 && sim.vPump > D.Ap*DEAD_PUMP + 1e-6){
+      sim.compress = Math.min(1, sim.compress + dV/compVol);
+      sim.vPump = Math.max(D.Ap*DEAD_PUMP, sim.vPump - dV*0.02);
+      sim.mode = "COMPRESSION";
+      sim.pumpP = D.Phold*sim.compress + CRACK*sim.compress;
+    } else if(sim.ram >= dims.ramStrokeMax - 1e-6){
+      /* ram at end of travel: nothing can be delivered, relief dumps to tank */
+      const before = sim.vPump;
+      sim.vPump = Math.max(D.Ap*DEAD_PUMP, sim.vPump - dV);
+      sim.vRes += (before - sim.vPump);
+      sim.relief = true;
+      sim.mode = "MAX_EXTENSION";
+      sim.pumpP = RELIEF_P;
+      sim.flowRate = dV/Math.max(dt,1e-3);
+      sim.flowPath = "relief";
+    } else {
+      const give = Math.min(dV, Math.max(sim.vPump - D.Ap*DEAD_PUMP, 0));
+      const room = (dims.ramStrokeMax - sim.ram)*D.Ar;
+      const moved = Math.min(give, room);
+      sim.vPump -= moved;
+      sim.ram   += moved/D.Ar;
+      sim.outlet = moved > 1e-9;
+      sim.mode = "DELIVERY";
+      sim.pumpP = D.Phold + CRACK;
+      sim.flowRate = moved/Math.max(dt,1e-3);
+      sim.flowPath = "outlet";
+      if(sim.halfUp && sim.theta < 1e-3){ sim.strokes++; sim.halfUp=false; }
+    }
+  } else {
+    sim.pumpP = 0;
+    sim.mode = sim.ram > 1e-6 ? "HOLD" : "IDLE";
+  }
+
+  /* --- 4c. release valve: lifting chamber back to reservoir --- */
+  if(sim.releaseOpen && sim.ram > 1e-6){
+    const P = Math.max(D.Phold, 0.005);
+    const rate = clamp(6 + 26*Math.sqrt(P), 0, 260);   // mm/s of ram descent
+    const dh = Math.min(rate*dt, sim.ram);
+    sim.ram -= dh;
+    sim.vRes += dh*D.Ar;
+    sim.mode = "RELEASE";
+    sim.flowRate = dh*D.Ar/Math.max(dt,1e-3);
+    sim.flowPath = "release";
+    sim.inlet=false; sim.outlet=false;
+  } else if(sim.releaseOpen){
+    if(sim.mode==="HOLD"||sim.mode==="IDLE") sim.mode="IDLE";
+  }
+
+  sim.ram = clamp(sim.ram, 0, dims.ramStrokeMax);
+  sim.hpP = (sim.ram > 1e-6 || sim.mode==="DELIVERY") && !sim.releaseOpen ? D.Phold : 0;
+  if(sim.mode==="MAX_EXTENSION") sim.hpP = D.Phold;
+  sim.t += dt;
+}
+
+/* state descriptions generated from the live state */
+function stateCopy(){
+  const D = derived(dims);
+  switch(sim.mode){
+    case "SUCTION": return ["SUCTION STROKE","var(--oil-low)",
+      "Pump piston is rising. Chamber pressure falls below the reservoir, so the inlet check ball lifts and oil is drawn into the pump. The outlet ball stays seated."];
+    case "COMPRESSION": return ["COMPRESSION","var(--warn)",
+      "Piston is descending against trapped oil. Pressure is climbing toward " + fmt(D.Phold,2) + " MPa; the outlet ball has not cracked open yet."];
+    case "DELIVERY": return ["PRESSURE STROKE","var(--oil-high)",
+      "Pump pressure exceeds the lifting chamber, so the outlet ball is off its seat and oil is displaced under the ram. Inlet is sealed by that same pressure."];
+    case "HOLD": return ["HOLDING","var(--ink-dim)",
+      "Both check valves are seated and the release valve is closed. The trapped column of oil carries the load with no pump effort."];
+    case "RELEASE": return ["RELEASE","var(--stop)",
+      "Release valve is open. The load pushes oil out of the lifting chamber and back to the reservoir, and the ram descends."];
+    case "MAX_EXTENSION": return ["MAX EXTENSION","var(--stop)",
+      "Ram is at the end of its " + fmt(dims.ramStrokeMax,0) + " mm stroke. Further pumping cannot deliver oil, so the relief path returns it to the reservoir."];
+    default: return ["IDLE","var(--ink-dim)",
+      "Ready. Drag the red handle, or use Pump once."];
+  }
+}
+
+/* ============================================================
+   5. PARAMETRIC DRAWING GEOMETRY (px)
+   ============================================================ */
+function layout(){
+  const d = dims, D = derived(d);
+  const cx = 232;
+  const ramR   = clamp(d.ramDia*1.05, 17, 58);
+  const boreR  = ramR + clamp((d.boreDia-d.ramDia)*1.1, 3, 9);
+  const cylWall= 12, resW = 40, shell = 9;
+  const cylOut = boreR + cylWall;
+  const bodyHalf = cylOut + resW + shell;
+
+  const baseTop = 452, baseBot = 508;
+  const bodyTop = 300;
+  const ramBot0 = 442;
+  const vScale  = 150/d.ramStrokeMax;
+  const ramLenPx= 208;
+
+  const ramBotY = ramBot0 - sim.ram*vScale;
+  const ramTopY = ramBotY - ramLenPx;
+
+  const pivotX = cx + bodyHalf + 34;
+  const pivotY = 340;
+  const LpPx   = clamp(d.pivotLink*2.0, 26, 96);
+  const pumpR  = clamp(d.pumpDia*2.6, 15, 27);   // floor keeps both ports inside the bore
+  // offset the pump axis outward if the link is too short to clear the pivot post
+  const pumpX  = pivotX + Math.max(LpPx, pumpR + 32);
+  const travelPx = LpPx*Math.sin(D.thetaMax);
+  const pumpCylLen = clamp(d.pumpCylLen*1.35, travelPx+46, 168);
+  const pumpTop = baseTop - pumpCylLen;
+
+  const headH = 13, deadPx = 6;
+  const headTop0 = baseTop - deadPx - headH;
+
+  const pinX = pivotX + LpPx*Math.cos(sim.theta);
+  const pinY = pivotY  - LpPx*Math.sin(sim.theta);
+  // piston travel is drawn straight from the physical lift (Lp*sin(theta)) at a
+  // fixed 2.0 px/mm, so the drawing can never disagree with the pumped volume
+  const headTopY = headTop0 - LpPx*Math.sin(sim.theta);
+  const headBotY = headTopY + headH;
+
+  const handleLenPx = clamp(d.handleLen*0.52, 115, 258);
+  const hEndX = pivotX + handleLenPx*Math.cos(sim.theta);
+  const hEndY = pivotY  - handleLenPx*Math.sin(sim.theta);
+
+  const xResL  = cx - cylOut - resW/2;          // centre of the left column (same volume)
+  const xResRel= cx + cylOut + 12;              // release return riser
+  const xResR  = cx + cylOut + 30;              // pump suction riser
+  const resTop = bodyTop + 14;
+
+  // three stacked galleries in the base, all on the pump side of the bore
+  const yIn = 470, yRel = 484, yOut = 498;
+  const pIn = pumpX - 12, pOut = pumpX + 12;
+  const portOut = cx;                                 // delivery enters the chamber on axis
+  const obX = pOut - 26;                              // delivery ball, at the pump bore
+  const ibX = pIn  - 24;                              // suction ball, at the pump bore
+  const Tx  = cx + Math.max(17, boreR*0.35);          // release tap, downstream of the outlet ball
+  const rvX = (Tx + xResRel)/2;                       // release valve
+
+  const pathInlet   = [[xResR,baseTop-6],[xResR,yIn],[pIn,yIn],[pIn,baseTop],[pIn,headBotY-4]];
+  const pathDelLow  = [[pOut,headBotY-4],[pOut,baseTop],[pOut,yOut],[obX,yOut]];
+  const pathDelHigh = [[obX,yOut],[portOut,yOut],[portOut,baseTop],[portOut,ramBotY-4]];
+  const pathHpBranch= [[Tx,yOut],[Tx,yRel],[rvX,yRel]];
+  const pathRelOut  = [[rvX,yRel],[xResRel,yRel],[xResRel,baseTop-6]];
+  const pathDeliver = pathDelLow.concat(pathDelHigh.slice(1));
+  const pathRelease = [[portOut,ramBotY-4],[portOut,baseTop],[portOut,yOut],[Tx,yOut],
+                       [Tx,yRel],[rvX,yRel],[xResRel,yRel],[xResRel,baseTop-6]];
+  const pathRelief  = [[pOut,headBotY-4],[pOut,baseTop],[pOut,yOut],[Tx,yOut],
+                       [Tx,yRel],[rvX,yRel],[xResRel,yRel],[xResRel,baseTop-6]];
+
+  const inletBall  = [ ibX, yIn ];
+  const outletBall = [ obX, yOut ];
+  const relValve   = [ rvX, yRel ];
+
+  return {cx,ramR,boreR,cylWall,resW,shell,cylOut,bodyHalf,baseTop,baseBot,bodyTop,
+          ramBot0,vScale,ramLenPx,ramBotY,ramTopY,pivotX,pivotY,LpPx,pumpX,pumpR,
+          pumpTop,pumpCylLen,headTopY,headBotY,headH,pinX,pinY,handleLenPx,hEndX,hEndY,
+          xResL,xResR,xResRel,resTop,yRel,yIn,yOut,portOut,pIn,pOut,Tx,ibX,obX,rvX,
+          pathInlet,pathDelLow,pathDelHigh,pathHpBranch,pathRelOut,pathDeliver,
+          pathRelease,pathRelief,inletBall,outletBall,relValve,
+          travelPx,headTop0};
+}
+
+/* ============================================================
+   6. SVG RENDERING (state -> drawing, no physics here)
+   ============================================================ */
+const SVGNS="http://www.w3.org/2000/svg";
+const svg = document.getElementById("jack");
+const R = {};   // cached element references
+
+function el(tag, attrs, parent){
+  const n = document.createElementNS(SVGNS, tag);
+  for(const k in attrs) n.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(n);
+  return n;
+}
+function poly(pts){ return pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" "); }
+function pathLen(pts){
+  let L=0, segs=[];
+  for(let i=1;i<pts.length;i++){
+    const dx=pts[i][0]-pts[i-1][0], dy=pts[i][1]-pts[i-1][1];
+    const l=Math.hypot(dx,dy); segs.push(l); L+=l;
+  }
+  return {segs,L};
+}
+function ptAt(pts, s){
+  const {segs,L}=pathLen(pts);
+  let rem = ((s%L)+L)%L;
+  for(let i=0;i<segs.length;i++){
+    if(rem<=segs[i]){
+      const t=segs[i]>0?rem/segs[i]:0;
+      return [pts[i][0]+(pts[i+1][0]-pts[i][0])*t, pts[i][1]+(pts[i+1][1]-pts[i][1])*t];
+    }
+    rem-=segs[i];
+  }
+  return pts[pts.length-1];
+}
+
+const NPART = 14;
+
+function buildSVG(){
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  const g = layout();
+
+  const defs = el("defs",{},svg);
+  const grad = el("linearGradient",{id:"ramGrad",x1:"0",y1:"0",x2:"1",y2:"0"},defs);
+  el("stop",{offset:"0%","stop-color":"#8d979e"},grad);
+  el("stop",{offset:"28%","stop-color":"#eef2f5"},grad);
+  el("stop",{offset:"62%","stop-color":"#c3cbd1"},grad);
+  el("stop",{offset:"100%","stop-color":"#8d979e"},grad);
+  const pg = el("linearGradient",{id:"pumpGrad",x1:"0",y1:"0",x2:"1",y2:"0"},defs);
+  el("stop",{offset:"0%","stop-color":"#7c868e"},pg);
+  el("stop",{offset:"40%","stop-color":"#cfd6db"},pg);
+  el("stop",{offset:"100%","stop-color":"#7c868e"},pg);
+  const hp = el("pattern",{id:"hatch",patternUnits:"userSpaceOnUse",width:"9",height:"9",
+                           patternTransform:"rotate(45)"},defs);
+  el("line",{x1:"0",y1:"0",x2:"0",y2:"9",stroke:"#232a30","stroke-width":"1.3",opacity:"0.5"},hp);
+  const mk = el("marker",{id:"arw",viewBox:"0 0 10 10",refX:"9",refY:"5",
+    markerWidth:"6",markerHeight:"6",orient:"auto-start-reverse"},defs);
+  el("path",{d:"M0,0 L10,5 L0,10 z",fill:"#3b4750"},mk);
+  const fmk = el("marker",{id:"farw",viewBox:"0 0 10 10",refX:"9.5",refY:"5",
+    markerWidth:"5",markerHeight:"5",orient:"auto-start-reverse"},defs);
+  el("path",{d:"M0,0 L10,5 L0,10 z",fill:"#8f231d"},fmk);
+
+  // drawing sheet grid
+  const grid = el("g",{opacity:"0.5"},svg);
+  for(let x=20;x<780;x+=40) el("line",{x1:x,y1:8,x2:x,y2:562,stroke:"#dbe1e7","stroke-width":"1"},grid);
+  for(let y=20;y<566;y+=40) el("line",{x1:8,y1:y,x2:772,y2:y,stroke:"#dbe1e7","stroke-width":"1"},grid);
+
+  R.metal     = el("g",{},svg);
+  R.flowLayer = el("g",{},svg);          // galleries sit on the casting, under the chamber oil
+  R.oil       = el("g",{},svg);
+  R.moving    = el("g",{},svg);
+  R.particles = el("g",{},svg);
+  R.press     = el("g",{},svg);
+  R.dimsLayer = el("g",{},svg);
+
+  /* ---- body, base, cylinder: cut material, so it carries section hatching ---- */
+  const M = R.metal;
+  const mrect = (a,parent)=>{
+    el("rect",a,parent);
+    const over={}; for(const k in a) over[k]=a[k];
+    over.fill="url(#hatch)"; over.stroke="none";
+    return el("rect",over,parent);
+  };
+  mrect({x:g.cx-g.bodyHalf, y:g.baseTop, width:(g.pumpX+46)-(g.cx-g.bodyHalf),
+             height:g.baseBot-g.baseTop, fill:"var(--body-d)", stroke:"#2c343a","stroke-width":"1.5",rx:"3"},M);
+  mrect({x:g.cx-g.bodyHalf,y:g.bodyTop,width:g.shell,height:g.baseTop-g.bodyTop,fill:"var(--body)"},M);
+  mrect({x:g.cx+g.bodyHalf-g.shell,y:g.bodyTop,width:g.shell,height:g.baseTop-g.bodyTop,fill:"var(--body)"},M);
+  mrect({x:g.cx-g.bodyHalf,y:g.bodyTop,width:2*g.bodyHalf,height:14,fill:"var(--body)"},M);
+  // cylinder walls
+  mrect({x:g.cx-g.cylOut,y:g.bodyTop,width:g.cylWall,height:g.baseTop-g.bodyTop,fill:"var(--cyl)",stroke:"#4e575e"},M);
+  mrect({x:g.cx+g.boreR,y:g.bodyTop,width:g.cylWall,height:g.baseTop-g.bodyTop,fill:"var(--cyl)",stroke:"#4e575e"},M);
+  // pump cylinder
+  mrect({x:g.pumpX-g.pumpR-9,y:g.pumpTop,width:9,height:g.baseTop-g.pumpTop,fill:"var(--cyl)",stroke:"#4e575e"},M);
+  mrect({x:g.pumpX+g.pumpR,y:g.pumpTop,width:9,height:g.baseTop-g.pumpTop,fill:"var(--cyl)",stroke:"#4e575e"},M);
+  mrect({x:g.pumpX-g.pumpR-9,y:g.pumpTop-7,width:2*g.pumpR+18,height:7,fill:"var(--body)"},M);
+  // pivot post
+  mrect({x:g.pivotX-9,y:g.pivotY,width:18,height:g.baseTop-g.pivotY,fill:"var(--body-d)",stroke:"#2c343a",rx:"2"},M);
+
+  /* ---- passages (channel walls) ---- */
+  R.chan = {};
+  [["Inlet",g.pathInlet],["DelLow",g.pathDelLow],["DelHigh",g.pathDelHigh],
+   ["HpBranch",g.pathHpBranch],["RelOut",g.pathRelOut]].forEach(function(e){
+    const n=e[0], pts=e[1];
+    R.chan[n] = {
+      wall: el("polyline",{points:poly(pts),fill:"none",stroke:"#10161a","stroke-width":"13",
+              "stroke-linejoin":"round","stroke-linecap":"round"},R.flowLayer),
+      oil:  el("polyline",{points:poly(pts),fill:"none",stroke:"var(--oil-low)","stroke-width":"8.5",
+              "stroke-linejoin":"round","stroke-linecap":"round"},R.flowLayer)
+    };
+  });
+
+  /* ---- oil regions ---- */
+  const O = R.oil;
+  R.resL = el("rect",{x:g.cx-g.bodyHalf+g.shell,width:g.resW,fill:"var(--oil-low)"},O);
+  R.resR = el("rect",{x:g.cx+g.cylOut,width:g.resW,fill:"var(--oil-low)"},O);
+  R.hp   = el("rect",{x:g.cx-g.boreR,width:2*g.boreR,fill:"var(--oil-high)"},O);
+  R.pumpOil = el("rect",{x:g.pumpX-g.pumpR,width:2*g.pumpR,fill:"var(--oil-low)"},O);
+  R.resLline = el("line",{stroke:"var(--oil-low-d)","stroke-width":"2"},O);
+  R.resRline = el("line",{stroke:"var(--oil-low-d)","stroke-width":"2"},O);
+  // the two columns are one annular volume: tie the free surface across the bore.
+  // drawn under the ram, so it reads as passing behind the cylinder.
+  R.resTie = el("line",{stroke:"var(--oil-low-d)","stroke-width":"2","stroke-dasharray":"5 6",
+                        opacity:"0.65"},O);
+
+  /* ---- check valves ---- */
+  function valveSeat(x,y,dir,parent){
+    const gg = el("g",{},parent);
+    el("rect",{x:x-16,y:y-8,width:32,height:16,fill:"#39434a",rx:"2"},gg);
+    el("path",{d:`M${x-16*dir},${y-8} L${x-4*dir},${y-2.5} L${x-4*dir},${y+2.5} L${x-16*dir},${y+8} Z`,
+               fill:"#5e6870"},gg);
+    return gg;
+  }
+  valveSeat(g.inletBall[0], g.inletBall[1], 1, R.flowLayer);
+  valveSeat(g.outletBall[0],g.outletBall[1],-1, R.flowLayer);
+  R.ballIn  = el("circle",{r:"5.2",fill:"var(--ball)",stroke:"#7a5c14","stroke-width":"1"},R.moving);
+  R.ballOut = el("circle",{r:"5.2",fill:"var(--ball)",stroke:"#7a5c14","stroke-width":"1"},R.moving);
+  R.dirIn   = el("text",{"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
+                 "text-anchor":"middle",x:g.inletBall[0],y:g.inletBall[1]+21},R.flowLayer);
+  R.dirIn.textContent="SUCTION";
+  R.dirOut  = el("text",{"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
+                 "text-anchor":"middle",x:g.outletBall[0],y:g.outletBall[1]+21},R.flowLayer);
+  R.dirOut.textContent="DELIVERY";
+
+  /* ---- release valve ---- */
+  const rv = el("g",{},R.moving);
+  el("rect",{x:g.relValve[0]-13,y:g.relValve[1]-9,width:26,height:18,fill:"#39434a",rx:"2"},rv);
+  R.relStem = el("rect",{x:g.relValve[0]-2.5,width:5,height:14,fill:"#b9c2c8"},rv);
+  R.relSeat = el("path",{fill:"var(--stop)"},rv);
+  el("text",{"font-family":"var(--mono)","font-size":"9",fill:"#4a545c","text-anchor":"middle",
+             x:g.relValve[0],y:g.relValve[1]+21},rv).textContent="RELEASE";
+
+  /* ---- ram ---- */
+  R.ramSeal1 = el("rect",{x:g.cx-g.ramR-2,width:2*g.ramR+4,height:7,fill:"var(--seal)"},R.moving);
+  R.ramBody  = el("rect",{x:g.cx-g.ramR,width:2*g.ramR,fill:"url(#ramGrad)",stroke:"#7d868d","stroke-width":"1"},R.moving);
+  R.ramCap   = el("rect",{x:g.cx-g.ramR-9,width:2*g.ramR+18,height:14,rx:"3",fill:"var(--handle)",stroke:"var(--handle-d)"},R.moving);
+  R.loadBox  = el("g",{},R.moving);
+
+  /* ---- pump piston ---- */
+  R.pistSeal = el("rect",{x:g.pumpX-g.pumpR-1,width:2*g.pumpR+2,height:4,fill:"var(--seal)"},R.moving);
+  R.pistHead = el("rect",{x:g.pumpX-g.pumpR,width:2*g.pumpR,height:g.headH,fill:"url(#pumpGrad)",stroke:"#6f787f"},R.moving);
+  R.pistRod  = el("line",{stroke:"#aeb7bd","stroke-width":"6","stroke-linecap":"round"},R.moving);
+
+  /* ---- handle angle sector ---- */
+  R.angSector = el("path",{fill:"var(--handle)",opacity:"0.15"},R.moving);
+  R.angArc    = el("path",{fill:"none",stroke:"var(--handle-d)","stroke-width":"1.4"},R.moving);
+
+  /* ---- handle ---- */
+  R.handle   = el("line",{stroke:"var(--handle)","stroke-width":"14","stroke-linecap":"round",
+                  cursor:"grab"},R.moving);
+  R.handleHi = el("line",{stroke:"#f0645c","stroke-width":"4","stroke-linecap":"round","pointer-events":"none"},R.moving);
+  R.link     = el("line",{stroke:"var(--handle)","stroke-width":"9","stroke-linecap":"round"},R.moving);
+  el("circle",{cx:g.pivotX,cy:g.pivotY,r:"7",fill:"#39434a",stroke:"#20272c","stroke-width":"2"},R.moving);
+  R.pin      = el("circle",{r:"5",fill:"#39434a",stroke:"#20272c","stroke-width":"2"},R.moving);
+  R.arc      = el("path",{fill:"none",stroke:"#8b959d","stroke-width":"1","stroke-dasharray":"4 4"},R.moving);
+  R.angLabel = el("text",{"font-family":"var(--mono)","font-size":"12","font-weight":"600",
+    fill:"#7c1f19","text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"3.5"},R.moving);
+  R.handForce = el("line",{stroke:"#8f231d","stroke-width":"3.6","stroke-linecap":"round",
+    "marker-end":"url(#farw)"},R.moving);
+  R.handLabel = el("text",{"font-family":"var(--mono)","font-size":"11",fill:"#7c1f19",
+    "text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"3.5"},R.moving);
+  R.ramArrow  = el("path",{fill:"#8f231d",opacity:"0"},R.moving);
+  R.pumpArrow = el("path",{fill:"#1f5c96",opacity:"0"},R.moving);
+
+  /* ---- flow particles ---- */
+  R.parts = [];
+  for(let i=0;i<NPART;i++){
+    R.parts.push(el("circle",{r:"2.6",fill:"#fff",opacity:"0"},R.particles));
+  }
+
+  /* ---- pressure labels ---- */
+  R.pLabels = {};
+  ["res","pump","hp"].forEach(k=>{
+    const t = el("text",{"font-family":"var(--mono)","font-size":"11","font-weight":"600",
+      fill:"#1d242a","text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"3"},R.press);
+    R.pLabels[k]=t;
+  });
+
+  /* ---- dimension overlay ---- */
+  R.dimEls = {};
+  const mkDim = (name)=>{
+    const gg = el("g",{},R.dimsLayer);
+    const line = el("line",{stroke:"#3b4750","stroke-width":"1.1","marker-start":"url(#arw)","marker-end":"url(#arw)"},gg);
+    const t1 = el("line",{stroke:"#3b4750","stroke-width":"1"},gg);
+    const t2 = el("line",{stroke:"#3b4750","stroke-width":"1"},gg);
+    const txt= el("text",{"font-family":"var(--mono)","font-size":"11",fill:"#1d242a",
+      "text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"3.5"},gg);
+    R.dimEls[name]={gg,line,t1,t2,txt};
+  };
+  ["ramD","ramS","pumpD","pumpS","handleL","pivotL"].forEach(mkDim);
+
+  // static callouts
+  R.calloutRam = el("text",{"font-family":"var(--mono)","font-size":"11",fill:"#48545e",
+    "text-anchor":"middle"},svg);
+  R.calloutRam.textContent="RAM";
+  R.calloutRes = el("text",{"font-family":"var(--mono)","font-size":"10",fill:"#6b5b1e",
+    "text-anchor":"middle"},svg);
+  R.calloutRes.textContent="RESERVOIR";
+  R.calloutRes2 = el("text",{"font-family":"var(--mono)","font-size":"10",fill:"#6b5b1e",
+    "text-anchor":"middle"},svg);
+  R.calloutRes2.textContent="RESERVOIR";
+  R.calloutPump = el("text",{"font-family":"var(--mono)","font-size":"10",fill:"#48545e",
+    "text-anchor":"middle"},svg);
+  R.calloutPump.textContent="PUMP";
+  R.calloutHp = el("text",{"font-family":"var(--mono)","font-size":"10",fill:"#0f4d31",
+    "text-anchor":"middle"},svg);
+  R.calloutHp.textContent="LIFTING CHAMBER";
+
+  bindHandleDrag();
+  updateSVG();
+}
+
+function segY(y1,y2){ return {y:Math.min(y1,y2), h:Math.abs(y2-y1)}; }
+
+function updateSVG(){
+  const g = layout(), D = derived(dims);
+
+  /* ram */
+  R.ramBody.setAttribute("y", g.ramTopY);
+  R.ramBody.setAttribute("height", g.ramLenPx);
+  R.ramBody.setAttribute("x", g.cx-g.ramR);
+  R.ramBody.setAttribute("width", 2*g.ramR);
+  R.ramCap.setAttribute("y", g.ramTopY-14);
+  R.ramCap.setAttribute("x", g.cx-g.ramR-9);
+  R.ramCap.setAttribute("width", 2*g.ramR+18);
+  R.ramSeal1.setAttribute("y", g.ramBotY-9);
+  R.ramSeal1.setAttribute("x", g.cx-g.ramR-2);
+  R.ramSeal1.setAttribute("width", 2*g.ramR+4);
+
+  /* load block */
+  while(R.loadBox.firstChild) R.loadBox.removeChild(R.loadBox.firstChild);
+  if(dims.load>0){
+    const w = clamp(40+dims.load/500, 46, 150), h=26;
+    el("rect",{x:g.cx-w/2,y:g.ramTopY-14-h,width:w,height:h,fill:"#39434a",stroke:"#20272c",rx:"2"},R.loadBox);
+    const t=el("text",{x:g.cx,y:g.ramTopY-14-h/2+4,"font-family":"var(--mono)","font-size":"11",
+      fill:"#dfe6ea","text-anchor":"middle"},R.loadBox);
+    t.textContent = U.force(dims.load);
+  }
+
+  /* high pressure chamber */
+  const hpSeg = segY(g.ramBotY, g.baseTop);
+  R.hp.setAttribute("y", hpSeg.y); R.hp.setAttribute("height", Math.max(hpSeg.h,2));
+  R.hp.setAttribute("x", g.cx-g.boreR); R.hp.setAttribute("width", 2*g.boreR);
+  R.hp.setAttribute("fill", sim.hpP>0.02 ? "var(--oil-high)" : "var(--oil-high-d)");
+
+  /* reservoir level */
+  const resCapV = Math.max(dims.resFill*1000, 1);
+  const frac = clamp(sim.vRes/resCapV, 0, 1);
+  const resH = (g.baseTop-g.resTop);
+  const lv = resH*frac;
+  [["resL","resLline",g.cx-g.bodyHalf+g.shell],["resR","resRline",g.cx+g.cylOut]].forEach(([a,b,x])=>{
+    R[a].setAttribute("x",x); R[a].setAttribute("width",g.resW);
+    R[a].setAttribute("y", g.baseTop-lv); R[a].setAttribute("height", Math.max(lv,0));
+    R[b].setAttribute("x1",x); R[b].setAttribute("x2",x+g.resW);
+    R[b].setAttribute("y1",g.baseTop-lv); R[b].setAttribute("y2",g.baseTop-lv);
+  });
+  R.resTie.setAttribute("x1", g.cx-g.cylOut); R.resTie.setAttribute("x2", g.cx+g.cylOut);
+  R.resTie.setAttribute("y1", g.baseTop-lv);  R.resTie.setAttribute("y2", g.baseTop-lv);
+
+  /* pump piston + chamber */
+  R.pistHead.setAttribute("y", g.headTopY);
+  R.pistHead.setAttribute("x", g.pumpX-g.pumpR); R.pistHead.setAttribute("width",2*g.pumpR);
+  R.pistSeal.setAttribute("y", g.headBotY-4);
+  R.pistSeal.setAttribute("x", g.pumpX-g.pumpR-1); R.pistSeal.setAttribute("width",2*g.pumpR+2);
+  R.pistRod.setAttribute("x1",g.pinX); R.pistRod.setAttribute("y1",g.pinY);
+  R.pistRod.setAttribute("x2",g.pumpX); R.pistRod.setAttribute("y2",g.headTopY+2);
+  const pcSeg = segY(g.headBotY, g.baseTop);
+  R.pumpOil.setAttribute("y",pcSeg.y); R.pumpOil.setAttribute("height",Math.max(pcSeg.h,1.5));
+  R.pumpOil.setAttribute("x",g.pumpX-g.pumpR); R.pumpOil.setAttribute("width",2*g.pumpR);
+  R.pumpOil.setAttribute("fill",
+    sim.mode==="DELIVERY"||sim.mode==="MAX_EXTENSION" ? "var(--oil-high)" :
+    sim.mode==="COMPRESSION" ? "#8ec14a" : "var(--oil-low)");
+
+  /* handle + linkage */
+  R.handle.setAttribute("x1", g.pivotX-Math.cos(sim.theta)*22);
+  R.handle.setAttribute("y1", g.pivotY+Math.sin(sim.theta)*22);
+  R.handle.setAttribute("x2", g.hEndX); R.handle.setAttribute("y2", g.hEndY);
+  R.handleHi.setAttribute("x1", g.pivotX); R.handleHi.setAttribute("y1", g.pivotY-3);
+  R.handleHi.setAttribute("x2", g.hEndX);  R.handleHi.setAttribute("y2", g.hEndY-3);
+  R.link.setAttribute("x1",g.pivotX); R.link.setAttribute("y1",g.pivotY);
+  R.link.setAttribute("x2",g.pinX);   R.link.setAttribute("y2",g.pinY);
+  R.pin.setAttribute("cx",g.pinX); R.pin.setAttribute("cy",g.pinY);
+  const a0x=g.pivotX+g.LpPx+6, a0y=g.pivotY;
+  const a1x=g.pivotX+(g.LpPx+6)*Math.cos(D.thetaMax), a1y=g.pivotY-(g.LpPx+6)*Math.sin(D.thetaMax);
+  R.arc.setAttribute("d",`M${a0x.toFixed(1)},${a0y.toFixed(1)} A${(g.LpPx+6).toFixed(1)},${(g.LpPx+6).toFixed(1)} 0 0 0 ${a1x.toFixed(1)},${a1y.toFixed(1)}`);
+
+  /* handle angle, swept from horizontal, and the operator force at the hand */
+  const rA = Math.min(58, g.handleLenPx*0.42);
+  const sxA = g.pivotX + rA, syA = g.pivotY;
+  const exA = g.pivotX + rA*Math.cos(sim.theta), eyA = g.pivotY - rA*Math.sin(sim.theta);
+  const bigA = 0;
+  R.angSector.setAttribute("d","M"+g.pivotX+","+g.pivotY+" L"+sxA.toFixed(1)+","+syA.toFixed(1)+
+    " A"+rA.toFixed(1)+","+rA.toFixed(1)+" 0 "+bigA+" 0 "+exA.toFixed(1)+","+eyA.toFixed(1)+" Z");
+  R.angArc.setAttribute("d","M"+sxA.toFixed(1)+","+syA.toFixed(1)+
+    " A"+rA.toFixed(1)+","+rA.toFixed(1)+" 0 "+bigA+" 0 "+exA.toFixed(1)+","+eyA.toFixed(1));
+  const half = sim.theta/2, rL = rA+17;
+  R.angLabel.setAttribute("x", g.pivotX + rL*Math.cos(half));
+  R.angLabel.setAttribute("y", g.pivotY - rL*Math.sin(half) + 4);
+  R.angLabel.textContent = fmt(sim.theta*180/PI,1) + " deg";
+
+  // the operator pushes perpendicular to the handle, at the hand position
+  const ux = Math.sin(sim.theta), uy = Math.cos(sim.theta), FL = 52;
+  const fx0 = g.hEndX - ux*FL, fy0 = g.hEndY - uy*FL;
+  R.handForce.setAttribute("x1",fx0.toFixed(1)); R.handForce.setAttribute("y1",fy0.toFixed(1));
+  R.handForce.setAttribute("x2",g.hEndX.toFixed(1)); R.handForce.setAttribute("y2",g.hEndY.toFixed(1));
+  const pushing = sim.mode==="COMPRESSION"||sim.mode==="DELIVERY"||sim.mode==="MAX_EXTENSION";
+  R.handForce.setAttribute("opacity", pushing?1:0.4);
+  R.handLabel.setAttribute("opacity", pushing?1:0.55);
+  R.handLabel.setAttribute("x", fx0 - 4);
+  R.handLabel.setAttribute("y", fy0 - 9);
+  R.handLabel.textContent = "F hand " + U.force(D.Fhand);
+
+  /* check balls */
+  const ibx = g.inletBall[0] + (sim.inlet ? 5 : 0);
+  R.ballIn.setAttribute("cx",ibx); R.ballIn.setAttribute("cy",g.inletBall[1]);
+  R.ballIn.setAttribute("fill", sim.inlet ? "var(--ok)" : "var(--ball)");
+  const obx = g.outletBall[0] - (sim.outlet||sim.relief ? 5 : 0);
+  R.ballOut.setAttribute("cx",obx); R.ballOut.setAttribute("cy",g.outletBall[1]);
+  R.ballOut.setAttribute("fill", (sim.outlet||sim.relief) ? "var(--ok)" : "var(--ball)");
+
+  /* release valve stem */
+  const ry = g.relValve[1]-9-(sim.releaseOpen?7:0);
+  R.relStem.setAttribute("y", ry-10); R.relStem.setAttribute("x", g.relValve[0]-2.5);
+  const rx=g.relValve[0], rvy=g.relValve[1]+(sim.releaseOpen?-6:0);
+  R.relSeat.setAttribute("d",`M${rx-6},${rvy-5} L${rx+6},${rvy-5} L${rx},${rvy+5} Z`);
+  R.relSeat.setAttribute("fill", sim.releaseOpen?"var(--stop)":"#8b959d");
+
+  /* passages: colour by what each one actually carries right now */
+  const set=(n,c,w)=>{const e=R.chan[n].oil;e.setAttribute("stroke",c);
+                      e.setAttribute("stroke-width",w);};
+  const delivering = sim.outlet || sim.mode==="DELIVERY";
+  const hot = sim.hpP > 0.02 || sim.ram > 1e-6 || delivering;
+  const W = 8.5, WA = 11;                       // idle width, active width
+  set("Inlet", "var(--oil-low)", sim.inlet?WA:W);
+  // pump side of the delivery ball carries whatever is in the pump chamber
+  set("DelLow", delivering ? "var(--oil-high)" : "var(--oil-low)", delivering?WA:W);
+  // downstream of the delivery ball everything is at lifting pressure
+  set("DelHigh", hot ? "var(--oil-high)" : "var(--oil-high-d)", delivering?WA:W);
+  set("HpBranch", hot ? "var(--oil-high)" : "var(--oil-high-d)", W);
+  set("RelOut", sim.releaseOpen ? "var(--oil-high)" : "var(--oil-low)", sim.releaseOpen?WA:W);
+
+  /* motion arrows: ram up on delivery, down on release; plunger with its own stroke */
+  const arrowD=(x,y,len,dir)=>{
+    const t=y+dir*len/2, b=y-dir*len/2, hb=t-dir*13;
+    return "M"+x+","+t+" L"+(x+7)+","+hb+" L"+(x+3)+","+hb+" L"+(x+3)+","+b+
+           " L"+(x-3)+","+b+" L"+(x-3)+","+hb+" L"+(x-7)+","+hb+" Z";
+  };
+  const ramDir = (sim.mode==="DELIVERY") ? -1 : (sim.mode==="RELEASE" ? 1 : 0);
+  R.ramArrow.setAttribute("opacity", ramDir?0.9:0);
+  if(ramDir) R.ramArrow.setAttribute("d", arrowD(g.cx, g.ramBotY-46, 40, ramDir));
+  const pumpDir = (sim.mode==="SUCTION") ? -1 :
+                  (sim.mode==="DELIVERY"||sim.mode==="COMPRESSION"||sim.mode==="MAX_EXTENSION") ? 1 : 0;
+  const headroom = g.headTopY - g.pumpTop - 10;
+  const showPA = pumpDir!==0 && headroom>26;
+  R.pumpArrow.setAttribute("opacity", showPA?0.9:0);
+  if(showPA) R.pumpArrow.setAttribute("d", arrowD(g.pumpX, g.headTopY-17, 24, pumpDir));
+
+  /* particles */
+  const showFlow = T.flow && sim.flowPath && sim.flowRate>1;
+  const pathMap = {inlet:g.pathInlet, outlet:g.pathDeliver, release:g.pathRelease, relief:g.pathRelief};
+  if(showFlow){
+    // every path is stored in its true flow direction, so particles always run forward
+    const pts = pathMap[sim.flowPath];
+    const {L} = pathLen(pts);
+    const speed = clamp(sim.flowRate/60, 20, 260);
+    const col = (sim.flowPath==="inlet") ? "#8a6a12" : "#0b4f32";
+    const rad = (sim.flowPath==="outlet") ? 3.2 : 2.7;
+    for(let i=0;i<NPART;i++){
+      const base = (i/NPART)*L;
+      let s = (base + sim.t*speed) % L;
+      if(s<0) s+=L;
+      const p = ptAt(pts, s);
+      const c = R.parts[i];
+      c.setAttribute("cx",p[0].toFixed(1)); c.setAttribute("cy",p[1].toFixed(1));
+      c.setAttribute("r",rad);
+      c.setAttribute("fill",col); c.setAttribute("opacity","0.95");
+    }
+  } else {
+    R.parts.forEach(c=>c.setAttribute("opacity","0"));
+  }
+
+  /* pressure overlay */
+  R.press.setAttribute("opacity", T.press ? 1 : 0);
+  if(T.press){
+    R.pLabels.res.setAttribute("x", g.cx-g.bodyHalf+g.shell+g.resW/2);
+    R.pLabels.res.setAttribute("y", g.baseTop-lv-8);
+    R.pLabels.res.textContent = "Reservoir  " + U.press(0) ;
+    R.pLabels.pump.setAttribute("x", g.pumpX);
+    R.pLabels.pump.setAttribute("y", g.pumpTop-14);
+    R.pLabels.pump.textContent = "Pump  " + U.press(Math.max(sim.pumpP,0));
+    R.pLabels.hp.setAttribute("x", g.cx);
+    R.pLabels.hp.setAttribute("y", g.baseTop+ (g.baseBot-g.baseTop)/2 - 22);
+    R.pLabels.hp.textContent = "Lifting  " + U.press(sim.hpP);
+  }
+
+  /* dimensions */
+  R.dimsLayer.setAttribute("opacity", T.dims ? 1 : 0);
+  if(T.dims){
+    hDim("ramD", g.cx-g.ramR, g.cx+g.ramR, g.ramTopY+30, "Ram dia " + U.len(dims.ramDia));
+    vDim("ramS", g.cx+g.bodyHalf+16, g.ramBot0-dims.ramStrokeMax*g.vScale, g.ramBot0,
+         "Stroke " + U.len(dims.ramStrokeMax), 1);
+    hDim("pumpD", g.pumpX-g.pumpR, g.pumpX+g.pumpR, g.pumpTop-20, "Pump dia " + U.len(dims.pumpDia));
+    vDim("pumpS", g.pumpX+g.pumpR+24, g.headTop0-g.travelPx, g.headTop0,
+         "Pump stroke " + U.len(derived(dims).strokeReal), 1);
+    dDim("handleL", g.pivotX, g.pivotY, g.hEndX, g.hEndY, "Handle " + U.len(dims.handleLen), -18);
+    dDim("pivotL", g.pivotX, g.pivotY, g.pinX, g.pinY, "Pivot-link " + U.len(dims.pivotLink), 16);
+  }
+
+  /* callouts */
+  R.calloutRam.setAttribute("x", g.cx); R.calloutRam.setAttribute("y", g.ramTopY-24);
+  R.calloutRes.setAttribute("x", g.cx-g.bodyHalf+g.shell+g.resW/2);
+  R.calloutRes.setAttribute("y", g.resTop+14);
+  R.calloutRes2.setAttribute("x", g.cx+g.cylOut+g.resW/2);
+  R.calloutRes2.setAttribute("y", g.resTop+14);
+  R.calloutPump.setAttribute("x", g.pumpX); R.calloutPump.setAttribute("y", g.baseBot+16);
+  R.calloutHp.setAttribute("x", g.cx); R.calloutHp.setAttribute("y", g.baseBot+16);
+}
+
+function hDim(name,x1,x2,y,label){
+  const d=R.dimEls[name];
+  d.line.setAttribute("x1",x1); d.line.setAttribute("x2",x2);
+  d.line.setAttribute("y1",y);  d.line.setAttribute("y2",y);
+  d.t1.setAttribute("x1",x1); d.t1.setAttribute("x2",x1); d.t1.setAttribute("y1",y-6); d.t1.setAttribute("y2",y+6);
+  d.t2.setAttribute("x1",x2); d.t2.setAttribute("x2",x2); d.t2.setAttribute("y1",y-6); d.t2.setAttribute("y2",y+6);
+  d.txt.setAttribute("x",(x1+x2)/2); d.txt.setAttribute("y",y-9); d.txt.textContent=label;
+}
+function vDim(name,x,y1,y2,label,side){
+  const d=R.dimEls[name];
+  d.line.setAttribute("x1",x); d.line.setAttribute("x2",x);
+  d.line.setAttribute("y1",y1); d.line.setAttribute("y2",y2);
+  d.t1.setAttribute("x1",x-6); d.t1.setAttribute("x2",x+6); d.t1.setAttribute("y1",y1); d.t1.setAttribute("y2",y1);
+  d.t2.setAttribute("x1",x-6); d.t2.setAttribute("x2",x+6); d.t2.setAttribute("y1",y2); d.t2.setAttribute("y2",y2);
+  d.txt.setAttribute("x",x); d.txt.setAttribute("y",(y1+y2)/2);
+  d.txt.setAttribute("transform",`rotate(-90 ${x} ${(y1+y2)/2})`);
+  d.txt.setAttribute("dy","-8");
+  d.txt.textContent=label;
+}
+function dDim(name,x1,y1,x2,y2,label,off){
+  const d=R.dimEls[name];
+  const ang=Math.atan2(y2-y1,x2-x1), nx=Math.sin(ang)*off, ny=-Math.cos(ang)*off;
+  d.line.setAttribute("x1",x1+nx); d.line.setAttribute("y1",y1+ny);
+  d.line.setAttribute("x2",x2+nx); d.line.setAttribute("y2",y2+ny);
+  d.t1.setAttribute("x1",x1); d.t1.setAttribute("y1",y1); d.t1.setAttribute("x2",x1+nx); d.t1.setAttribute("y2",y1+ny);
+  d.t2.setAttribute("x1",x2); d.t2.setAttribute("y1",y2); d.t2.setAttribute("x2",x2+nx); d.t2.setAttribute("y2",y2+ny);
+  const mx=(x1+x2)/2+nx, my=(y1+y2)/2+ny;
+  d.txt.setAttribute("x",mx); d.txt.setAttribute("y",my);
+  d.txt.setAttribute("transform",`rotate(${(ang*180/PI).toFixed(1)} ${mx} ${my})`);
+  d.txt.setAttribute("dy","-6");
+  d.txt.textContent=label;
+}
+
+/* ============================================================
+   7. UNITS
+   ============================================================ */
+var usUnits = false;
+const fmt=(v,n)=> (isFinite(v)? v.toFixed(n) : "-");
+const U = {
+  len:  v=> usUnits ? fmt(v/25.4,2)+" in"   : fmt(v,1)+" mm",
+  area: v=> usUnits ? fmt(v/645.16,3)+" in^2" : fmt(v,1)+" mm^2",
+  vol:  v=> usUnits ? fmt(v/16387,2)+" in^3" : fmt(v/1000,1)+" mL",
+  volN: v=> usUnits ? fmt(v/16387,2)         : fmt(v/1000,1),
+  volU: ()=> usUnits ? "in^3" : "mL",
+  force:v=> usUnits ? fmt(v*0.224809,0)+" lbf" : (v>=1000? fmt(v/1000,2)+" kN" : fmt(v,0)+" N"),
+  press:v=> usUnits ? fmt(v*145.038,0)+" psi"  : fmt(v,2)+" MPa"
+};
+
+/* ============================================================
+   8. UI WIRING
+   ============================================================ */
+const T = {dims:true, press:false, flow:true};
+const $ = id=>document.getElementById(id);
+const bOnce=$("bOnce"), bAuto=$("bAuto"), bPause=$("bPause"), bRel=$("bRel"), bReset=$("bReset");
+const alertBox=$("alert");
+function setPressed(b,v){ b.setAttribute("aria-pressed", v?"true":"false"); }
+
+/* every dimension is stored in SI; the entry fields convert to and from the
+   selected system, so a value typed in inches is stored as millimetres. */
+const QTY = {
+  len:   {si:"mm", us:"in",   toUS:v=>v/25.4,     toSI:v=>v*25.4,     dp:[1,3], stepUS:0.05},
+  force: {si:"N",  us:"lbf",  toUS:v=>v*0.224809, toSI:v=>v/0.224809, dp:[0,0], stepUS:10},
+  vol:   {si:"mL", us:"in^3", toUS:v=>v/16.387,   toSI:v=>v*16.387,   dp:[0,2], stepUS:0.5}
+};
+const toField = (v,q)=> usUnits ? QTY[q].toUS(v) : v;
+const toStore = (v,q)=> usUnits ? QTY[q].toSI(v) : v;
+const fieldStep = q=> usUnits ? QTY[q].stepUS : (q==="len"?0.5:(q==="force"?50:5));
+const fieldDp   = q=> QTY[q].dp[usUnits?1:0];
+
+function buildControls(groupId, list){
+  const host = $(groupId);
+  list.forEach(s=>{
+    const wrap=document.createElement("div"); wrap.className="ctl";
+    wrap.innerHTML =
+      '<div class="row"><label for="n_'+s.k+'">'+s.lab+'</label>'+
+      '<span class="val"><input type="number" id="n_'+s.k+'" inputmode="decimal" aria-label="'+s.lab+'">'+
+      '<span class="unit" id="u_'+s.k+'"></span></span></div>';
+    host.appendChild(wrap);
+    const n=$("n_"+s.k);
+    n.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); commitField(s); }});
+    n.addEventListener("blur", ()=>commitField(s));
+  });
+}
+buildControls("grpRam", SPECS.ram);
+buildControls("grpPump", SPECS.pump);
+buildControls("grpHandle", SPECS.handle);
+buildControls("grpSys", SPECS.sys);
+
+function commitField(s){
+  const n=$("n_"+s.k);
+  const typed=parseFloat(n.value);
+  if(!isFinite(typed)){ syncInputs(); return; }          // put the last good value back
+  dims[s.k]=clamp(toStore(typed,s.q), s.min, s.max);      // clamped in SI, always
+  onDimsChanged(s.k);
+}
+function applyAll(){
+  Object.values(SPECS).flat().forEach(s=>{
+    const typed=parseFloat($("n_"+s.k).value);
+    if(isFinite(typed)) dims[s.k]=clamp(toStore(typed,s.q), s.min, s.max);
+  });
+  onDimsChanged("all");
+}
+
+/* rewrite every field in the currently selected system */
+function syncInputs(){
+  Object.values(SPECS).flat().forEach(s=>{
+    const n=$("n_"+s.k), q=QTY[s.q];
+    n.value = toField(dims[s.k], s.q).toFixed(fieldDp(s.q));
+    n.min   = toField(s.min, s.q).toFixed(fieldDp(s.q));
+    n.max   = toField(s.max, s.q).toFixed(fieldDp(s.q));
+    n.step  = fieldStep(s.q);
+    n.title = "Range " + n.min + " to " + n.max + " " + (usUnits?q.us:q.si);
+    $("u_"+s.k).textContent = usUnits ? q.us : q.si;
+  });
+}
+
+function onDimsChanged(key){
+  // keep the drawing legal
+  if(dims.boreDia < dims.ramDia+2){ dims.boreDia = dims.ramDia+2; }
+  if(dims.ramStart > dims.ramStrokeMax) dims.ramStart = dims.ramStrokeMax;
+  const D = derived(dims);
+  sim.ram = clamp(sim.ram, 0, dims.ramStrokeMax);
+  sim.theta = clamp(sim.theta, 0, D.thetaMax);
+  sim.lift = dims.pivotLink*Math.sin(sim.theta);
+  // oil bookkeeping stays conserved against the new geometry
+  sim.vTotal = sim.vRes + sim.vPump + D.Ar*sim.ram + dims.deadVol*1000;
+  if(key==="resFill") { sim.vRes = dims.resFill*1000; sim.vTotal = sim.vRes+sim.vPump+D.Ar*sim.ram+dims.deadVol*1000; }
+  syncInputs();
+  buildSVG();
+  updateDash();
+}
+
+$("tDims").addEventListener("click",e=>{T.dims=!T.dims; setPressed(e.currentTarget,T.dims); updateSVG();});
+$("tPress").addEventListener("click",e=>{T.press=!T.press; setPressed(e.currentTarget,T.press); updateSVG();});
+$("tFlow").addEventListener("click",e=>{T.flow=!T.flow; setPressed(e.currentTarget,T.flow); updateSVG();});
+
+bOnce.addEventListener("click",()=>{ sim.drive="once"; sim.phase=0; sim.paused=false; setPressed(bAuto,false); });
+bAuto.addEventListener("click",()=>{
+  const on = sim.drive!=="auto";
+  sim.drive = on?"auto":"idle"; if(on){sim.phase=0; sim.paused=false;}
+  setPressed(bAuto,on);
+});
+bPause.addEventListener("click",()=>{ sim.paused=!sim.paused; bPause.textContent = sim.paused?"Resume":"Pause"; });
+bRel.addEventListener("click",()=>{
+  sim.releaseOpen=!sim.releaseOpen;
+  setPressed(bRel,sim.releaseOpen);
+  bRel.textContent = "Release valve: " + (sim.releaseOpen?"open":"closed");
+});
+bReset.addEventListener("click",()=>{
+  Object.assign(dims, DEFAULTS);
+  syncInputs(); resetSim(); bPause.textContent="Pause"; buildSVG(); updateDash();
+});
+function setUnits(us){
+  usUnits=us;
+  setPressed($("uSI"),!us); setPressed($("uUS"),us);
+  syncInputs();                    // convert the entry fields in place
+  updateDash(); updateSVG();
+}
+$("uSI").addEventListener("click",()=>setUnits(false));
+$("uUS").addEventListener("click",()=>setUnits(true));
+$("bApply").addEventListener("click",applyAll);
+$("bDefaults").addEventListener("click",()=>{
+  Object.assign(dims, DEFAULTS); syncInputs(); buildSVG(); updateDash();
+});
+
+/* handle dragging */
+function bindHandleDrag(){
+  const start = (ev)=>{
+    sim.dragging=true; sim.drive="idle"; setPressed(bAuto,false);
+    R.handle.setPointerCapture && R.handle.setPointerCapture(ev.pointerId);
+    move(ev); ev.preventDefault();
+  };
+  const move = (ev)=>{
+    if(!sim.dragging) return;
+    const pt = svg.createSVGPoint(); pt.x=ev.clientX; pt.y=ev.clientY;
+    const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const L = layout(), D = derived(dims);
+    const a = Math.atan2(L.pivotY-loc.y, loc.x-L.pivotX);
+    sim.theta = clamp(a, 0, D.thetaMax);
+  };
+  const end = ()=>{ sim.dragging=false; };
+  R.handle.addEventListener("pointerdown", start);
+  window.addEventListener("pointermove", move);
+  window.addEventListener("pointerup", end);
+  R.handle.addEventListener("keydown", e=>{
+    const D=derived(dims);
+    if(e.key==="ArrowUp"){sim.theta=clamp(sim.theta+D.thetaMax/12,0,D.thetaMax);e.preventDefault();}
+    if(e.key==="ArrowDown"){sim.theta=clamp(sim.theta-D.thetaMax/12,0,D.thetaMax);e.preventDefault();}
+  });
+  R.handle.setAttribute("tabindex","0");
+}
+
+/* ============================================================
+   9. DASHBOARD
+   ============================================================ */
+const DASH_ROWS = [
+  ["Ram diameter",      ()=>U.len(dims.ramDia)],
+  ["Ram area",          ()=>U.area(derived(dims).Ar)],
+  ["Pump diameter",     ()=>U.len(dims.pumpDia)],
+  ["Pump area",         ()=>U.area(derived(dims).Ap)],
+  ["Area ratio A_ram/A_pump", ()=>fmt(derived(dims).ratio,1)+" : 1"],
+  ["Handle advantage",  ()=>fmt(derived(dims).MA,1)+" : 1"],
+  ["Handle arc (max)",  ()=>fmt(derived(dims).thetaMax*180/PI,1)+" deg"],
+  ["Handle angle now",  ()=>fmt(sim.theta*180/PI,1)+" deg", true],
+  ["SEP"],
+  ["Ram position",      ()=>U.len(sim.ram)+" / "+U.len(dims.ramStrokeMax), true],
+  ["Displacement per stroke", ()=>U.vol(derived(dims).dispPerStroke)],
+  ["Ram rise per stroke",()=>U.len(derived(dims).risePerStroke)],
+  ["Full strokes to top",()=>fmt(derived(dims).strokesToTop,1)],
+  ["Completed strokes", ()=>String(sim.strokes)],
+  ["SEP"],
+  ["Lifting pressure",  ()=>U.press(sim.hpP), true],
+  ["Pump pressure",     ()=>U.press(Math.max(sim.pumpP,0))],
+  ["Applied load",      ()=>U.force(dims.load)],
+  ["Ram self weight",   ()=>U.force(derived(dims).ramWeight)],
+  ["Force at pump piston", ()=>U.force(derived(dims).Fpump)],
+  ["Estimated hand force", ()=>U.force(derived(dims).Fhand), true],
+  ["SEP"],
+  ["Inlet check valve", ()=>sim.inlet?"OPEN":"closed"],
+  ["Outlet check valve",()=>(sim.outlet||sim.relief)?"OPEN":"closed"],
+  ["Release valve",     ()=>sim.releaseOpen?"OPEN":"closed"],
+  ["Reservoir oil",     ()=>U.vol(sim.vRes)]
+];
+
+function updateDash(){
+  const tb=$("dash");
+  if(tb.childElementCount===0){
+    DASH_ROWS.forEach((r,i)=>{
+      const tr=document.createElement("tr");
+      if(r[0]==="SEP"){ tr.innerHTML='<td colspan="2" style="border:0;height:7px"></td>'; }
+      else { tr.innerHTML='<td>'+r[0]+'</td><td id="dv'+i+'">-</td>'; if(r[2]) tr.className="hi"; }
+      tb.appendChild(tr);
+    });
+  }
+  DASH_ROWS.forEach((r,i)=>{
+    if(r[0]==="SEP") return;
+    const c=$("dv"+i); if(c) c.textContent=r[1]();
+  });
+
+  const D=derived(dims);
+  $("dRam").textContent  = "A_ram = pi*D^2/4 = "+U.area(D.Ar);
+  $("dPump").textContent = "A_pump = "+U.area(D.Ap)+" | rise per stroke = "+U.len(D.risePerStroke);
+  $("dHandle").textContent = "MA = "+fmt(D.MA,1)+" : 1 | handle arc "+fmt(D.thetaMax*180/PI,1)+
+                             " deg (set by stroke and pivot distance)";
+
+  // warnings
+  let msg="";
+  if(dims.pumpStroke > dims.pivotLink*0.98)
+    msg = "Pump stroke cannot exceed the pivot-to-link distance. Stroke limited to "+U.len(D.strokeReal)+".";
+  else if(sim.starved) msg = "Reservoir is empty. Add oil or lower the ram before pumping again.";
+  else if(D.Phold > RELIEF_P)
+    msg = "Required pressure "+U.press(D.Phold)+" exceeds the "+U.press(RELIEF_P)+" relief setting. Use a larger ram or a smaller load.";
+  alertBox.textContent=msg;
+
+  // ledger
+  const vh = D.Ar*sim.ram + dims.deadVol*1000;
+  const tot = Math.max(sim.vRes + sim.vPump + vh, 1);
+  $("barRes").style.width  = (100*sim.vRes/tot)+"%";
+  $("barPump").style.width = (100*sim.vPump/tot)+"%";
+  $("barHp").style.width   = (100*vh/tot)+"%";
+  $("lRes").textContent  = U.volN(sim.vRes)+" "+U.volU();
+  $("lPump").textContent = U.volN(sim.vPump)+" "+U.volU();
+  $("lHp").textContent   = U.volN(vh)+" "+U.volU();
+  $("ledTotal").textContent = "total "+U.vol(tot);
+
+  const [name,color,copy]=stateCopy();
+  const pill=$("statePill");
+  pill.textContent=name; pill.style.color=color;
+  $("stateText").textContent=copy;
+}
+
+/* ============================================================
+   10. LOOP
+   ============================================================ */
+let last=performance.now(), acc=0;
+function frame(now){
+  const dt=Math.min((now-last)/1000, 0.05); last=now;
+  if(!sim.paused) step(dt);
+  updateSVG();
+  acc+=dt; if(acc>0.08){ updateDash(); acc=0; }
+  requestAnimationFrame(frame);
+}
+
+resetSim();
+syncInputs();
+buildSVG();
+updateDash();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

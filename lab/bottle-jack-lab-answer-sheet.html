@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydraulic Bottle Jack - Laboratory Answer Sheet</title>
+<style>
+  :root{
+    --paper:#fbfaf7;
+    --ink:#1b2128;
+    --ink-2:#4a545e;
+    --ink-3:#7c8791;
+    --rule:#d6d2c8;
+    --rule-2:#b9b3a5;
+    --accent:#14794c;      /* result green, matches the simulator's pressurised oil */
+    --accent-bg:#eaf5ef;
+    --given:#8a5a12;
+    --given-bg:#fbf3e2;
+    --mono: ui-monospace,"SFMono-Regular","Cascadia Mono","Consolas","Liberation Mono",monospace;
+    --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans: "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#eceae4;color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.5}
+  .sheet{max-width:920px;margin:0 auto;background:var(--paper);padding:34px 44px 56px;
+         box-shadow:0 0 0 1px var(--rule)}
+
+  header{border-bottom:2.5px solid var(--ink);padding-bottom:14px;margin-bottom:8px}
+  header h1{font-family:var(--serif);font-size:27px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+  header .sub{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+  .idline{display:flex;gap:26px;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+  .idline span{flex:1 1 auto;border-bottom:1px solid var(--rule-2);padding-bottom:3px}
+
+  .lead{font-family:var(--serif);font-size:15.5px;margin:18px 0 6px}
+  .assume{background:#f3f1ea;border-left:3px solid var(--rule-2);padding:10px 14px;margin:14px 0 26px;
+          font-size:13.5px;color:var(--ink-2)}
+  .assume b{color:var(--ink)}
+
+  h2.band{font-family:var(--mono);font-size:11px;letter-spacing:.19em;text-transform:uppercase;
+    color:var(--ink);border-bottom:1.5px solid var(--ink);padding-bottom:6px;margin:34px 0 16px}
+
+  /* measurement block */
+  .meas{display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:11px 20px}
+  .m{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+     border-bottom:1px dotted var(--rule-2);padding-bottom:4px}
+  .m label{font-size:13px;color:var(--ink-2)}
+  .m label i{font-family:var(--mono);font-style:normal;color:var(--ink);font-size:12.5px}
+  .m .f{white-space:nowrap}
+  .m input{width:78px;font-family:var(--mono);font-size:13px;text-align:right;padding:3px 6px;
+    border:1px solid var(--rule-2);border-radius:2px;background:#fff;color:var(--ink)}
+  .m input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .m u{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-decoration:none;margin-left:5px}
+  .flag{background:var(--given-bg);border-color:var(--given)}
+
+  /* question cards */
+  .q{margin:0 0 26px;padding:0 0 20px;border-bottom:1px solid var(--rule)}
+  .q:last-child{border-bottom:0}
+  .q h3{font-family:var(--serif);font-size:17px;font-weight:600;margin:0 0 3px}
+  .q h3 em{font-family:var(--mono);font-style:normal;font-size:13px;color:var(--ink-3);margin-right:9px}
+  .q .ask{font-size:13.5px;color:var(--ink-2);margin:0 0 12px}
+  .work{font-family:var(--mono);font-size:13px;line-height:2;white-space:pre-wrap;
+        background:#fff;border:1px solid var(--rule);border-left:3px solid var(--rule-2);
+        padding:11px 14px;margin:0 0 10px;overflow-x:auto}
+  .work .lab{color:var(--ink-3)}
+  .ans{display:inline-block;font-family:var(--mono);font-size:15px;font-weight:600;
+       color:var(--accent);background:var(--accent-bg);border:1.5px solid var(--accent);
+       border-radius:3px;padding:6px 14px}
+  .rem{font-size:13px;color:var(--ink-2);margin:10px 0 0;padding-left:12px;border-left:2px solid var(--rule-2)}
+  .rem b{color:var(--ink)}
+
+  table.cmp{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;margin:6px 0 12px}
+  table.cmp th{text-align:left;font-weight:600;border-bottom:1.5px solid var(--ink);padding:5px 8px 5px 0}
+  table.cmp td{border-bottom:1px solid var(--rule);padding:5px 8px 5px 0}
+  table.cmp td:last-child,table.cmp th:last-child{text-align:right}
+
+  .toolbar{max-width:920px;margin:16px auto 0;display:flex;gap:9px;justify-content:flex-end}
+  .toolbar button{font-family:var(--mono);font-size:12px;letter-spacing:.06em;padding:8px 14px;
+    background:#fff;border:1px solid var(--rule-2);border-radius:3px;cursor:pointer;color:var(--ink)}
+  .toolbar button:hover{background:#f3f1ea}
+
+  @media print{
+    body{background:#fff}
+    .sheet{box-shadow:none;max-width:none;padding:0 0 20px}
+    .toolbar{display:none}
+    .q{break-inside:avoid}
+    .m input{border:0;border-bottom:1px solid #999;border-radius:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button id="bPrint">Print</button>
+  <button id="bReset">Restore example values</button>
+</div>
+
+<div class="sheet">
+
+<header>
+  <h1>Hydraulic Bottle Jack: Laboratory Answer Sheet</h1>
+  <div class="sub">Fluid Power Systems Engineering - questions 2 to 13</div>
+  <div class="idline"><span>Name</span><span>Section</span><span>Date</span><span>Jack rating</span></div>
+</header>
+
+<p class="lead">Enter your measured values in the measurement block. Every formula, substitution, and
+answer below updates from those numbers, so the sheet shows the full calculation rather than a result
+on its own.</p>
+
+<div class="assume">
+  <b>Model assumptions.</b> All results are ideal and quasi-static: no friction in the linkage or seals,
+  no internal leakage past the check valves, no fluid compressibility, and no losses in the passages.
+  A real jack requires more hand force and delivers less output power than these numbers predict.
+  <b>Units are US customary throughout</b> (in, lb, psi, hp), with 1 hp = 550 ft-lb/s = 6600 in-lb/s.
+</div>
+
+<h2 class="band">Measurements</h2>
+<div class="meas" id="meas"></div>
+<p class="rem" style="margin-top:14px">Fields shaded in amber are not measurable with calipers on the
+assembled jack. Take the reservoir diameters from the sectioned unit or the manufacturer drawing, and
+replace the example values before recording results.</p>
+
+<h2 class="band">Calculations</h2>
+<div id="qs"></div>
+
+</div>
+
+<script>
+"use strict";
+
+/* ---------- measured inputs (defaults are the simulator's example jack) ---------- */
+const M = [
+  {k:"dp",  sym:"d_p", lab:"Pump cylinder bore",              v:0.315,  u:"in"},
+  {k:"sp",  sym:"s_p", lab:"Pump piston stroke",              v:0.787,  u:"in"},
+  {k:"Dr",  sym:"D_r", lab:"Lifting cylinder bore",           v:1.575,  u:"in"},
+  {k:"W",   sym:"W",   lab:"Rated lift load",                 v:1124,   u:"lb"},
+  {k:"L",   sym:"L",   lab:"Lifting cylinder full extension", v:3.937,  u:"in"},
+  {k:"a",   sym:"a",   lab:"Pivot to pump rod end",           v:1.378,  u:"in"},
+  {k:"b",   sym:"b",   lab:"Pivot to operator hand",          v:13.78,  u:"in"},
+  {k:"ID",  sym:"D_i", lab:"Reservoir donut inside dia",      v:2.25,   u:"in", flag:true},
+  {k:"OD",  sym:"D_o", lab:"Reservoir donut outside dia",     v:3.50,   u:"in", flag:true},
+  {k:"n",   sym:"n",   lab:"Pumping rate",                    v:1,      u:"cycle/s"}
+];
+const D = {};
+M.forEach(m=>D[m.k]=m.v);
+
+const HP = 6600;                       // in-lb/s per horsepower
+const PI = Math.PI;
+const f = (v,n)=> (isFinite(v)? Number(v).toFixed(n) : "-");
+const sig = v => Math.abs(v)>=100 ? f(v,1) : Math.abs(v)>=1 ? f(v,3) : f(v,5);
+
+/* ---------- the model ---------- */
+function solve(){
+  const r = {};
+  r.Ap   = PI/4*D.dp*D.dp;             // in^2
+  r.Ar   = PI/4*D.Dr*D.Dr;             // in^2
+  r.Vp   = r.Ap*D.sp;                  // in^3 per full stroke
+  r.h    = r.Vp/r.Ar;                  // in of lift per stroke
+  r.P    = D.W/r.Ar;                   // psi
+  r.Fp   = r.P*r.Ap;                   // lb on the pump piston
+  r.T    = r.Fp*D.a;                   // lb-in at the handle pivot
+  r.Fh   = r.T/D.b;                    // lb at the operator's hand
+  r.Q    = r.Vp*D.n;                   // in^3/s
+  r.Phyd = r.P*r.Q/HP;                 // hp
+  r.N    = r.h>0 ? D.L/r.h : Infinity; // strokes to full extension
+  r.t    = r.N/D.n;                    // s
+  r.v    = D.L/r.t;                    // in/s
+  r.Plin = D.W*r.v/HP;                 // hp
+  r.sinT = D.a>0 ? D.sp/D.a : 0;
+  r.th   = Math.asin(Math.min(r.sinT,1))*180/PI;   // deg swept per stroke
+  r.arc  = 2*PI*D.b*r.th/360;          // in of hand travel
+  r.Pop  = r.Fh*r.arc*D.n/HP;          // hp
+  r.Ares = PI/4*(D.OD*D.OD - D.ID*D.ID);
+  r.Vlift= r.Ar*D.L;
+  r.drop = r.Ares>0 ? r.Vlift/r.Ares : NaN;
+  r.mult = r.Fh>0 ? D.W/r.Fh : Infinity;
+  r.aRat = r.Ap>0 ? r.Ar/r.Ap : Infinity;
+  r.lRat = D.a>0 ? D.b/D.a : Infinity;
+  r.sRed = r.v>0 ? r.arc/r.v : Infinity;
+  r.sIdeal = r.v>0 ? (D.sp*r.lRat)/r.v : Infinity;
+  return r;
+}
+
+/* ---------- question definitions ---------- */
+const Q = [
+  {n:2, t:"Volume displaced per pump stroke",
+   ask:"Measure the bore and stroke of the pumping cylinder and calculate the volume of fluid displaced per one full stroke.",
+   work:r=>[
+     ["Pump piston area", "A_p = (pi/4) * d_p^2",
+      "A_p = (pi/4) * ("+f(D.dp,3)+" in)^2 = "+f(r.Ap,5)+" in^2"],
+     ["Displaced volume", "V_p = A_p * s_p",
+      "V_p = "+f(r.Ap,5)+" in^2 * "+f(D.sp,3)+" in = "+f(r.Vp,5)+" in^3"]],
+   ans:r=>"V_p = "+f(r.Vp,5)+" in^3 per full stroke",
+   rem:"The pump is a single-acting plunger, so one full stroke displaces the swept volume once. The return stroke draws the same volume in from the reservoir and delivers nothing."},
+
+  {n:3, t:"Lifting cylinder area and lift per stroke",
+   ask:"Measure the bore of the lifting cylinder, calculate its cross-sectional area, and use the previous answer to find the lift accomplished per one full pump stroke.",
+   work:r=>[
+     ["Lifting cylinder area", "A_r = (pi/4) * D_r^2",
+      "A_r = (pi/4) * ("+f(D.Dr,3)+" in)^2 = "+f(r.Ar,5)+" in^2"],
+     ["Conservation of volume", "V_p = A_r * h   ->   h = V_p / A_r",
+      "h = "+f(r.Vp,5)+" in^3 / "+f(r.Ar,5)+" in^2 = "+f(r.h,5)+" in"]],
+   ans:r=>"A_r = "+f(r.Ar,4)+" in^2,   h = "+f(r.h,5)+" in per stroke",
+   rem:"Equivalently h = s_p * (A_p / A_r). The oil is treated as incompressible, so whatever volume leaves the pump appears under the ram."},
+
+  {n:4, t:"Pressure required in the lifting cylinder",
+   ask:"Use the lift rating printed on the jack and your measurements to determine the fluid pressure required to lift that load.",
+   work:r=>[
+     ["Definition of pressure", "P = F / A   ->   P = W / A_r",
+      "P = "+f(D.W,0)+" lb / "+f(r.Ar,5)+" in^2 = "+f(r.P,1)+" lb/in^2"]],
+   ans:r=>"P = "+f(r.P,1)+" psi",
+   rem:"This is gauge pressure and it is set by the load alone. It does not depend on the pump size, the handle, or how fast you pump."},
+
+  {n:5, t:"Downward force required on the pump piston",
+   ask:"Determine the downward force required on the piston pump to meet this pressure requirement.",
+   work:r=>[
+     ["Same pressure acts on both pistons", "F_p = P * A_p",
+      "F_p = "+f(r.P,1)+" lb/in^2 * "+f(r.Ap,5)+" in^2 = "+f(r.Fp,2)+" lb"]],
+   ans:r=>"F_p = "+f(r.Fp,2)+" lb",
+   rem:"Pascal's principle: with both check valves in their delivery state the pump chamber and the lifting chamber are one connected volume, so they share one pressure."},
+
+  {n:6, t:"Torque required at the handle pivot",
+   ask:"Using the pump force and the distance from the pump rod end to the handle pivot, calculate the torque that must be applied at the pivot.",
+   work:r=>[
+     ["Moment about the pivot", "T = F_p * a",
+      "T = "+f(r.Fp,2)+" lb * "+f(D.a,3)+" in = "+f(r.T,2)+" lb-in"]],
+   ans:r=>"T = "+f(r.T,2)+" lb-in",
+   rem:"The quantity asked for is a <b>torque (moment)</b>, not a moment of inertia. Moment of inertia carries units of lb-in-s^2 and describes resistance to angular acceleration, which is not what is happening here."},
+
+  {n:7, t:"Tangential force at the operator's hand",
+   ask:"Measure the distance from the operator's hand to the pivot and determine the tangential force the operator must apply.",
+   work:r=>[
+     ["Same torque, longer arm", "T = F_hand * b   ->   F_hand = T / b",
+      "F_hand = "+f(r.T,2)+" lb-in / "+f(D.b,2)+" in = "+f(r.Fh,2)+" lb"],
+     ["Check by lever ratio", "F_hand = F_p * (a / b)",
+      "F_hand = "+f(r.Fp,2)+" lb * ("+f(D.a,3)+" / "+f(D.b,2)+") = "+f(r.Fh,2)+" lb"]],
+   ans:r=>"F_hand = "+f(r.Fh,2)+" lb",
+   rem:"Assumes the hand force stays perpendicular to the handle. Any component along the handle produces no moment and is wasted."},
+
+  {n:8, t:"Hydraulic power generated at 1 cycle per second",
+   ask:"If you pump at 1 full cycle per second, how much hydraulic power are you generating while lifting the rated load?",
+   work:r=>[
+     ["Flow rate", "Q = V_p * n",
+      "Q = "+f(r.Vp,5)+" in^3 * "+f(D.n,2)+" /s = "+f(r.Q,5)+" in^3/s"],
+     ["Hydraulic power", "Power = P * Q",
+      "Power = "+f(r.P,1)+" lb/in^2 * "+f(r.Q,5)+" in^3/s = "+f(r.P*r.Q,3)+" in-lb/s"],
+     ["Convert", "1 hp = 550 ft-lb/s = 6600 in-lb/s",
+      "Power = "+f(r.P*r.Q,3)+" / 6600 = "+f(r.Phyd,6)+" hp"]],
+   ans:r=>"Power_hyd = "+f(r.Phyd,5)+" hp",
+   rem:"Pressure times flow is the fluid-power form of force times velocity. The units confirm it: (lb/in^2)(in^3/s) = lb-in/s."},
+
+  {n:9, t:"Time to full extension",
+   ask:"Determine how long it will take to extend the lifting cylinder to full extension at that rate.",
+   work:r=>[
+     ["Strokes required", "N = L / h",
+      "N = "+f(D.L,3)+" in / "+f(r.h,5)+" in = "+f(r.N,1)+" strokes"],
+     ["Elapsed time", "t = N / n",
+      "t = "+f(r.N,1)+" strokes / "+f(D.n,2)+" per s = "+f(r.t,1)+" s"]],
+   ans:r=>"t = "+f(r.t,1)+" s  ("+f(r.t/60,2)+" min)",
+   rem:"Round N up to a whole stroke if you want the number of strokes actually pumped; the fractional value is kept here so the time and speed stay consistent."},
+
+  {n:10, t:"Extension speed and output linear power",
+   ask:"Calculate the speed of extension, then use it with the maximum weight lifted to find the linear power exerted.",
+   work:r=>[
+     ["Average speed", "v = L / t",
+      "v = "+f(D.L,3)+" in / "+f(r.t,1)+" s = "+f(r.v,5)+" in/s"],
+     ["Linear power", "Power = F * v",
+      "Power = "+f(D.W,0)+" lb * "+f(r.v,5)+" in/s = "+f(D.W*r.v,3)+" in-lb/s"],
+     ["Convert", "Power = (in-lb/s) / 6600",
+      "Power = "+f(D.W*r.v,3)+" / 6600 = "+f(r.Plin,6)+" hp"]],
+   ans:r=>"v = "+f(r.v,5)+" in/s,   Power_out = "+f(r.Plin,5)+" hp",
+   rem:"This matches the hydraulic power from question 8 exactly, which it must: with no losses assumed, all the power entering the fluid leaves as lifting power."},
+
+  {n:11, t:"Operator input linear power",
+   ask:"Using the same rate, the operator force, and the arc distance the hand travels, determine the linear power exerted by the operator. Neglect the return stroke.",
+   work:r=>[
+     ["Angle swept per stroke", "sin(theta) = s_p / a   ->   theta = arcsin(s_p / a)",
+      "theta = arcsin("+f(D.sp,3)+" / "+f(D.a,3)+") = arcsin("+f(r.sinT,4)+") = "+f(r.th,2)+" deg"],
+     ["Arc travelled by the hand", "d = 2 * pi * b * theta / 360",
+      "d = 2 * pi * "+f(D.b,2)+" in * "+f(r.th,2)+" / 360 = "+f(r.arc,3)+" in"],
+     ["Operator power", "Power = F_hand * d * n",
+      "Power = "+f(r.Fh,2)+" lb * "+f(r.arc,3)+" in * "+f(D.n,2)+" /s = "+f(r.Fh*r.arc*D.n,3)+" in-lb/s"],
+     ["Convert", "Power = (in-lb/s) / 6600",
+      "Power = "+f(r.Fh*r.arc*D.n,3)+" / 6600 = "+f(r.Pop,6)+" hp"]],
+   ans:r=>"theta = "+f(r.th,2)+" deg,   d = "+f(r.arc,3)+" in,   Power_in = "+f(r.Pop,5)+" hp",
+   rem:r=>"The arc is longer than the straight-line displacement the lever ratio implies, "+
+       "so this method returns a slightly larger input power than questions 8 and 10. "+
+       "The ratio is theta/sin(theta), here about "+f((r.th*PI/180)/Math.max(r.sinT,1e-9),3)+
+       ". It is a consequence of the chord versus arc approximation, not a real loss."},
+
+  {n:12, t:"Reservoir area and drop in fluid level",
+   ask:"Determine the cross-sectional area of the donut-shaped reservoir, then find the drop in fluid level when the cylinder is fully extended.",
+   work:r=>[
+     ["Annulus area", "A_res = (pi/4) * (D_o^2 - D_i^2)",
+      "A_res = (pi/4) * (("+f(D.OD,3)+")^2 - ("+f(D.ID,3)+")^2) = "+f(r.Ares,4)+" in^2"],
+     ["Volume transferred at full extension", "V_lift = A_r * L",
+      "V_lift = "+f(r.Ar,5)+" in^2 * "+f(D.L,3)+" in = "+f(r.Vlift,4)+" in^3"],
+     ["Level drop", "drop = V_lift / A_res",
+      "drop = "+f(r.Vlift,4)+" in^3 / "+f(r.Ares,4)+" in^2 = "+f(r.drop,3)+" in"]],
+   ans:r=>"A_res = "+f(r.Ares,4)+" in^2,   drop = "+f(r.drop,3)+" in",
+   rem:"Every cubic inch that appears under the ram left the reservoir, so the reservoir must hold at least V_lift above the pump inlet or the pump will draw air near full extension."}
+];
+
+/* ---------- render ---------- */
+function buildMeas(){
+  const host=document.getElementById("meas");
+  host.innerHTML="";
+  M.forEach(m=>{
+    const d=document.createElement("div"); d.className="m";
+    d.innerHTML='<label for="i_'+m.k+'"><i>'+m.sym+'</i> '+m.lab+'</label>'+
+      '<span class="f"><input type="number" step="any" id="i_'+m.k+'"'+(m.flag?' class="flag"':'')+
+      ' value="'+m.v+'"><u>'+m.u+'</u></span>';
+    host.appendChild(d);
+    d.querySelector("input").addEventListener("input",e=>{
+      const v=parseFloat(e.target.value);
+      if(isFinite(v)){ D[m.k]=v; render(); }
+    });
+  });
+}
+
+function render(){
+  const r=solve();
+  const host=document.getElementById("qs");
+  host.innerHTML="";
+  Q.forEach(q=>{
+    const sec=document.createElement("section"); sec.className="q";
+    let w="";
+    q.work(r).forEach(row=>{
+      w+='<span class="lab">'+row[0]+'</span>\n  '+row[1]+'\n  '+row[2]+'\n\n';
+    });
+    sec.innerHTML='<h3><em>'+q.n+'</em>'+q.t+'</h3>'+
+      '<p class="ask">'+q.ask+'</p>'+
+      '<div class="work">'+w.replace(/\n\n$/,"")+'</div>'+
+      '<div class="ans">'+q.ans(r)+'</div>'+
+      (q.rem?'<p class="rem">'+(typeof q.rem==="function"?q.rem(r):q.rem)+'</p>':'');
+    host.appendChild(sec);
+  });
+
+  // question 13 is a comparison, so it gets a table rather than a formula block
+  const sec=document.createElement("section"); sec.className="q";
+  sec.innerHTML =
+    '<h3><em>13</em>Comparison of input, hydraulic, and output power</h3>'+
+    '<p class="ask">Compare the operator input linear power, the hydraulic power generated, and the '+
+    'output lifting linear power. Has the jack magnified the input power? By what factor is force '+
+    'multiplied? By what factor is speed reduced?</p>'+
+    '<table class="cmp"><thead><tr><th>Quantity</th><th>Source</th><th>hp</th></tr></thead><tbody>'+
+    '<tr><td>Operator input linear power</td><td>Q11</td><td>'+f(r.Pop,5)+'</td></tr>'+
+    '<tr><td>Hydraulic power generated</td><td>Q8</td><td>'+f(r.Phyd,5)+'</td></tr>'+
+    '<tr><td>Output lifting linear power</td><td>Q10</td><td>'+f(r.Plin,5)+'</td></tr>'+
+    '</tbody></table>'+
+    '<div class="work">'+
+    '<span class="lab">Force multiplication</span>\n'+
+    '  factor = W / F_hand\n'+
+    '  factor = '+f(D.W,0)+' lb / '+f(r.Fh,2)+' lb = '+f(r.mult,1)+' : 1\n\n'+
+    '<span class="lab">Where that factor comes from</span>\n'+
+    '  factor = (A_r / A_p) * (b / a)\n'+
+    '  factor = '+f(r.aRat,2)+' * '+f(r.lRat,2)+' = '+f(r.aRat*r.lRat,1)+' : 1\n\n'+
+    '<span class="lab">Speed reduction</span>\n'+
+    '  factor = hand speed / ram speed\n'+
+    '  factor = '+f(r.arc*D.n,3)+' in/s / '+f(r.v,5)+' in/s = '+f(r.sRed,1)+' : 1\n'+
+    '  using straight-line hand travel instead of the arc: '+f(r.sIdeal,1)+' : 1'+
+    '</div>'+
+    '<div class="ans">Force x '+f(r.mult,0)+',  speed / '+f(r.sIdeal,0)+',  power unchanged</div>'+
+    '<p class="rem"><b>The jack does not magnify power.</b> All three values are within a few percent '+
+    'of each other, and the small excess in the operator column is the arc-versus-chord artifact noted '+
+    'in question 11, not a gain. Power is force times speed, and the jack trades one for the other in '+
+    'exactly inverse proportion: force is multiplied by about '+f(r.mult,0)+' and speed is divided by '+
+    'about '+f(r.sIdeal,0)+'. The hydraulics supply '+f(r.aRat,1)+' of that factor through the area '+
+    'ratio and the handle supplies '+f(r.lRat,1)+' through the lever ratio. In a real jack the output '+
+    'power is measurably less than the input because of seal friction, check-valve losses, and leakage.</p>';
+  host.appendChild(sec);
+}
+
+document.getElementById("bPrint").addEventListener("click",()=>window.print());
+document.getElementById("bReset").addEventListener("click",()=>{
+  M.forEach(m=>{ D[m.k]=m.v; });
+  buildMeas(); render();
+});
+
+buildMeas();
+render();
+</script>
+</body>
+</html>
