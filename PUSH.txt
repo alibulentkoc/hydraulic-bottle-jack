@@ -1,0 +1,55 @@
+PUSH v1.2.0
+===========
+
+Everything in this folder is final. Nothing needs editing on github.com.
+
+1. Delete the old download folder, then extract the zip to
+   C:\Users\Bulent\Downloads\bottle-jack-lab
+
+2. Copy it over the clone and check what changed:
+
+     cd C:\Users\Bulent\Documents\hydraulic-bottle-jack
+     git pull
+     robocopy "C:\Users\Bulent\Downloads\bottle-jack-lab" "C:\Users\Bulent\Documents\hydraulic-bottle-jack" /E /XD .git
+     git status --short
+
+   Four files must appear as new (??):
+     docs/demo.gif
+     tests/verify-labels.js
+     tests/verify-compat.js
+     RELEASE_NOTES_v1.2.0.md
+   If they do not, the copy failed. Stop and redo step 1.
+
+3. Commit and push:
+
+     git add -A
+     git commit -m "v1.2.0: reservoir geometry, label layout, browser compatibility floor"
+     git push
+
+4. Check on github.com before tagging:
+     - Actions run is green (121 checks, six suites)
+     - the demo GIF shows at the top of the README
+     - https://alibulentkoc.github.io/hydraulic-bottle-jack/ loads after Ctrl+F5
+     - drag the handle on the live page; no automated test covers dragging
+
+5. Tag and push the tag:
+
+     git tag -a v1.2.0 -m "Reservoir geometry, label layout, browser compatibility"
+     git push origin v1.2.0
+
+6. Create the release on github.com:
+     Releases -> Draft a new release
+     Choose the existing tag v1.2.0
+     Title:       v1.2.0 - Browser compatibility, label layout, and reservoir geometry
+     Description: paste the contents of RELEASE_NOTES_v1.2.0.md
+     Attach nothing. Leave pre-release unchecked. Publish.
+
+7. Zenodo mints a new version DOI automatically. Check
+   https://doi.org/10.5281/zenodo.22181633 shows v1.2.0 with:
+     - author  Koc, A. Bulent   (not alibulentkoc)
+     - license MIT              (not CC BY)
+     - zip     about 350 kB     (not 3.4 kB)
+   Those three confirm the archive is complete this time.
+
+If you already pushed a v1.1.0 tag, it is harmless; leave it. Only the tag with
+a published release gets archived.
