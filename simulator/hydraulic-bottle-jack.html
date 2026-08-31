@@ -51,15 +51,16 @@
 
   /* ---------- header ---------- */
   header.top{
-    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+    display:flex;align-items:flex-end;justify-content:space-between;
     border-bottom:1px solid var(--rule);padding-bottom:10px;margin-bottom:14px;flex-wrap:wrap;
   }
+  .brand{margin-right:16px}
   .brand h1{
     font-family:var(--mono);font-size:19px;font-weight:600;letter-spacing:.14em;
     text-transform:uppercase;margin:0;
   }
   .brand p{margin:3px 0 0;color:var(--ink-dim);font-size:12.5px;max-width:62ch}
-  .unitsw{display:flex;gap:0;border:1px solid var(--rule-2);border-radius:3px;overflow:hidden}
+  .unitsw{display:flex;border:1px solid var(--rule-2);border-radius:3px;overflow:hidden}
   .unitsw button{
     font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:6px 12px;
     background:transparent;color:var(--ink-dim);border:0;cursor:pointer;
@@ -80,15 +81,17 @@
   /* ---------- stage ---------- */
   .stage{overflow:hidden}
   .stagebar{
-    display:flex;align-items:center;gap:12px;padding:9px 12px;border-bottom:1px solid var(--rule);
+    display:flex;align-items:center;padding:9px 12px;border-bottom:1px solid var(--rule);
     flex-wrap:wrap;
   }
   .statepill{
     font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.16em;
     padding:5px 11px;border-radius:3px;border:1px solid currentColor;white-space:nowrap;
   }
+  .statepill{margin-right:12px}
   .statetext{color:var(--ink-dim);font-size:12.5px;flex:1 1 260px;min-width:200px}
-  .toggles{display:flex;gap:6px;margin-left:auto}
+  .toggles{display:flex;margin-left:auto}
+  .toggles > * + *{margin-left:6px}
   .tgl{
     font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
     padding:6px 9px;background:transparent;color:var(--ink-faint);
@@ -104,10 +107,11 @@
   }
 
   .legend{
-    display:flex;flex-wrap:wrap;gap:6px 16px;padding:9px 12px;border-top:1px solid var(--rule);
+    display:flex;flex-wrap:wrap;padding:9px 12px 3px;border-top:1px solid var(--rule);
     font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--ink-dim);
   }
-  .legend span{display:flex;align-items:center;gap:6px}
+  .legend span{display:flex;align-items:center;margin:0 16px 6px 0}
+  .legend span .sw{margin-right:6px}
   .sw{width:11px;height:11px;border-radius:2px;border:1px solid rgba(0,0,0,.45);display:inline-block}
 
   /* ---------- signature: oil inventory ledger ---------- */
@@ -122,7 +126,8 @@
   .barlabels b{color:var(--ink);font-weight:600}
 
   /* ---------- controls ---------- */
-  .controls{display:flex;flex-wrap:wrap;gap:8px;padding:11px 12px;border-top:1px solid var(--rule)}
+  .controls{display:flex;flex-wrap:wrap;padding:11px 12px 3px;border-top:1px solid var(--rule)}
+  .controls > *{margin:0 8px 8px 0}
   button.act{
     font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
     padding:9px 14px;border-radius:3px;cursor:pointer;
@@ -134,7 +139,8 @@
   button.act:disabled{opacity:.4;cursor:not-allowed}
 
   /* ---------- panel ---------- */
-  .panel{display:flex;flex-direction:column;gap:12px}
+  .panel{display:flex;flex-direction:column}
+  .panel > * + *{margin-top:12px}
   .grp{margin-bottom:14px}
   .grp:last-child{margin-bottom:0}
   .grp h3{
@@ -142,9 +148,10 @@
     color:var(--ink-faint);margin:0 0 9px;padding-bottom:5px;border-bottom:1px dashed var(--rule);
   }
   .ctl{margin-bottom:11px}
-  .ctl .row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:4px}
+  .ctl .row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
   .ctl label{font-size:12.5px;color:var(--ink-dim)}
-  .ctl .val{display:flex;align-items:center;gap:4px}
+  .ctl .val{display:flex;align-items:center}
+  .ctl .val > * + *{margin-left:4px}
   .ctl{margin-bottom:8px}
   .ctl input[type=number]{
     width:86px;font-family:var(--mono);font-size:13px;text-align:right;
@@ -152,7 +159,8 @@
   }
   .ctl input[type=number]:focus{border-color:var(--oil-high);background:#0d1216}
   .ctl .unit{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);width:32px}
-  .applyrow{display:flex;gap:8px;margin:14px 0 2px}
+  .applyrow{display:flex;margin:14px 0 2px}
+  .applyrow > * + *{margin-left:8px}
   .applyrow button{flex:1 1 auto}
   .derived{
     font-family:var(--mono);font-size:11px;color:var(--ink-faint);
@@ -176,6 +184,7 @@
   }
   .alert:empty{display:none}
 
+  :focus{outline:1px dotted var(--rule-2);outline-offset:2px}
   :focus-visible{outline:2px solid var(--oil-high);outline-offset:2px}
   @media (prefers-reduced-motion: reduce){ .bar div{transition:none} }
 </style>
@@ -356,6 +365,12 @@ const CRACK = 0.15;         // MPa, extra pressure needed to lift a check ball
 const RELIEF_P = 65;        // MPa, overload relief setting
 
 const clamp = (v,a,b)=> v<a?a : v>b?b : v;
+// every dimension spec in one list, without Array.prototype.flat (ES2019)
+function allSpecs(){
+  var out=[], k;
+  for(k in SPECS) if(Object.prototype.hasOwnProperty.call(SPECS,k)) out = out.concat(SPECS[k]);
+  return out;
+}
 
 function derived(d){
   const Ar = PI*d.ramDia*d.ramDia/4;          // mm^2
@@ -626,6 +641,19 @@ function layout(){
    6. SVG RENDERING (state -> drawing, no physics here)
    ============================================================ */
 const SVGNS="http://www.w3.org/2000/svg";
+/* A halo drawn with paint-order keeps labels readable over the drawing. Where
+   paint-order is unsupported the stroke paints on top of the glyphs and hides
+   them, so on those browsers the halo is dropped and the text stays legible. */
+const HAS_PAINT_ORDER = (function(){
+  try { return !!(window.CSS && window.CSS.supports && window.CSS.supports("paint-order","stroke")); }
+  catch(e){ return false; }
+})();
+function haloText(attrs, parent){
+  if(!HAS_PAINT_ORDER){
+    delete attrs["paint-order"]; delete attrs.stroke; delete attrs["stroke-width"];
+  }
+  return el("text", attrs, parent);
+}
 const svg = document.getElementById("jack");
 const R = {};   // cached element references
 
@@ -640,7 +668,7 @@ function pathLen(pts){
   let L=0, segs=[];
   for(let i=1;i<pts.length;i++){
     const dx=pts[i][0]-pts[i-1][0], dy=pts[i][1]-pts[i-1][1];
-    const l=Math.hypot(dx,dy); segs.push(l); L+=l;
+    const l=Math.sqrt(dx*dx+dy*dy); segs.push(l); L+=l;
   }
   return {segs,L};
 }
@@ -757,10 +785,10 @@ function buildSVG(){
   valveSeat(g.outletBall[0],g.outletBall[1],-1, R.flowLayer);
   R.ballIn  = el("circle",{r:"5.2",fill:"var(--ball)",stroke:"#7a5c14","stroke-width":"1"},R.moving);
   R.ballOut = el("circle",{r:"5.2",fill:"var(--ball)",stroke:"#7a5c14","stroke-width":"1"},R.moving);
-  R.dirIn   = el("text",{"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
+  R.dirIn   = haloText({"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
                  "text-anchor":"middle",x:g.inletBall[0],y:g.inletBall[1]-13},R.flowLayer);
   R.dirIn.textContent="SUCTION";
-  R.dirOut  = el("text",{"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
+  R.dirOut  = haloText({"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
                  "text-anchor":"middle",x:g.outletBall[0],y:g.outletBall[1]-13},R.flowLayer);
   R.dirOut.textContent="DELIVERY";
 
@@ -795,11 +823,11 @@ function buildSVG(){
   el("circle",{cx:g.pivotX,cy:g.pivotY,r:"7",fill:"#39434a",stroke:"#20272c","stroke-width":"2"},R.moving);
   R.pin      = el("circle",{r:"5",fill:"#39434a",stroke:"#20272c","stroke-width":"2"},R.moving);
   R.arc      = el("path",{fill:"none",stroke:"#8b959d","stroke-width":"1","stroke-dasharray":"4 4"},R.moving);
-  R.angLabel = el("text",{"font-family":"var(--mono)","font-size":"12","font-weight":"600",
+  R.angLabel = haloText({"font-family":"var(--mono)","font-size":"12","font-weight":"600",
     fill:"#7c1f19","text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"4.5"},R.moving);
   R.handForce = el("line",{stroke:"#8f231d","stroke-width":"3.6","stroke-linecap":"round",
     "marker-end":"url(#farw)"},R.moving);
-  R.handLabel = el("text",{"font-family":"var(--mono)","font-size":"11",fill:"#7c1f19",
+  R.handLabel = haloText({"font-family":"var(--mono)","font-size":"11",fill:"#7c1f19",
     "text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"4.5"},R.moving);
   R.ramArrow  = el("path",{fill:"#8f231d",opacity:"0"},R.moving);
   R.pumpArrow = el("path",{fill:"#1f5c96",opacity:"0"},R.moving);
@@ -815,7 +843,7 @@ function buildSVG(){
   ["res","pump","hp"].forEach((k,i)=>{
     R.pChips[k] = el("rect",{x:22,y:22+i*19,width:11,height:11,rx:"2",
       stroke:"#39434a","stroke-width":"1"},R.press);
-    R.pLabels[k] = el("text",{"font-family":"var(--mono)","font-size":"11","font-weight":"600",
+    R.pLabels[k] = haloText({"font-family":"var(--mono)","font-size":"11","font-weight":"600",
       fill:"#1d242a","text-anchor":"start",x:39,y:31+i*19,
       "paint-order":"stroke",stroke:"#e9edf1","stroke-width":"4"},R.press);
   });
@@ -827,7 +855,7 @@ function buildSVG(){
     const line = el("line",{stroke:"#3b4750","stroke-width":"1.1","marker-start":"url(#arw)","marker-end":"url(#arw)"},gg);
     const t1 = el("line",{stroke:"#3b4750","stroke-width":"1"},gg);
     const t2 = el("line",{stroke:"#3b4750","stroke-width":"1"},gg);
-    const txt= el("text",{"font-family":"var(--mono)","font-size":"11",fill:"#1d242a",
+    const txt= haloText({"font-family":"var(--mono)","font-size":"11",fill:"#1d242a",
       "text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"4.5"},gg);
     R.dimEls[name]={gg,line,t1,t2,txt};
   };
@@ -1171,7 +1199,7 @@ function commitField(s){
   onDimsChanged(s.k);
 }
 function applyAll(){
-  Object.values(SPECS).flat().forEach(s=>{
+  allSpecs().forEach(s=>{
     const typed=parseFloat($("n_"+s.k).value);
     if(isFinite(typed)) dims[s.k]=clamp(toStore(typed,s.q), s.min, s.max);
   });
@@ -1180,7 +1208,7 @@ function applyAll(){
 
 /* rewrite every field in the currently selected system */
 function syncInputs(){
-  Object.values(SPECS).flat().forEach(s=>{
+  allSpecs().forEach(s=>{
     const n=$("n_"+s.k), q=QTY[s.q];
     n.value = toField(dims[s.k], s.q).toFixed(fieldDp(s.q));
     n.min   = toField(s.min, s.q).toFixed(fieldDp(s.q));
@@ -1247,24 +1275,53 @@ $("bDefaults").addEventListener("click",()=>{
 });
 
 /* handle dragging */
+/* Map a screen point into viewBox units with getBoundingClientRect alone, so
+   neither SVGPoint nor getScreenCTM is required. The drawing scales uniformly
+   (width 100%, height auto), so one ratio per axis is exact. */
+function toDrawing(clientX, clientY){
+  const r = svg.getBoundingClientRect();
+  const vb = (svg.getAttribute("viewBox") || "0 0 780 570").split(/[\s,]+/);
+  const vw = parseFloat(vb[2]), vh = parseFloat(vb[3]);
+  return { x: parseFloat(vb[0]) + (clientX - r.left) * vw / (r.width  || vw),
+           y: parseFloat(vb[1]) + (clientY - r.top ) * vh / (r.height || vh) };
+}
+function eventPoint(ev){
+  if(ev.touches && ev.touches.length) return {x:ev.touches[0].clientX, y:ev.touches[0].clientY};
+  if(ev.changedTouches && ev.changedTouches.length)
+    return {x:ev.changedTouches[0].clientX, y:ev.changedTouches[0].clientY};
+  return {x:ev.clientX, y:ev.clientY};
+}
 function bindHandleDrag(){
   const start = (ev)=>{
     sim.dragging=true; sim.drive="idle"; setPressed(bAuto,false);
-    R.handle.setPointerCapture && R.handle.setPointerCapture(ev.pointerId);
-    move(ev); ev.preventDefault();
+    if(ev.pointerId!==undefined && R.handle.setPointerCapture){
+      try { R.handle.setPointerCapture(ev.pointerId); } catch(e){}
+    }
+    move(ev); if(ev.preventDefault) ev.preventDefault();
   };
   const move = (ev)=>{
     if(!sim.dragging) return;
-    const pt = svg.createSVGPoint(); pt.x=ev.clientX; pt.y=ev.clientY;
-    const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const p = eventPoint(ev), loc = toDrawing(p.x, p.y);
     const L = layout(), D = derived(dims);
     const a = Math.atan2(L.pivotY-loc.y, loc.x-L.pivotX);
     sim.theta = clamp(a, 0, D.thetaMax);
+    if(ev.touches && ev.preventDefault) ev.preventDefault();
   };
   const end = ()=>{ sim.dragging=false; };
-  R.handle.addEventListener("pointerdown", start);
-  window.addEventListener("pointermove", move);
-  window.addEventListener("pointerup", end);
+  // Pointer events where available, otherwise the mouse and touch pair that
+  // every browser has supported for a decade.
+  if(typeof window.PointerEvent === "function"){
+    R.handle.addEventListener("pointerdown", start);
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", end);
+  } else {
+    R.handle.addEventListener("mousedown", start);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", end);
+    R.handle.addEventListener("touchstart", start, {passive:false});
+    window.addEventListener("touchmove", move, {passive:false});
+    window.addEventListener("touchend", end);
+  }
   R.handle.addEventListener("keydown", e=>{
     const D=derived(dims);
     if(e.key==="ArrowUp"){sim.theta=clamp(sim.theta+D.thetaMax/12,0,D.thetaMax);e.preventDefault();}

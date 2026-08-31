@@ -12,6 +12,8 @@ full hydraulic cycle: draw fluid, pressurize it, do work, hold the load, return 
 fluid to tank. This repository holds an interactive cross section of that device
 and the laboratory materials built around it.
 
+![The simulator: pumping, then the release valve opened](docs/demo.gif)
+
 **Run it now: <https://alibulentkoc.github.io/hydraulic-bottle-jack/>**
 
 Everything runs in a browser from a local file. No server, no build step, no
@@ -24,7 +26,7 @@ network access, no dependencies at runtime.
 | `simulator/hydraulic-bottle-jack.html` | Interactive parametric cross section |
 | `lab/bottle-jack-lab-handout.html` | Student handout: objectives, principles, procedure, data tables, questions 2 to 15 |
 | `lab/bottle-jack-lab-answer-sheet.html` | Instructor answer sheet: live formulas, substitutions, and results |
-| `tests/` | Verification suite, 73 checks |
+| `tests/` | Verification suite, 121 checks |
 
 Open any of the three files directly in a browser. The two laboratory documents
 are formatted to print.
@@ -106,7 +108,7 @@ npm install     # jsdom, for the interface checks only
 npm test
 ```
 
-73 checks in five suites:
+121 checks in six suites:
 
 - **physics** (19): volume conservation across pump cycles and through the release
   valve, area-ratio scaling, load holding, stroke limiting, relief behaviour at
@@ -119,6 +121,8 @@ npm test
   exercised, unit round-trips checked.
 - **labels** (10): no annotation overlaps another or leaves the canvas, checked
   at both dimension extremes and in both unit systems.
+- **compatibility** (48): the source stays inside a conservative browser feature
+  floor, and every feature that could fail silently is feature detected.
 
 The suite runs on every push through GitHub Actions.
 
@@ -126,6 +130,30 @@ The suite runs on every push through GitHub Actions.
 the section-banner comments in the source. Those comments are the contract between
 the artifacts and the suite: if one is renamed, extraction fails with an explicit
 error rather than silently testing nothing.
+
+## Browser support
+
+Written to a conservative floor rather than to current browsers: ES6 syntax
+(2015), no ES2017 or later library methods, no CSS feature newer than grid.
+Tested constructs are limited to what Chrome, Firefox, Edge, and Safari have all
+supported since roughly 2017, which covers the machines actually found in
+teaching labs.
+
+Three features that would otherwise fail silently are handled explicitly:
+
+- **`paint-order`**, which gives labels a halo over the drawing, is feature
+  detected. Where it is missing the halo is dropped, because an unsupported
+  paint-order paints the stroke over the glyphs and hides the text.
+- **Pointer events** drive the draggable handle where available, with a mouse
+  and touch pair as the fallback, so dragging works on older iPads.
+- **Flexbox `gap`** is not used at all, since Safari only gained it in 2021.
+  Spacing comes from margins, which behave identically everywhere.
+
+Screen coordinates are mapped into the drawing with `getBoundingClientRect`
+alone, avoiding `getScreenCTM` and `SVGPoint`, both deprecated in SVG 2.
+
+A `compatibility` test suite enforces all of this on every push, so the floor
+cannot drift as the files are edited.
 
 ## Limitations
 

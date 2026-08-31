@@ -28,8 +28,8 @@
   header{border-bottom:2.5px solid var(--ink);padding-bottom:14px;margin-bottom:8px}
   header h1{font-family:var(--serif);font-size:27px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
   header .sub{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
-  .idline{display:flex;gap:26px;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
-  .idline span{flex:1 1 auto;border-bottom:1px solid var(--rule-2);padding-bottom:3px}
+  .idline{display:flex;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+  .idline span{flex:1 1 auto;margin-right:26px;border-bottom:1px solid var(--rule-2);padding-bottom:3px}
 
   .lead{font-family:var(--serif);font-size:15.5px;margin:18px 0 6px}
   .assume{background:#f3f1ea;border-left:3px solid var(--rule-2);padding:10px 14px;margin:14px 0 26px;
@@ -41,7 +41,7 @@
 
   /* measurement block */
   .meas{display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:11px 20px}
-  .m{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  .m{display:flex;align-items:baseline;justify-content:space-between;
      border-bottom:1px dotted var(--rule-2);padding-bottom:4px}
   .m label{font-size:13px;color:var(--ink-2)}
   .m label i{font-family:var(--mono);font-style:normal;color:var(--ink);font-size:12.5px}
@@ -73,7 +73,8 @@
   table.cmp td{border-bottom:1px solid var(--rule);padding:5px 8px 5px 0}
   table.cmp td:last-child,table.cmp th:last-child{text-align:right}
 
-  .toolbar{max-width:920px;margin:16px auto 0;display:flex;gap:9px;justify-content:flex-end}
+  .toolbar{max-width:920px;margin:16px auto 0;display:flex;justify-content:flex-end}
+  .toolbar > * + *{margin-left:9px}
   .toolbar button{font-family:var(--mono);font-size:12px;letter-spacing:.06em;padding:8px 14px;
     background:#fff;border:1px solid var(--rule-2);border-radius:3px;cursor:pointer;color:var(--ink)}
   .toolbar button:hover{background:#f3f1ea}

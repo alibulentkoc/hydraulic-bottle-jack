@@ -20,6 +20,12 @@
   handle and linkage labels were separated into their own rows.
 - New verification suite checks every label for overlap and for leaving the
   canvas, at both dimension extremes and in both unit systems.
+- Browser compatibility floor lowered and enforced: removed Array.prototype.flat,
+  Math.hypot, getScreenCTM, SVGPoint, flexbox gap and accent-color; added a
+  mouse and touch fallback for the draggable handle, feature detection for
+  paint-order, and a :focus fallback for :focus-visible. A new compatibility
+  suite checks the source against the floor on every push.
+- Animated demonstration added to the README.
 
 ## 1.0.0 - 2026-08-30
 
