@@ -45,6 +45,12 @@ function check(tag){
       rec("tap upstream of chamber",  g.obX - g.Tx, tag);
       rec("galleries inside base",    508 - g.yOut - 6, tag);
       rec("lifting chamber height",   g.baseTop - g.ramBotY, tag);
+      // the handle must never pass through the pump cylinder
+      rec("pivot above pump cylinder", g.pumpTop - g.pivotY - 12, tag);
+      rec("handle tip on canvas",      Math.min(g.hEndY - 8, 772 - g.hEndX), tag);
+      rec("ram protrudes at rest",     (g.bodyTop - (g.ramBot0 - g.ramLenPx)) - 20, tag);
+      rec("load block on canvas",      g.ramTopY - 54, tag);
+      rec("oil column inside body",    g.resTop - g.bodyTop - 6, tag);
     }
   }
 }

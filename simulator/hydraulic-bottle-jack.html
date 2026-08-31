@@ -567,16 +567,23 @@ function layout(){
   const bodyHalf = cylOut + resW + shell;
 
   const baseTop = 452, baseBot = 508;
-  const bodyTop = 300;
-  const ramBot0 = 442;
-  const vScale  = 150/d.ramStrokeMax;
-  const ramLenPx= 208;
+  // the drawn oil column follows the entered reservoir height, and the body is
+  // sized to contain it, so these controls change the drawing and not just the
+  // numbers. Clamped for legibility, like every other radial exaggeration.
+  const resHpx  = clamp(d.resHeight*0.9, 80, 150);
+  const bodyH   = resHpx + 14;
+  const bodyTop = baseTop - bodyH;
+  const ramBot0 = baseTop - 10;
+  // ram travel scales with the entered stroke, so a long-stroke jack visibly
+  // extends further. Ram length keeps a constant protrusion at zero stroke.
+  const travelMax = clamp(d.ramStrokeMax*0.85, 50, 150);
+  const vScale  = travelMax/d.ramStrokeMax;
+  const ramLenPx= bodyH + 34;
 
   const ramBotY = ramBot0 - sim.ram*vScale;
   const ramTopY = ramBotY - ramLenPx;
 
   const pivotX = cx + bodyHalf + 34;
-  const pivotY = 340;
   const LpPx   = clamp(d.pivotLink*2.0, 26, 96);
   const pumpR  = clamp(d.pumpDia*2.6, 15, 27);   // floor keeps both ports inside the bore
   // offset the pump axis outward if the link is too short to clear the pivot post
@@ -584,6 +591,9 @@ function layout(){
   const travelPx = LpPx*Math.sin(D.thetaMax);
   const pumpCylLen = clamp(d.pumpCylLen*1.35, travelPx+46, 168);
   const pumpTop = baseTop - pumpCylLen;
+  // a long pump cylinder reaches above the old fixed pivot height, which put the
+  // handle through the cylinder. The pivot now sits above whatever the pump needs.
+  const pivotY = clamp(Math.min(340, pumpTop - 26), 200, 400);
 
   const headH = 13, deadPx = 6;
   const headTop0 = baseTop - deadPx - headH;
@@ -595,7 +605,8 @@ function layout(){
   const headTopY = headTop0 - LpPx*Math.sin(sim.theta);
   const headBotY = headTopY + headH;
 
-  const handleLenPx = clamp(d.handleLen*0.52, 115, 258);
+  let handleLenPx = clamp(d.handleLen*0.52, 115, 258);
+  handleLenPx = Math.min(handleLenPx, (pivotY-26)/Math.max(Math.sin(D.thetaMax), 0.15));
   const hEndX = pivotX + handleLenPx*Math.cos(sim.theta);
   const hEndY = pivotY  - handleLenPx*Math.sin(sim.theta);
 
@@ -629,6 +640,7 @@ function layout(){
   const relValve   = [ rvX, yRel ];
 
   return {cx,ramR,boreR,cylWall,resW,shell,cylOut,bodyHalf,baseTop,baseBot,bodyTop,
+          resHpx,bodyH,travelMax,
           ramBot0,vScale,ramLenPx,ramBotY,ramTopY,pivotX,pivotY,LpPx,pumpX,pumpR,
           pumpTop,pumpCylLen,headTopY,headBotY,headH,pinX,pinY,handleLenPx,hEndX,hEndY,
           xResL,xResR,xResRel,resTop,yRel,yIn,yOut,portOut,pIn,pOut,Tx,ibX,obX,rvX,

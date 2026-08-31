@@ -25,6 +25,15 @@
   mouse and touch fallback for the draggable handle, feature detection for
   paint-order, and a :focus fallback for :focus-visible. A new compatibility
   suite checks the source against the floor on every push.
+- Vertical geometry made parametric. Body height and the drawn oil column now
+  follow the reservoir column height, ram travel on screen follows the entered
+  ram stroke, ram length keeps a constant protrusion at rest, and the handle
+  pivot sits above the pump cylinder whatever the pump stroke and cylinder
+  length, which removes the case where the handle passed through the cylinder.
+  Handle length is bounded so the grip stays on the canvas.
+- Five geometry invariants added for those: pivot above the pump cylinder,
+  handle tip on canvas, ram protrusion at rest, load block on canvas, and the
+  oil column contained by the body.
 - Animated demonstration added to the README.
 
 ## 1.0.0 - 2026-08-30
