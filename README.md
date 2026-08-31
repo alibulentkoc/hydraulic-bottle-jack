@@ -24,10 +24,12 @@ network access, no dependencies at runtime.
 | File | What it is |
 | --- | --- |
 | `simulator/hydraulic-bottle-jack.html` | Interactive parametric cross section |
-| `lab/bottle-jack-lab-handout.html` | Student handout: objectives, principles, procedure, data tables, questions 2 to 15 |
+| `lab/bottle-jack-lab-handout.html` | Student handout, typeset as a LaTeX-style article: objectives, principles, procedure, data tables, questions 2 to 13 |
 | `lab/bottle-jack-lab-answer-sheet.html` | Instructor answer sheet: live formulas, substitutions, and results |
 | `lab/bottle-jack-lab-grader.html` | Instructor grading tool: measurement audit against master dimensions |
-| `tests/` | Verification suite, 158 checks |
+| `lab/bottle-jack-lab-handout-A4.pdf` | The handout as a print-ready A4 PDF, ten pages, with page numbers |
+| `tools/build-pdf.py` | Rebuilds that PDF from the handout |
+| `tests/` | Verification suite, 156 checks |
 
 Open any of the three files directly in a browser. The two laboratory documents
 are formatted to print.
@@ -83,12 +85,24 @@ the materials are built around that rather than in spite of it:
   is apart.
 - The reservoir annulus diameters are measured **while the jack is open**, and are
   flagged as unrecoverable after reassembly.
-- With no efficiency measurement available, the analysis adds **uncertainty
-  propagation**, so students identify which measurement dominates the result and
-  why a squared term doubles its contribution.
-- A **class-pooled study** plots rated capacity against lifting cylinder area
-  across every jack in the room, from which students recover the working pressure
-  a manufacturer designs a product family around.
+- The handout carries the companion simulation as a pre-laboratory prediction
+  exercise and a post-laboratory arithmetic check, with the limits of that check
+  stated plainly.
+
+### Printing
+
+The handout is set for A4: 18 mm top, 16 mm side and 20 mm bottom margins, single
+line spacing, orphan and widow control, and break rules that keep figures,
+tables, equations and problems whole. Printed from a browser it runs to ten
+pages with no content outside the text block, verified by rendering it through a
+paged-CSS engine and checking every text block against the margins.
+
+No browser implements the CSS page margin-at-rules, so the HTML cannot number its
+own pages; enable Headers and footers in the print dialog and the number lands in
+the bottom margin reserved for it. `lab/bottle-jack-lab-handout-A4.pdf` carries
+the numbers itself and is the file to hand out if you would rather not rely on a
+print dialog. Rebuild it with `python3 tools/build-pdf.py`, which needs
+`weasyprint`.
 
 ### Grading when the answer sheet is public
 
@@ -108,8 +122,7 @@ It also raises specific flags: dimensions far outside tolerance, a suspicious
 number of readings matching the master exactly, a reported level drop that
 exceeds the reported oil column, and the arc-versus-chord discrepancy that
 question 13 must account for. A suggested weighting puts thirty per cent of the
-marks on measurement technique and twenty on the uncertainty analysis, leaving
-fifteen for the calculations a tool can do.
+marks on measurement technique, which the answer sheet cannot supply.
 
 The handout states eight core principles up front, including several that students
 rarely articulate on their own: that a pair of check valves is what turns
@@ -130,7 +143,7 @@ npm install     # jsdom, for the interface checks only
 npm test
 ```
 
-158 checks in six suites:
+156 checks in six suites:
 
 - **physics** (19): volume conservation across pump cycles and through the release
   valve, area-ratio scaling, load holding, stroke limiting, relief behaviour at

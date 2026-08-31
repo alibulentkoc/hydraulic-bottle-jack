@@ -5,123 +5,196 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hydraulic Bottle Jack - Student Lab Handout</title>
 <style>
+  /* Typeset to resemble a LaTeX article: a serif body at a comfortable measure,
+     justified text, numbered sections, numbered display equations, and rules
+     rather than boxes for tables. No web fonts, so the stack falls back through
+     the Computer Modern lookalikes a machine may have to a system serif. */
   :root{
-    --paper:#fbfaf7; --ink:#1b2128; --ink-2:#4a545e; --ink-3:#7c8791;
-    --rule:#d6d2c8; --rule-2:#b9b3a5;
-    --accent:#14794c; --accent-bg:#eaf5ef;
-    --warn:#8f231d; --warn-bg:#fbeeed;
-    --note-bg:#f3f1ea;
-    --mono: ui-monospace,"SFMono-Regular","Cascadia Mono","Consolas","Liberation Mono",monospace;
-    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
-    --sans:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --ink:#111418; --ink-2:#3d454d; --ink-3:#6b737b;
+    --rule:#111418; --rule-2:#c9c6bd; --paper:#fffefb; --accent:#14603f;
+    --serif:"Latin Modern Roman","CMU Serif","Nimbus Roman","Times New Roman",Times,Georgia,serif;
+    --sans:"Latin Modern Sans","CMU Sans Serif","Helvetica Neue",Arial,sans-serif;
+    --mono:"Latin Modern Mono","CMU Typewriter Text",ui-monospace,"Consolas","Liberation Mono",monospace;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:#eceae4;color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.52}
-  .sheet{max-width:920px;margin:0 auto;background:var(--paper);padding:34px 44px 60px;box-shadow:0 0 0 1px var(--rule)}
+  body{margin:0;background:#e9e7e1;color:var(--ink);font-family:var(--serif);font-size:15.5px;line-height:1.26}
+  .page{max-width:178mm;margin:0 auto;background:var(--paper);padding:18mm 16mm 20mm;box-shadow:0 0 0 1px #d8d5cc}
 
-  header{border-bottom:2.5px solid var(--ink);padding-bottom:14px}
-  header h1{font-family:var(--serif);font-size:27px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
-  header .sub{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
-  .idline{display:flex;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
-  .idline span{flex:1 1 auto;margin-right:24px;border-bottom:1px solid var(--rule-2);padding-bottom:3px}
+  .titleblock{text-align:center;margin:0 0 24px}
+  .titleblock h1{font-size:25px;font-weight:600;line-height:1.28;margin:0 0 6px}
+  .titleblock .subtitle{font-size:16.5px;font-style:italic;color:var(--ink-2);margin:0 0 22px}
+  .namedate{display:flex;justify-content:center;margin-top:6px}
+  .namedate span{margin:0 22px;font-size:15px}
+  .namedate u{display:inline-block;min-width:190px;border-bottom:.6px solid var(--ink);text-decoration:none;margin-left:8px}
+  .namedate span.short u{min-width:120px}
+  hr.title{border:0;border-top:.9px solid var(--rule);margin:26px 0 0}
 
-  h2.band{font-family:var(--mono);font-size:11px;letter-spacing:.19em;text-transform:uppercase;color:var(--ink);
-    border-bottom:1.5px solid var(--ink);padding-bottom:6px;margin:32px 0 14px}
-  h3.part{font-family:var(--serif);font-size:18px;font-weight:600;margin:24px 0 4px}
-  h3.part em{font-family:var(--mono);font-style:normal;font-size:12px;color:var(--ink-3);
-    letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:2px}
-  h4{font-family:var(--sans);font-size:14px;font-weight:600;margin:16px 0 5px}
+  h2{font-size:17.5px;font-weight:600;margin:22px 0 7px;line-height:1.2}
+  h2 .n{display:inline-block;min-width:26px}
+  h3{font-size:15.5px;font-weight:600;margin:15px 0 5px;line-height:1.2}
+  h3 .n{display:inline-block;min-width:36px}
+  p{margin:0 0 8px;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+  p + p{text-indent:1.4em}
+  .noindent + p{text-indent:0}
 
-  ol.obj{counter-reset:o;list-style:none;padding:0;margin:0}
-  ol.obj li{counter-increment:o;position:relative;padding:0 0 8px 40px;margin:0}
-  ol.obj li::before{content:counter(o,decimal-leading-zero);position:absolute;left:0;top:1px;
-    font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600}
+  .eq{display:flex;align-items:center;margin:9px 0 10px}
+  .eq .body{flex:1 1 auto;text-align:center;font-size:16.5px}
+  .eq .tag{flex:0 0 auto;width:44px;text-align:right;color:var(--ink-2);font-size:15px}
+  i.v{font-style:italic}
 
-  .principle{border-left:3px solid var(--accent);background:var(--accent-bg);padding:11px 15px;margin:0 0 10px}
-  .principle b{display:block;font-family:var(--serif);font-size:15.5px;margin-bottom:2px}
-  .principle .eq{font-family:var(--mono);font-size:12.5px;color:var(--accent);margin-top:4px}
+  ol.tight{margin:0 0 10px;padding-left:26px}
+  ol.tight li{margin-bottom:4px;text-align:justify}
+  ol.principles{margin:0;padding-left:26px}
+  ol.principles li{margin-bottom:9px;text-align:justify}
+  ul.plain{margin:0 0 10px;padding-left:24px}
+  ul.plain li{margin-bottom:3px;text-align:justify}
 
-  .warn{border:1.5px solid var(--warn);background:var(--warn-bg);padding:12px 16px;margin:14px 0}
-  .warn b{color:var(--warn);font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase}
-  .warn ul{margin:8px 0 0;padding-left:20px}
-  .warn li{margin-bottom:4px;font-size:13.5px}
+  .framed{border:.9px solid var(--ink);padding:14px 18px;margin:16px 0}
+  .framed .hd{font-variant:small-caps;font-weight:600;letter-spacing:.04em;margin-bottom:7px;font-size:16px}
+  .callout{border-left:2.4px solid var(--rule-2);padding:2px 0 2px 15px;margin:14px 0;color:var(--ink-2)}
+  .callout b{color:var(--ink)}
 
-  .note{background:var(--note-bg);border-left:3px solid var(--rule-2);padding:10px 14px;margin:12px 0;font-size:13.5px;color:var(--ink-2)}
-  .note b{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:14.5px}
+  caption{caption-side:top;text-align:left;font-size:14.5px;margin-bottom:6px;color:var(--ink-2)}
+  caption b{color:var(--ink);font-weight:600}
+  thead th{border-top:1.1px solid var(--rule);border-bottom:.6px solid var(--rule);text-align:left;
+           padding:6px 8px 6px 0;font-weight:600;font-size:14px}
+  tbody td{padding:0;height:30px;border-bottom:.4px solid var(--rule-2)}
+  tbody td.lab{padding:6px 8px 6px 0}
+  tbody tr:last-child td{border-bottom:1.1px solid var(--rule)}
+  td.sym{font-style:italic;white-space:nowrap;padding:6px 8px 6px 0}
+  td.fill{background:repeating-linear-gradient(90deg,transparent,transparent 5px,#efece4 5px,#efece4 6px)}
 
-  ol.steps{padding-left:22px;margin:6px 0 0}
-  ol.steps li{margin-bottom:9px}
-  ol.steps li b{font-weight:600}
-  .tool{font-family:var(--mono);font-size:11.5px;color:var(--accent);
-    border:1px solid var(--accent);border-radius:2px;padding:0 5px;margin-left:5px;white-space:nowrap}
+  .prob{margin:0 0 15px}
+  .prob .hd{font-weight:600;margin-bottom:4px}
+  .prob .hd .n{margin-right:9px}
+  .prob .ask{margin:0 0 9px;text-align:justify}
+  .given{font-family:var(--mono);font-size:13px;line-height:1.5;white-space:pre-wrap;
+         border-left:2.4px solid var(--rule-2);padding:6px 0 6px 15px;margin:0 0 10px}
+  .work{height:104px;border:.6px solid var(--rule-2);
+        background:repeating-linear-gradient(180deg,transparent,transparent 25px,#eeebe3 25px,#eeebe3 26px)}
+  .work.tall{height:150px}
+  .ansline{margin:9px 0 0;font-size:15px}
+  .ansline u{display:inline-block;min-width:118px;border-bottom:.7px solid var(--ink);
+             text-decoration:none;margin:0 7px}
 
-  table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0 6px}
-  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;text-align:left;
-     border-bottom:1.5px solid var(--ink);padding:6px 7px;vertical-align:bottom}
-  td{border-bottom:1px solid var(--rule);padding:0;height:31px}
-  td.lab{padding:6px 7px;border-bottom:1px solid var(--rule)}
-  td.sym{font-family:var(--mono);font-size:12.5px;padding:6px 7px;color:var(--ink-2);white-space:nowrap}
-  td.fill{background:repeating-linear-gradient(90deg,transparent,transparent 4px,#efece4 4px,#efece4 5px)}
-  .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:14px 0 0}
+  figure{margin:20px 0 18px;text-align:center}
+  figure img{max-width:100%;height:auto;border:.6px solid var(--rule-2)}
+  figcaption{font-size:14.5px;color:var(--ink-2);margin-top:9px;text-align:justify}
+  figcaption b{color:var(--ink);font-weight:600}
+  .qr{float:right;width:112px;margin:2px 0 10px 18px;text-align:center}
+  .qr img{width:112px;height:112px;display:block;border:.6px solid var(--rule-2)}
+  .qr span{display:block;font-size:12px;color:var(--ink-3);margin-top:5px;line-height:1.3}
+  .refs{padding-left:26px}
+  .refs li{margin-bottom:9px;text-align:left;font-size:15px}
+  .refs .hang{text-indent:-1.6em;padding-left:1.6em;display:block}
+  code.link{font-family:var(--mono);font-size:13.5px;word-break:break-all}
+  a{color:var(--accent)}
 
-  .q{border-bottom:1px solid var(--rule);padding:0 0 16px;margin:0 0 18px}
-  .q:last-child{border-bottom:0}
-  .q .hd{display:flex;align-items:baseline}
-  .q .hd > * + *{margin-left:10px}
-  .q .num{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);min-width:26px}
-  .q .ttl{font-family:var(--serif);font-size:16px;font-weight:600}
-  .q .ask{font-size:13.5px;color:var(--ink-2);margin:3px 0 8px 36px}
-  .q .give{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px solid var(--rule);
-    border-left:3px solid var(--rule-2);padding:8px 12px;margin:0 0 8px 36px;white-space:pre-wrap}
-  .work{margin-left:36px;height:96px;border:1px solid var(--rule);border-radius:2px;background:
-    repeating-linear-gradient(180deg,#fff,#fff 23px,var(--rule) 23px,var(--rule) 24px)}
-  .work.tall{height:144px}
-  .ansline{margin:8px 0 0 36px;font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
-  .ansline span{display:inline-block;border-bottom:1.5px solid var(--ink);min-width:150px;margin:0 6px}
+  .toolbar{max-width:178mm;margin:14px auto 0;display:flex;justify-content:flex-end;align-items:center}
+  .printhint{font-family:var(--sans);font-size:12px;color:#6b737b;margin-right:12px}
+  .toolbar button{font-family:var(--sans);font-size:12.5px;padding:7px 14px;background:#fff;
+    border:.8px solid var(--rule-2);border-radius:2px;cursor:pointer;color:var(--ink)}
+  :focus{outline:1px dotted var(--rule-2);outline-offset:2px}
 
-  .toolbar{max-width:920px;margin:16px auto 0;display:flex;justify-content:flex-end}
-  .toolbar > * + *{margin-left:9px}
-  .toolbar button{font-family:var(--mono);font-size:12px;padding:8px 14px;background:#fff;
-    border:1px solid var(--rule-2);border-radius:3px;cursor:pointer;color:var(--ink)}
-  .toolbar button:hover{background:#f3f1ea}
-
+  /* A4 with a deeper bottom margin reserved for the page number. No browser
+     implements the CSS page margin-at-rules, so the number itself comes from
+     the print dialog: switch on Headers and footers and it lands in the space
+     left here. Chromium, Firefox and Safari all honour size and margin. */
+  @page{
+    size: A4 portrait;
+    margin: 18mm 16mm 20mm 16mm;
+  }
   @media print{
-    body{background:#fff}
-    .sheet{box-shadow:none;max-width:none;padding:0 0 20px}
-    .toolbar{display:none}
-    .q,.principle,.warn,table{break-inside:avoid}
-    h2.band{break-after:avoid}
+    body{background:#fff;font-size:10.5pt;line-height:1.24}
+    .page{box-shadow:none;max-width:none;width:auto;padding:0;margin:0;background:transparent}
+    .toolbar,.printhint{display:none}
+    p{orphans:3;widows:3}
+    .prob,table,.framed,figure,.eq{break-inside:avoid;page-break-inside:avoid}
+    h2,h3{break-after:avoid;page-break-after:avoid}
+    figure img{max-height:92mm;width:auto}
+    thead{display:table-header-group}
+    a{color:inherit;text-decoration:none}
+    .given{font-size:9.5pt}
   }
 </style>
 </head>
 <body>
 
-<div class="toolbar"><button onclick="window.print()">Print</button></div>
+<div class="toolbar">
+  <span class="printhint">Sized for A4. For page numbers, enable Headers and footers in the print dialog.</span>
+  <button onclick="window.print()">Print</button>
+</div>
 
-<div class="sheet">
+<div class="page">
 
-<header>
+<div class="titleblock">
   <h1>Hydraulic Bottle Jack: Disassembly, Measurement, and Analysis</h1>
-  <div class="sub">Fluid Power Systems Engineering - student handout</div>
-  <div class="idline"><span>Name</span><span>Group</span><span>Section</span><span>Date</span></div>
-</header>
+  <div class="subtitle">Student Handout &ndash; Mechanical and Hydraulic Systems</div>
+  <div class="namedate">
+    <span>Name <u></u></span>
+    <span class="short">Date <u></u></span>
+  </div>
+  <hr class="title">
+</div>
 
-<h2 class="band">Why this device</h2>
+<h2><span class="n">1</span>Introduction</h2>
 <p>A bottle jack is the smallest complete hydraulic power system you will ever hold. It contains a
 reservoir, a positive-displacement pump, two check valves, a directional control element, an actuator,
 and a set of passages, and it performs the full cycle of a hydraulic system: draw fluid, pressurize it,
 do work with it, hold the load, and return the fluid to tank. Everything you will later study in an
-industrial circuit is present here at a scale you can hold in one hand and take apart in one lab period.
+industrial circuit is present here, as Figure 1 shows, at a scale you can hold in one hand and take
+apart in a single laboratory period.
 The equations you use on this jack are the same equations used on a 200 ton press.</p>
 
-<div class="note"><b>The jacks in this lab are drained.</b> There is no oil in them and no load will be
-lifted. Every result you produce is a <b>prediction</b> from geometry. That is a real engineering
-activity: you are deriving the performance of a machine from its dimensions. It also means nothing in
-this lab validates the ideal model, so you will report uncertainty in place of measured error.</div>
+<div class="callout"><b>The jacks in this laboratory are drained.</b> There is no oil in them and no
+load will be lifted. Every result you produce is therefore a <b>prediction</b> derived from geometry,
+which is itself a legitimate engineering activity: you are determining the performance of a machine
+from its dimensions alone. It also means that nothing here validates the ideal model against a real
+machine, so report every result as a prediction rather than as a measurement.</div>
 
-<h2 class="band">Objectives</h2>
+
+<figure>
+  <img src="data:image/png;base64,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"
+       alt="Cross section of a hydraulic bottle jack during the pressure stroke">
+  <figcaption><b>Figure 1.</b> Cross section of a bottle jack during the pressure stroke, drawn
+  by the companion simulation. Amber is reservoir oil at atmospheric pressure and green is oil at
+  lifting pressure, so the boundary between the two colors is the delivery check ball itself. The
+  plunger is descending, the suction ball is seated, and oil is passing along the base gallery into
+  the chamber beneath the ram. The two amber columns are one annular volume surrounding the lifting
+  cylinder, seen twice in section. Dimensions are omitted here because measuring them is your
+  task; the simulation displays them when the dimension overlay is switched on.</figcaption>
+</figure>
+
+<h3><span class="n">1.1</span>Companion simulation</h3>
+
+<p class="noindent">An interactive cross-section of the jack accompanies this laboratory. It shows oil
+moving between the reservoir, the pump chamber, and the lifting chamber while the handle is operated,
+with the check valves opening and closing according to the pressure across them. Every dimension in the
+drawing can be edited, in either SI or US customary units, and the ram rises only by the volume the
+pump has actually delivered, so the animation obeys conservation of volume rather than approximating
+it.</p>
+
+<p>Use it before the laboratory to predict how many strokes a full extension requires, and afterwards
+to check your calculations against your own measured geometry. Note that the simulation and your hand
+calculations share the same ideal model, so agreement between them confirms your arithmetic and nothing
+about the physical jack.</p>
+
+<div class="callout">
+  <div class="qr">
+    <img src="data:image/png;base64,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" alt="QR code linking to the simulation">
+    <span>Scan for the simulation</span>
+  </div>
+  <b>Simulation.</b>
+  <code class="link"><a href="https://alibulentkoc.github.io/hydraulic-bottle-jack/simulator/hydraulic-bottle-jack.html">https://alibulentkoc.github.io/hydraulic-bottle-jack/simulator/hydraulic-bottle-jack.html</a></code>
+  <br>Runs in any browser, with no installation and no network connection once loaded. Scan the code
+  or type the address; either reaches the same page.
+  <div style="clear:both"></div>
+</div>
+
+<h2><span class="n">2</span>Objectives</h2>
 <p>On completing this laboratory you will be able to:</p>
-<ol class="obj">
+<ol class="tight">
   <li>Identify the functional components of a hydraulic bottle jack and trace the fluid path from
       reservoir to lifting chamber and back.</li>
   <li>Select and use the correct instrument for each feature: dial calipers, telescoping gauge,
@@ -130,58 +203,47 @@ this lab validates the ideal model, so you will report uncertainty in place of m
   <li>Apply Pascal's principle to relate load, piston area, and system pressure.</li>
   <li>Analyze the pump handle as a lever and compute the torque and hand force required at rated load.</li>
   <li>Compute hydraulic power and linear power, and compare operator input to lifting output.</li>
-  <li>Quantify how measurement uncertainty propagates through squared terms and identify which single
-      measurement dominates the final answer.</li>
   <li>Explain, with numbers, why force multiplication in any machine is paid for with distance.</li>
 </ol>
 
-<h2 class="band">Core principles</h2>
-<p>These eight ideas are the reason this device is worth a lab period. Every question you answer later
-is one of them with numbers attached.</p>
+<h2><span class="n">3</span>Core Principles</h2>
+<p class="noindent">The following eight ideas are the reason this device merits a laboratory period. Every question you answer later is one of them with numbers attached.</p>
 
-<div class="principle"><b>1. Pressure is created by the load, not by the pump.</b>
-The pump moves fluid. The resistance the fluid meets is what raises pressure. A jack with no load on it
+<ol class="principles">
+
+<li><b>Pressure is created by the load, not by the pump.</b> The pump moves fluid. The resistance the fluid meets is what raises pressure. A jack with no load on it
 develops almost no pressure no matter how hard you pump.
-<div class="eq">P = F / A</div></div>
+<div class="eq"><span class="body">P = F / A</span><span class="tag">(1)</span></div></li>
 
-<div class="principle"><b>2. Pascal's principle makes the area ratio a force multiplier.</b>
-When the delivery check valve is open, the pump chamber and the lifting chamber are one connected body
+<li><b>Pascal's principle makes the area ratio a force multiplier.</b> When the delivery check valve is open, the pump chamber and the lifting chamber are one connected body
 of fluid at one pressure. The same pressure on a larger piston produces a larger force.
-<div class="eq">F_ram / F_pump = A_ram / A_pump</div></div>
+<div class="eq"><span class="body">F_ram / F_pump = A_ram / A_pump</span><span class="tag">(2)</span></div></li>
 
-<div class="principle"><b>3. Conservation of volume makes the same area ratio a distance divider.</b>
-Oil is treated as incompressible, so the volume that leaves the pump appears under the ram. The larger
+<li><b>Conservation of volume makes the same area ratio a distance divider.</b> Oil is treated as incompressible, so the volume that leaves the pump appears under the ram. The larger
 the ram, the less it rises for that volume.
-<div class="eq">A_pump * s_pump = A_ram * s_ram</div></div>
+<div class="eq"><span class="body">A_pump * s_pump = A_ram * s_ram</span><span class="tag">(3)</span></div></li>
 
-<div class="principle"><b>4. Force multiplication is paid for with distance, so power is not created.</b>
-Principles 2 and 3 use the same ratio in opposite directions. Multiply force by 250 and you divide
+<li><b>Force multiplication is paid for with distance, so power is not created.</b> Principles 2 and 3 use the same ratio in opposite directions. Multiply force by 250 and you divide
 speed by 250. Ideal power in equals ideal power out; a real machine returns less.
-<div class="eq">Power = F * v = P * Q</div></div>
+<div class="eq"><span class="body">Power = F * v = P * Q</span><span class="tag">(4)</span></div></li>
 
-<div class="principle"><b>5. The two multiplications are in series and simply multiply.</b>
-The handle is a lever with its own ratio, ahead of the hydraulics. The total advantage of the jack is
+<li><b>The two multiplications are in series and simply multiply.</b> The handle is a lever with its own ratio, ahead of the hydraulics. The total advantage of the jack is
 the product of the two, which is how a 4 lb hand force holds a 1000 lb load.
-<div class="eq">MA_total = (A_ram / A_pump) * (L_handle / L_pivot-to-link)</div></div>
+<div class="eq"><span class="body">MA_total = (A_ram / A_pump) * (L_handle / L_pivot-to-link)</span><span class="tag">(5)</span></div></li>
 
-<div class="principle"><b>6. Two check valves turn reciprocating motion into one-way flow.</b>
-The plunger moves back and forth. The valves make the fluid move in one direction only: the inlet ball
+<li><b>Two check valves turn reciprocating motion into one-way flow.</b> The plunger moves back and forth. The valves make the fluid move in one direction only: the inlet ball
 admits on the up stroke and seals on the down stroke, the delivery ball does the reverse. This is the
-defining trick of every positive-displacement pump.</div>
-
-<div class="principle"><b>7. A closed valve holds the load with zero input power.</b>
-Once the delivery ball seats, the trapped fluid column carries the load indefinitely with no energy
+defining trick of every positive-displacement pump.</li>
+  <li><b>A closed valve holds the load with zero input power.</b> Once the delivery ball seats, the trapped fluid column carries the load indefinitely with no energy
 supplied. An electric motor holding the same load consumes power continuously. This static holding
-ability is a principal reason hydraulics is chosen for lifting.</div>
+ability is a principal reason hydraulics is chosen for lifting.</li>
+  <li><b>Lowering is metered, not powered.</b> The release valve does not push the ram down. The load does. The valve controls the rate at which fluid
+is allowed back to the reservoir, which is throttling, or flow control, in its simplest form.</li>
+  </ol>
 
-<div class="principle"><b>8. Lowering is metered, not powered.</b>
-The release valve does not push the ram down. The load does. The valve controls the rate at which fluid
-is allowed back to the reservoir, which is throttling, or flow control, in its simplest form.</div>
-
-<h2 class="band">Safety</h2>
-<div class="warn">
-  <b>Read before you begin</b>
-  <ul>
+<h2><span class="n">4</span>Safety</h2>
+<div class="framed">
+  <div class="hd">Read before beginning</div>   <ul>
     <li>Wear eye protection during the entire disassembly. Check balls, springs, and seals can leave a
         bore under spring tension.</li>
     <li>The jacks are drained but not dry. Expect residual oil. Wear nitrile gloves, work over absorbent
@@ -194,25 +256,25 @@ is allowed back to the reservoir, which is throttling, or flow control, in its s
   </ul>
 </div>
 
-<h2 class="band">Equipment</h2>
+<h2><span class="n">5</span>Equipment</h2>
 <p>Per group: bottle jack, dial calipers, telescoping gauge set, small-hole (split-ball) gauge set,
 0 to 1 in micrometer, dial indicator with magnetic base, digital angle gauge or protractor, steel rule,
 hex and socket wrenches, magnetic parts tray, absorbent pads, nitrile gloves, camera or phone for the
 component photograph.</p>
 
-<div class="note"><b>On instrument choice.</b> A telescoping gauge and a small-hole gauge do not read
+<div class="callout"><b>On instrument choice.</b> A telescoping gauge and a small-hole gauge do not read
 themselves: you transfer the setting to a micrometer. Reading either one with dial calipers is the
 single largest source of error in this lab, and because area depends on diameter squared, that error
 arrives in your answer at double size. The pump bore is near 0.3 in, below the range of most telescoping
 gauge sets, so it requires the small-hole gauge.</div>
 
-<h2 class="band">Procedure</h2>
+<h2><span class="n">6</span>Procedure</h2>
 <p>The order below is not the order of the questions. Measure in this order, because two of the
 measurements are only available while the jack is assembled and three of them are only available while
 it is apart.</p>
 
-<h3 class="part"><em>Part A</em>Familiarization, jack assembled</h3>
-<ol class="steps">
+<h3><span class="n">6.1</span>Part A: Familiarization, jack assembled</h3>
+<ol class="tight">
   <li>Record the manufacturer, model, and the <b>rated capacity from the nameplate</b> in Table 1. Convert
       tons to pounds and record both.</li>
   <li>Operate the handle through several full strokes and open and close the release valve. Note by feel
@@ -222,269 +284,266 @@ it is apart.</p>
       against the opened jack in Part C.</li>
 </ol>
 
-<h3 class="part"><em>Part B</em>Kinematic measurements, jack still assembled</h3>
-<div class="note">These two measurements are lost the moment you take the jack apart. Do them first and
+<h3><span class="n">6.2</span>Part B: Kinematic measurements, jack still assembled</h3>
+<div class="callout">These two measurements are lost the moment you take the jack apart. Do them first and
 have a second group member verify each reading before you move on.</div>
-<ol class="steps">
+<ol class="tight">
   <li>Mount the <b>dial indicator</b> against the top of the pump plunger. Sweep the handle slowly from
       its lower stop to its upper stop and record total plunger travel. This is the pump stroke
-      <span class="tool">s_p</span>. Take three readings and record all three in Table 2.</li>
+      <i class="v">s<sub>p</sub></i>. Take three readings and record all three in Table 2.</li>
   <li>With the <b>angle gauge</b> on the handle, record the handle angle at the lower stop and at the
-      upper stop. The difference is the swept angle <span class="tool">theta</span>. Record it on the
+      upper stop. The difference is the swept angle &theta;. Record it on the
       same stroke you measure, not separately.</li>
   <li>Measure the perpendicular distance from the handle pivot to the point where the linkage connects
-      to the pump rod <span class="tool">a</span>, and from the pivot to the centre of the operator's
-      grip <span class="tool">b</span>. State where on the grip you measured to; this choice changes
+      to the pump rod <i class="v">a</i>, and from the pivot to the center of the operator's
+      grip <i class="v">b</i>. State where on the grip you measured to; this choice changes
       your answer to question 7 and must be reported.</li>
 </ol>
 
-<h3 class="part"><em>Part C</em>Disassembly and internal measurements</h3>
-<ol class="steps">
+<h3><span class="n">6.3</span>Part C: Disassembly and internal measurements</h3>
+<ol class="tight">
   <li>Disassemble in a documented order. Photograph each stage and lay parts on the tray in the sequence
       they came out.</li>
   <li>Compare the opened jack with your Part A sketch. Correct the sketch and mark the actual flow path:
       reservoir to inlet check valve to pump chamber to delivery check valve to lifting chamber, and
       lifting chamber to release valve back to reservoir.</li>
-  <li>Measure the <b>lifting cylinder bore</b> <span class="tool">D_r</span> with the telescoping gauge
+  <li>Measure the <b>lifting cylinder bore</b> <i class="v">D<sub>r</sub></i> with the telescoping gauge
       and micrometer. Take three readings at different depths and two clock positions. A worn jack is
       oval and tapered, and the spread between your readings is data about the condition of that jack.</li>
-  <li>Measure the <b>pump cylinder bore</b> <span class="tool">d_p</span> with the small-hole gauge and
+  <li>Measure the <b>pump cylinder bore</b> <i class="v">d<sub>p</sub></i> with the small-hole gauge and
       micrometer. Three readings.</li>
-  <li>Measure the <b>reservoir annulus</b>: inside diameter <span class="tool">D_i</span>, which is the
-      outside of the lifting cylinder, and outside diameter <span class="tool">D_o</span>, which is the
-      inside of the jack body. Also measure the <b>height of the annular oil space</b>
-      <span class="tool">H</span>, from the floor of the reservoir to the fill plug or to the top of
+  <li>Measure the <b>reservoir annulus</b>: inside diameter <i class="v">D<sub>i</sub></i>, which is the
+      outside of the lifting cylinder, and outside diameter <i class="v">D<sub>o</sub></i>, which is the
+      inside of the jack body. Also measure the <b>height of the annular oil space</b>       <i class="v">H</i>, from the floor of the reservoir to the fill plug or to the top of
       the annulus, whichever limits the oil. <b>All three are available only now.</b> You cannot
       return for them after reassembly.</li>
-  <li>Measure the <b>full extension</b> of the lifting cylinder <span class="tool">L</span>, from the
+  <li>Measure the <b>full extension</b> of the lifting cylinder <i class="v">L</i>, from the
       seated position to the mechanical stop.</li>
   <li>Inspect and record the condition of the ram seal, the check balls and seats, and the release valve
       seat. Note scoring, pitting, or debris.</li>
 </ol>
 
-<h3 class="part"><em>Part D</em>Reassembly</h3>
-<ol class="steps">
+<h3><span class="n">6.4</span>Part D: Reassembly</h3>
+<ol class="tight">
   <li>Reassemble in reverse order using your photographs. Confirm both check balls are seated in their
       bores before closing the base.</li>
   <li>Operate the handle and the release valve to confirm free movement. Return the jack, tools, and
       gauges to the positions shown on the bench card.</li>
 </ol>
 
-<h3 class="part"><em>Part E</em>Analysis</h3>
-<p>Complete questions 2 through 15 on the calculation pages. Carry at least four significant figures
+<h3><span class="n">6.5</span>Part E: Analysis</h3>
+<p>Complete questions 2 through 13 in Section 8. Carry at least four significant figures
 through intermediate steps and round only at the final answer. Show the formula, the substitution with
 units, and the result for every question. An answer with no units is not an answer.</p>
 
-<h2 class="band">Data: Table 1, identification</h2>
+<h2><span class="n">7</span>Data</h2>
 <table>
+  <caption><b>Table 1.</b> Identification.</caption>
   <tr><td class="lab">Manufacturer and model</td><td class="fill"></td>
       <td class="lab">Rated capacity (ton)</td><td class="fill" style="width:110px"></td></tr>
   <tr><td class="lab">Serial or lab unit number</td><td class="fill"></td>
       <td class="lab">Rated load W (lb)</td><td class="fill"></td></tr>
 </table>
 
-<h2 class="band">Data: Table 2, kinematic measurements (jack assembled)</h2>
+
 <table>
+  <caption><b>Table 2.</b> Kinematic measurements, jack assembled.</caption>
   <tr><th style="width:36%">Quantity</th><th style="width:12%">Symbol</th>
       <th>Reading 1</th><th>Reading 2</th><th>Reading 3</th><th>Mean</th><th>Spread</th></tr>
-  <tr><td class="lab">Pump plunger stroke (in)</td><td class="sym">s_p</td>
+  <tr><td class="lab">Pump plunger stroke (in)</td><td class="sym">s<sub>p</sub></td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
-  <tr><td class="lab">Handle swept angle (deg)</td><td class="sym">theta</td>
+  <tr><td class="lab">Handle swept angle (deg)</td><td class="sym">&theta;</td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
   <tr><td class="lab">Pivot to pump rod end (in)</td><td class="sym">a</td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
   <tr><td class="lab">Pivot to operator hand (in)</td><td class="sym">b</td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
 </table>
-<p class="cap">Note the point on the grip that b was measured to: _______________________________________</p>
+<p style="font-size:14.5px;color:var(--ink-2);text-align:left">Note the point on the grip that b was measured to: _______________________________________</p>
 
-<h2 class="band">Data: Table 3, internal measurements (jack disassembled)</h2>
+
 <table>
+  <caption><b>Table 3.</b> Internal measurements, jack disassembled.</caption>
   <tr><th style="width:36%">Quantity</th><th style="width:12%">Symbol</th>
       <th>Reading 1</th><th>Reading 2</th><th>Reading 3</th><th>Mean</th><th>Spread</th></tr>
-  <tr><td class="lab">Lifting cylinder bore (in)</td><td class="sym">D_r</td>
+  <tr><td class="lab">Lifting cylinder bore (in)</td><td class="sym">D<sub>r</sub></td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
-  <tr><td class="lab">Pump cylinder bore (in)</td><td class="sym">d_p</td>
+  <tr><td class="lab">Pump cylinder bore (in)</td><td class="sym">d<sub>p</sub></td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
-  <tr><td class="lab">Reservoir inside dia (in)</td><td class="sym">D_i</td>
+  <tr><td class="lab">Reservoir inside dia (in)</td><td class="sym">D<sub>i</sub></td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
-  <tr><td class="lab">Reservoir outside dia (in)</td><td class="sym">D_o</td>
+  <tr><td class="lab">Reservoir outside dia (in)</td><td class="sym">D<sub>o</sub></td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
   <tr><td class="lab">Reservoir oil column height (in)</td><td class="sym">H</td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
   <tr><td class="lab">Lifting cylinder extension (in)</td><td class="sym">L</td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
 </table>
-<p class="cap">Condition notes: seals, check balls, seats, bore scoring</p>
+<p style="font-size:14.5px;color:var(--ink-2)">Condition notes: seals, check balls, seats, bore scoring</p>
 <table><tr><td class="fill" style="height:52px"></td></tr></table>
 
-<h2 class="band">Calculations</h2>
+<h2><span class="n">8</span>Calculations</h2>
 <p>Use the mean of your three readings for every dimension. Units are US customary throughout:
 inches, pounds, psi, horsepower, with 1 hp = 550 ft-lb/s = 6600 in-lb/s.</p>
 
-<div class="q">
-  <div class="hd"><span class="num">2</span><span class="ttl">Volume displaced per pump stroke</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">2.</span>Volume displaced per pump stroke</div>
   <p class="ask">Use the pump bore and stroke from Tables 2 and 3 to calculate the volume of fluid
      displaced per one full stroke of the piston pump.</p>
-  <div class="give">A_p = (pi/4) * d_p^2
+  <div class="given">A_p = (pi/4) * d_p^2
 V_p = A_p * s_p</div>
   <div class="work"></div>
-  <p class="ansline">A_p =<span></span>in^2      V_p =<span></span>in^3</p>
+  <p class="ansline">A_p =<u></u>in^2      V_p =<u></u>in^3</p>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">3</span><span class="ttl">Lifting cylinder area and lift per stroke</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">3.</span>Lifting cylinder area and lift per stroke</div>
   <p class="ask">Calculate the cross-sectional area of the lifting cylinder, then use it with your answer
      to question 2 to determine the lift produced by one full pump stroke.</p>
-  <div class="give">A_r = (pi/4) * D_r^2
+  <div class="given">A_r = (pi/4) * D_r^2
 V_p = A_r * h    ->    h = V_p / A_r</div>
   <div class="work"></div>
-  <p class="ansline">A_r =<span></span>in^2      h =<span></span>in per stroke</p>
+  <p class="ansline">A_r =<u></u>in^2      h =<u></u>in per stroke</p>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">4</span><span class="ttl">Pressure required in the lifting cylinder</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">4.</span>Pressure required in the lifting cylinder</div>
   <p class="ask">Use the rated load from the nameplate and your measurements to determine the fluid
      pressure required to lift that load.</p>
-  <div class="give">P = W / A_r</div>
+  <div class="given">P = W / A_r</div>
   <div class="work"></div>
-  <p class="ansline">P =<span></span>lb/in^2</p>
+  <p class="ansline">P =<u></u>lb/in^2</p>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">5</span><span class="ttl">Downward force on the pump piston</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">5.</span>Downward force on the pump piston</div>
   <p class="ask">Determine the downward force required on the pump piston to produce that pressure.
      State which core principle allows you to use the same pressure on both pistons.</p>
-  <div class="give">F_p = P * A_p</div>
+  <div class="given">F_p = P * A_p</div>
   <div class="work"></div>
-  <p class="ansline">F_p =<span></span>lb</p>
+  <p class="ansline">F_p =<u></u>lb</p>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">6</span><span class="ttl">Torque required at the handle pivot</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">6.</span>Torque required at the handle pivot</div>
   <p class="ask">Using the pump force and the pivot to rod end distance, calculate the torque that must
      be applied at the handle pivot.</p>
-  <div class="give">T = F_p * a</div>
+  <div class="given">T = F_p * a</div>
   <div class="work"></div>
-  <p class="ansline">T =<span></span>lb-in</p>
-  <div class="note" style="margin-left:36px"><b>Terminology.</b> The quantity here is a torque, also
+  <p class="ansline">T =<u></u>lb-in</p>
+  <div class="callout" style="margin-top:10px"><b>Terminology.</b> The quantity here is a torque, also
     called a moment. It is not a moment of inertia, which carries units of lb-in-s^2 and describes
     resistance to angular acceleration.</div>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">7</span><span class="ttl">Tangential force at the operator's hand</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">7.</span>Tangential force at the operator's hand</div>
   <p class="ask">Use the pivot to hand distance to determine the force the operator must apply
      perpendicular to the handle to produce the required torque.</p>
-  <div class="give">T = F_hand * b    ->    F_hand = T / b
+  <div class="given">T = F_hand * b    ->    F_hand = T / b
 check:  F_hand = F_p * (a / b)</div>
   <div class="work"></div>
-  <p class="ansline">F_hand =<span></span>lb</p>
+  <p class="ansline">F_hand =<u></u>lb</p>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">8</span><span class="ttl">Hydraulic power at one cycle per second</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">8.</span>Hydraulic power at one cycle per second</div>
   <p class="ask">If you pump at one full cycle per second while lifting the rated load, how much hydraulic
      power are you generating?</p>
-  <div class="give">Q = V_p * n
+  <div class="given">Q = V_p * n
 Power = P * Q          [ (lb/in^2)(in^3/s) = in-lb/s ]
 1 hp = 6600 in-lb/s</div>
   <div class="work"></div>
-  <p class="ansline">Q =<span></span>in^3/s      Power =<span></span>hp</p>
+  <p class="ansline">Q =<u></u>in^3/s      Power =<u></u>hp</p>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">9</span><span class="ttl">Time to full extension</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">9.</span>Time to full extension</div>
   <p class="ask">Determine how many strokes and how long it takes to extend the lifting cylinder fully
      at that rate.</p>
-  <div class="give">N = L / h            t = N / n</div>
+  <div class="given">N = L / h            t = N / n</div>
   <div class="work"></div>
-  <p class="ansline">N =<span></span>strokes      t =<span></span>s</p>
+  <p class="ansline">N =<u></u>strokes      t =<u></u>s</p>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">10</span><span class="ttl">Extension speed and output linear power</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">10.</span>Extension speed and output linear power</div>
   <p class="ask">Calculate the speed of extension, then use it with the rated load to find the linear
      power delivered to the load.</p>
-  <div class="give">v = L / t
+  <div class="given">v = L / t
 Power = F * v          (AGM 206: linear power = force x speed)</div>
   <div class="work"></div>
-  <p class="ansline">v =<span></span>in/s      Power =<span></span>hp</p>
+  <p class="ansline">v =<u></u>in/s      Power =<u></u>hp</p>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">11</span><span class="ttl">Operator input linear power</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">11.</span>Operator input linear power</div>
   <p class="ask">At the same rate, using the hand force and the arc distance the hand travels, determine
      the linear power exerted by the operator. Neglect the return stroke.</p>
-  <div class="give">d = 2 * pi * b * theta / 360          [theta from Table 2, in degrees]
+  <div class="given">d = 2 * pi * b * theta / 360          [theta from Table 2, in degrees]
 Power = F_hand * d * n</div>
   <div class="work"></div>
-  <p class="ansline">d =<span></span>in      Power =<span></span>hp</p>
-  <div class="note" style="margin-left:36px"><b>Expect a small mismatch.</b> The arc is slightly longer
+  <p class="ansline">d =<u></u>in      Power =<u></u>hp</p>
+  <div class="callout" style="margin-top:10px"><b>Expect a small mismatch.</b> The arc is slightly longer
     than the straight-line displacement the lever ratio implies, by a factor of theta/sin(theta) with
     theta in radians, typically 6 to 7 percent. Your input power will come out a few percent above
     questions 8 and 10. This is a geometry artifact of the arc formula, not a loss and not an error.
     Say so in question 13.</div>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">12</span><span class="ttl">Reservoir area and drop in fluid level</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">12.</span>Reservoir area and drop in fluid level</div>
   <p class="ask"><b>(a)</b> Determine the cross-sectional area of the donut-shaped reservoir, then find
      the drop in fluid level when the lifting cylinder is fully extended.
      <b>(b)</b> Using the height of the annular oil space, determine the maximum reservoir capacity and
      show whether the reservoir can supply a full extension. Report the margin.</p>
-  <div class="give">A_res    = (pi/4) * (D_o^2 - D_i^2)
+  <div class="given">A_res    = (pi/4) * (D_o^2 - D_i^2)
 V_lift   = A_r * L
 drop     = V_lift / A_res
 capacity = A_res * H
 margin   = capacity / V_lift        must exceed 1.0</div>
   <div class="work tall"></div>
-  <p class="ansline">A_res =<span></span>in^2      drop =<span></span>in</p>
-  <p class="ansline">capacity =<span></span>in^3      margin =<span></span>: 1</p>
-  <div class="note" style="margin-left:36px"><b>Two checks on your own numbers.</b> The drop cannot
+  <p class="ansline">A_res =<u></u>in^2      drop =<u></u>in</p>
+  <p class="ansline">capacity =<u></u>in^3      margin =<u></u>: 1</p>
+  <div class="callout" style="margin-top:10px"><b>Two checks on your own numbers.</b> The drop cannot
     exceed the oil column height, or the pump would draw air before full extension. And the annulus is
     interrupted by the pump cylinder boss and the cast passages, so a clean donut overstates the true
     capacity; treat your answer as an upper bound and say so.</div>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">13</span><span class="ttl">Comparison of input, hydraulic, and output power</span></div>
+<div class="prob">
+  <div class="hd"><span class="n">13.</span>Comparison of input, hydraulic, and output power</div>
   <p class="ask">Compare your answers from questions 8, 10, and 11. Has the jack magnified power? By what
      factor is force multiplied, and by what factor is speed reduced? Show that the total force factor is
      the product of the hydraulic ratio and the lever ratio, and account for the mismatch noted in
      question 11.</p>
-  <div class="give">force factor  = W / F_hand      and      (A_r / A_p) * (b / a)
+  <div class="given">force factor  = W / F_hand      and      (A_r / A_p) * (b / a)
 speed factor  = hand speed / ram speed</div>
   <div class="work tall"></div>
 </div>
 
-<div class="q">
-  <div class="hd"><span class="num">14</span><span class="ttl">Measurement uncertainty</span></div>
-  <p class="ask">Estimate the uncertainty in each measured diameter from the spread of your three
-     readings. Propagate it to the lift per stroke. State which single measurement contributes most to
-     the uncertainty in your answer, and explain why in terms of the exponent on that variable.</p>
-  <div class="give">u(A)/A = 2 * u(D)/D
-u(h)/h = sqrt( (2*u(d_p)/d_p)^2 + (u(s_p)/s_p)^2 + (2*u(D_r)/D_r)^2 )</div>
-  <div class="work tall"></div>
-  <p class="ansline">h =<span></span>+/-<span></span>in      dominant term:<span></span></p>
-</div>
-
-<div class="q">
-  <div class="hd"><span class="num">15</span><span class="ttl">Class data: capacity against area</span></div>
-  <p class="ask">Post your rated load W and lifting cylinder area A_r to the class table. Plot W against
-     A_r for every jack in the room and fit a straight line through the origin. What does the slope
-     represent physically? What does it tell you about how a manufacturer scales a family of jacks? If
-     your point falls far from the line, what is the most likely explanation?</p>
-  <div class="work tall"></div>
-  <p class="ansline">slope =<span></span>lb/in^2      meaning:<span></span></p>
-</div>
-
-<h2 class="band">Report</h2>
+<h2><span class="n">9</span>Report</h2>
 <p>Submit Tables 1 through 3, all calculations with substitutions shown, your corrected flow-path sketch
-from Part C, the class plot from question 15, and a closing paragraph answering this: which of the eight
+from Part C and a closing paragraph answering this: which of the eight
 core principles could you have confirmed by measurement in this lab, and which had to be taken on the
 authority of the equations because the jacks contain no fluid? Be specific about what an oil-filled jack
 would have let you measure that this one did not.</p>
+
+<h2><span class="n">10</span>Citation</h2>
+
+<p class="noindent">Cite this activity and its accompanying simulation as:</p>
+
+<ol class="refs">
+  <li><span class="hang">Koc, A. B. (2026). <i>Interactive Hydraulic Bottle Jack Cross Section and
+      Laboratory Materials</i> (Version 1.2.0) [Computer software and instructional materials].
+      Agricultural Sciences Department, Agricultural Mechanization and Business Program, Clemson
+      University. Zenodo. <code class="link">https://doi.org/10.5281/zenodo.22181633</code></span></li>
+</ol>
+
+<p style="font-size:14.5px;color:var(--ink-2);margin-top:14px">Source, simulation, and verification
+suite: <code class="link"><a href="https://github.com/alibulentkoc/hydraulic-bottle-jack">https://github.com/alibulentkoc/hydraulic-bottle-jack</a></code>.
+Software released under the MIT License; instructional content released under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0).</p>
 
 </div>
 </body>

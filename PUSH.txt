@@ -2,54 +2,89 @@ PUSH v1.2.0
 ===========
 
 Everything in this folder is final. Nothing needs editing on github.com.
+Versions already read 1.2.0 in CITATION.cff, package.json and CHANGELOG.md.
 
-1. Delete the old download folder, then extract the zip to
-   C:\Users\Bulent\Downloads\bottle-jack-lab
+--------------------------------------------------------------------------
+STEP 1  Replace the download folder
+--------------------------------------------------------------------------
+Delete the old one first, so nothing stale is left behind:
 
-2. Copy it over the clone and check what changed:
+    rmdir /s /q C:\Users\Bulent\Downloads\bottle-jack-lab
 
-     cd C:\Users\Bulent\Documents\hydraulic-bottle-jack
-     git pull
-     robocopy "C:\Users\Bulent\Downloads\bottle-jack-lab" "C:\Users\Bulent\Documents\hydraulic-bottle-jack" /E /XD .git
-     git status --short
+Then extract hydraulic-bottle-jack-repo.zip to:
 
-   Four files must appear as new (??):
-     docs/demo.gif
-     tests/verify-labels.js
-     tests/verify-compat.js
-     RELEASE_NOTES_v1.2.0.md
-   If they do not, the copy failed. Stop and redo step 1.
+    C:\Users\Bulent\Downloads\bottle-jack-lab
 
-3. Commit and push:
+--------------------------------------------------------------------------
+STEP 2  Copy over the clone
+--------------------------------------------------------------------------
+    cd C:\Users\Bulent\Documents\hydraulic-bottle-jack
+    git pull
+    robocopy "C:\Users\Bulent\Downloads\bottle-jack-lab" "C:\Users\Bulent\Documents\hydraulic-bottle-jack" /E /XD .git
+    git status --short
 
-     git add -A
-     git commit -m "v1.2.0: reservoir geometry, label layout, browser compatibility floor"
-     git push
+Use robocopy, not drag and drop: four entries start with a dot and Explorer
+skips them. Robocopy exits with code 1 on success, which is normal.
 
-4. Check on github.com before tagging:
-     - Actions run is green (121 checks, six suites)
-     - the demo GIF shows at the top of the README
-     - https://alibulentkoc.github.io/hydraulic-bottle-jack/ loads after Ctrl+F5
-     - drag the handle on the live page; no automated test covers dragging
+These files must appear as new (??). If any is missing, stop and redo step 1:
 
-5. Tag and push the tag:
+    docs/demo.gif
+    lab/bottle-jack-lab-grader.html
+    lab/bottle-jack-lab-handout-A4.pdf
+    tests/verify-labels.js
+    tests/verify-compat.js
+    tools/build-pdf.py
+    RELEASE_NOTES_v1.2.0.md
 
-     git tag -a v1.2.0 -m "Reservoir geometry, label layout, browser compatibility"
-     git push origin v1.2.0
+--------------------------------------------------------------------------
+STEP 3  Commit and push
+--------------------------------------------------------------------------
+    git add -A
+    git commit -m "v1.2.0: reservoir geometry, label layout, browser compatibility, LaTeX handout, grading tool"
+    git push
 
-6. Create the release on github.com:
-     Releases -> Draft a new release
-     Choose the existing tag v1.2.0
-     Title:       v1.2.0 - Browser compatibility, label layout, and reservoir geometry
-     Description: paste the contents of RELEASE_NOTES_v1.2.0.md
-     Attach nothing. Leave pre-release unchecked. Publish.
+--------------------------------------------------------------------------
+STEP 4  Check before tagging
+--------------------------------------------------------------------------
+  - Actions tab shows a green run (156 checks in six suites)
+  - the demo GIF appears at the top of the README
+  - https://alibulentkoc.github.io/hydraulic-bottle-jack/ loads after Ctrl+F5
+    and now lists five items including the A4 PDF
+  - drag the handle on the live simulator; no automated test covers dragging
+  - open lab/bottle-jack-lab-handout.html and print preview it at A4
 
-7. Zenodo mints a new version DOI automatically. Check
-   https://doi.org/10.5281/zenodo.22181633 shows v1.2.0 with:
-     - author  Koc, A. Bulent   (not alibulentkoc)
-     - license MIT              (not CC BY)
-     - zip     about 350 kB     (not 3.4 kB)
-   Those three confirm the archive is complete this time.
+--------------------------------------------------------------------------
+STEP 5  Tag and push the tag
+--------------------------------------------------------------------------
+    git tag -a v1.2.0 -m "Reservoir geometry, label layout, browser compatibility, LaTeX handout"
+    git push origin v1.2.0
 
-If you already pushed a v1.1.0 tag, it is harmless; leave it. Only the tag with
-a published release gets archived.
+A v1.1.0 tag from earlier, if it exists, is harmless. Only a tag with a
+published release is archived.
+
+--------------------------------------------------------------------------
+STEP 6  Create the release on github.com
+--------------------------------------------------------------------------
+    Releases -> Draft a new release
+    Choose the existing tag        v1.2.0
+    Title                          v1.2.0 - Reservoir geometry, label layout, and laboratory materials
+    Description                    paste the contents of RELEASE_NOTES_v1.2.0.md
+    Attach nothing. Leave pre-release unchecked. Publish.
+
+--------------------------------------------------------------------------
+STEP 7  Confirm Zenodo archived it properly
+--------------------------------------------------------------------------
+Open https://doi.org/10.5281/zenodo.22181633 and check three things:
+
+    author    Koc, A. Bulent      not alibulentkoc
+    license   MIT                 not CC BY
+    zip size  about 600 kB        not 3.4 kB
+
+Those three confirm CITATION.cff and .zenodo.json were present when the
+release fired, which is what went wrong on v1.0.0.
+
+--------------------------------------------------------------------------
+IF THE PUSH IS REJECTED
+--------------------------------------------------------------------------
+    git pull --rebase
+    git push

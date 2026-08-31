@@ -54,6 +54,15 @@
   separately from measurement. Raises flags for readings that match the master
   exactly, for a level drop exceeding the oil column, and for the arc-versus-chord
   discrepancy in question 13, and carries a suggested mark weighting.
+- Student handout retypeset as a LaTeX-style article: centred title block with
+  name and date rules, numbered sections and subsections, numbered display
+  equations, booktabs-style tables, and a references section. Questions 14 and
+  15 removed, a section describing the companion simulation with its link added,
+  and a full citation for the activity added at the end. The introduction now
+  carries a labelled cross-section figure drawn by the simulation itself, and the
+  simulation link is accompanied by a QR code so the printed sheet reaches the
+  same page. Both images are embedded in the file, so it stays self-contained. The grading tool's
+  suggested weighting was rebalanced to match the shorter question set.
 - Animated demonstration added to the README.
 
 ## 1.0.0 - 2026-08-30

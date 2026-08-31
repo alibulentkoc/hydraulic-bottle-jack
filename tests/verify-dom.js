@@ -23,9 +23,19 @@ module.exports = new Promise(resolve => {
   {
     const { d, errs } = open(HANDOUT);
     ok("handout loads without errors", errs.length === 0, errs.join("; "));
-    ok("handout renders eight objectives", d.querySelectorAll("ol.obj li").length === 8);
-    ok("handout renders eight core principles", d.querySelectorAll(".principle").length === 8);
-    ok("handout renders questions 2 through 15", d.querySelectorAll(".q").length === 14);
+    ok("handout renders seven objectives", d.querySelectorAll("ol.tight")[0].querySelectorAll("li").length === 7);
+    ok("handout renders eight core principles", d.querySelectorAll("ol.principles > li").length === 8);
+    ok("handout renders questions 2 through 13", d.querySelectorAll(".prob").length === 12);
+    ok("handout carries the simulation link",
+       /hydraulic-bottle-jack\/simulator/.test(d.body.innerHTML));
+    ok("handout carries the citation", /10\.5281\/zenodo/.test(d.body.innerHTML));
+    ok("handout embeds the figure and QR code",
+       d.querySelectorAll("img").length === 2 &&
+       [].every.call(d.querySelectorAll("img"),
+         function(i){ return i.getAttribute("src").indexOf("data:image/png;base64,") === 0; }));
+    ok("handout cross-references the figure", /Figure 1 shows/.test(d.body.textContent));
+    ok("handout is set up for A4", /size:\s*A4/.test(d.body.innerHTML) ||
+       /size:\s*A4/.test([].map.call(d.querySelectorAll("style"), function(t){return t.textContent;}).join("")));
   }
 
   /* answer sheet: recomputes when a measurement changes */
