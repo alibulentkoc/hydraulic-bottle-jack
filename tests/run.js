@@ -18,6 +18,7 @@ if(require.main === module){
     failed += report("geometry",     require("./verify-geometry.js"));
     failed += report("answer sheet", require("./verify-answer-sheet.js"));
     failed += report("interface",    await require("./verify-dom.js"));
+    failed += report("labels",       await require("./verify-labels.js"));
     console.log(failed ? "\n" + failed + " failing check(s)\n" : "\nall checks passed\n");
     process.exit(failed ? 1 : 0);
   })();

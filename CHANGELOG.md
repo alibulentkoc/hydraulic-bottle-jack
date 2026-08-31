@@ -13,6 +13,13 @@
 - Handout and answer sheet: added the reservoir oil column height measurement
   and a capacity and adequacy check as question 12(b).
 - Geometry verification sweep extended over the three new dimensions.
+- Label layout reworked so annotations no longer overlap: reservoir callouts run
+  vertically in their columns, the pump diameter dimension moved to a clear lane
+  below the casting with extension lines, valve names sit above their galleries,
+  pressure readings moved to a fixed corner block with colour chips, and the
+  handle and linkage labels were separated into their own rows.
+- New verification suite checks every label for overlap and for leaving the
+  canvas, at both dimension extremes and in both unit systems.
 
 ## 1.0.0 - 2026-08-30
 

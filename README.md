@@ -24,7 +24,7 @@ network access, no dependencies at runtime.
 | `simulator/hydraulic-bottle-jack.html` | Interactive parametric cross section |
 | `lab/bottle-jack-lab-handout.html` | Student handout: objectives, principles, procedure, data tables, questions 2 to 15 |
 | `lab/bottle-jack-lab-answer-sheet.html` | Instructor answer sheet: live formulas, substitutions, and results |
-| `tests/` | Verification suite, 63 checks |
+| `tests/` | Verification suite, 73 checks |
 
 Open any of the three files directly in a browser. The two laboratory documents
 are formatted to print.
@@ -106,7 +106,7 @@ npm install     # jsdom, for the interface checks only
 npm test
 ```
 
-63 checks in four suites:
+73 checks in five suites:
 
 - **physics** (19): volume conservation across pump cycles and through the release
   valve, area-ratio scaling, load holding, stroke limiting, relief behaviour at
@@ -117,6 +117,8 @@ npm test
   including that ideal speed reduction equals force multiplication exactly.
 - **interface** (17): all three documents loaded in a headless DOM, controls
   exercised, unit round-trips checked.
+- **labels** (10): no annotation overlaps another or leaves the canvas, checked
+  at both dimension extremes and in both unit systems.
 
 The suite runs on every push through GitHub Actions.
 

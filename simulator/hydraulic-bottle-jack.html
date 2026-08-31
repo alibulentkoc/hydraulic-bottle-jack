@@ -758,10 +758,10 @@ function buildSVG(){
   R.ballIn  = el("circle",{r:"5.2",fill:"var(--ball)",stroke:"#7a5c14","stroke-width":"1"},R.moving);
   R.ballOut = el("circle",{r:"5.2",fill:"var(--ball)",stroke:"#7a5c14","stroke-width":"1"},R.moving);
   R.dirIn   = el("text",{"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
-                 "text-anchor":"middle",x:g.inletBall[0],y:g.inletBall[1]+21},R.flowLayer);
+                 "text-anchor":"middle",x:g.inletBall[0],y:g.inletBall[1]-13},R.flowLayer);
   R.dirIn.textContent="SUCTION";
   R.dirOut  = el("text",{"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
-                 "text-anchor":"middle",x:g.outletBall[0],y:g.outletBall[1]+21},R.flowLayer);
+                 "text-anchor":"middle",x:g.outletBall[0],y:g.outletBall[1]-13},R.flowLayer);
   R.dirOut.textContent="DELIVERY";
 
   /* ---- release valve ---- */
@@ -770,7 +770,7 @@ function buildSVG(){
   R.relStem = el("rect",{x:g.relValve[0]-2.5,width:5,height:14,fill:"#b9c2c8"},rv);
   R.relSeat = el("path",{fill:"var(--stop)"},rv);
   el("text",{"font-family":"var(--mono)","font-size":"9",fill:"#4a545c","text-anchor":"middle",
-             x:g.relValve[0],y:g.relValve[1]+21},rv).textContent="RELEASE";
+             x:g.relValve[0],y:g.relValve[1]-14},rv).textContent="RELEASE";
 
   /* ---- ram ---- */
   R.ramSeal1 = el("rect",{x:g.cx-g.ramR-2,width:2*g.ramR+4,height:7,fill:"var(--seal)"},R.moving);
@@ -796,11 +796,11 @@ function buildSVG(){
   R.pin      = el("circle",{r:"5",fill:"#39434a",stroke:"#20272c","stroke-width":"2"},R.moving);
   R.arc      = el("path",{fill:"none",stroke:"#8b959d","stroke-width":"1","stroke-dasharray":"4 4"},R.moving);
   R.angLabel = el("text",{"font-family":"var(--mono)","font-size":"12","font-weight":"600",
-    fill:"#7c1f19","text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"3.5"},R.moving);
+    fill:"#7c1f19","text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"4.5"},R.moving);
   R.handForce = el("line",{stroke:"#8f231d","stroke-width":"3.6","stroke-linecap":"round",
     "marker-end":"url(#farw)"},R.moving);
   R.handLabel = el("text",{"font-family":"var(--mono)","font-size":"11",fill:"#7c1f19",
-    "text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"3.5"},R.moving);
+    "text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"4.5"},R.moving);
   R.ramArrow  = el("path",{fill:"#8f231d",opacity:"0"},R.moving);
   R.pumpArrow = el("path",{fill:"#1f5c96",opacity:"0"},R.moving);
 
@@ -811,11 +811,13 @@ function buildSVG(){
   }
 
   /* ---- pressure labels ---- */
-  R.pLabels = {};
-  ["res","pump","hp"].forEach(k=>{
-    const t = el("text",{"font-family":"var(--mono)","font-size":"11","font-weight":"600",
-      fill:"#1d242a","text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"3"},R.press);
-    R.pLabels[k]=t;
+  R.pLabels = {}; R.pChips = {};
+  ["res","pump","hp"].forEach((k,i)=>{
+    R.pChips[k] = el("rect",{x:22,y:22+i*19,width:11,height:11,rx:"2",
+      stroke:"#39434a","stroke-width":"1"},R.press);
+    R.pLabels[k] = el("text",{"font-family":"var(--mono)","font-size":"11","font-weight":"600",
+      fill:"#1d242a","text-anchor":"start",x:39,y:31+i*19,
+      "paint-order":"stroke",stroke:"#e9edf1","stroke-width":"4"},R.press);
   });
 
   /* ---- dimension overlay ---- */
@@ -826,7 +828,7 @@ function buildSVG(){
     const t1 = el("line",{stroke:"#3b4750","stroke-width":"1"},gg);
     const t2 = el("line",{stroke:"#3b4750","stroke-width":"1"},gg);
     const txt= el("text",{"font-family":"var(--mono)","font-size":"11",fill:"#1d242a",
-      "text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"3.5"},gg);
+      "text-anchor":"middle","paint-order":"stroke",stroke:"#e9edf1","stroke-width":"4.5"},gg);
     R.dimEls[name]={gg,line,t1,t2,txt};
   };
   ["ramD","ramS","pumpD","pumpS","handleL","pivotL"].forEach(mkDim);
@@ -934,9 +936,9 @@ function updateSVG(){
     " A"+rA.toFixed(1)+","+rA.toFixed(1)+" 0 "+bigA+" 0 "+exA.toFixed(1)+","+eyA.toFixed(1)+" Z");
   R.angArc.setAttribute("d","M"+sxA.toFixed(1)+","+syA.toFixed(1)+
     " A"+rA.toFixed(1)+","+rA.toFixed(1)+" 0 "+bigA+" 0 "+exA.toFixed(1)+","+eyA.toFixed(1));
-  const half = sim.theta/2, rL = rA+17;
+  const half = sim.theta/2, rL = rA+20;
   R.angLabel.setAttribute("x", g.pivotX + rL*Math.cos(half));
-  R.angLabel.setAttribute("y", g.pivotY - rL*Math.sin(half) + 4);
+  R.angLabel.setAttribute("y", g.pivotY - rL*Math.sin(half) + 18);
   R.angLabel.textContent = fmt(sim.theta*180/PI,1) + " deg";
 
   // the operator pushes perpendicular to the handle, at the hand position
@@ -1023,47 +1025,62 @@ function updateSVG(){
   /* pressure overlay */
   R.press.setAttribute("opacity", T.press ? 1 : 0);
   if(T.press){
-    R.pLabels.res.setAttribute("x", g.cx-g.bodyHalf+g.shell+g.resW/2);
-    R.pLabels.res.setAttribute("y", g.baseTop-lv-8);
-    R.pLabels.res.textContent = "Reservoir  " + U.press(0) ;
-    R.pLabels.pump.setAttribute("x", g.pumpX);
-    R.pLabels.pump.setAttribute("y", g.pumpTop-14);
-    R.pLabels.pump.textContent = "Pump  " + U.press(Math.max(sim.pumpP,0));
-    R.pLabels.hp.setAttribute("x", g.cx);
-    R.pLabels.hp.setAttribute("y", g.baseTop+ (g.baseBot-g.baseTop)/2 - 22);
-    R.pLabels.hp.textContent = "Lifting  " + U.press(sim.hpP);
+    // fixed corner block: never collides with the drawing at any dimension
+    R.pLabels.res.textContent  = "Reservoir  " + U.press(0);
+    R.pLabels.pump.textContent = "Pump       " + U.press(Math.max(sim.pumpP,0));
+    R.pLabels.hp.textContent   = "Lifting    " + U.press(sim.hpP);
+    R.pChips.res.setAttribute("fill","var(--oil-low)");
+    R.pChips.pump.setAttribute("fill",
+      sim.mode==="DELIVERY"||sim.mode==="MAX_EXTENSION" ? "var(--oil-high)" :
+      sim.mode==="COMPRESSION" ? "#8ec14a" : "var(--oil-low)");
+    R.pChips.hp.setAttribute("fill", sim.hpP>0.02 ? "var(--oil-high)" : "var(--oil-high-d)");
   }
 
   /* dimensions */
   R.dimsLayer.setAttribute("opacity", T.dims ? 1 : 0);
   if(T.dims){
-    hDim("ramD", g.cx-g.ramR, g.cx+g.ramR, g.ramTopY+30, "Ram dia " + U.len(dims.ramDia));
+    hDim("ramD", g.cx-g.ramR, g.cx+g.ramR, g.ramTopY+34, "Ram dia " + U.len(dims.ramDia));
     vDim("ramS", g.cx+g.bodyHalf+16, g.ramBot0-dims.ramStrokeMax*g.vScale, g.ramBot0,
          "Stroke " + U.len(dims.ramStrokeMax), 1);
-    hDim("pumpD", g.pumpX-g.pumpR, g.pumpX+g.pumpR, g.pumpTop-20, "Pump dia " + U.len(dims.pumpDia));
-    vDim("pumpS", g.pumpX+g.pumpR+24, g.headTop0-g.travelPx, g.headTop0,
+    // pump diameter moves to a clear lane below the casting, tied back by extension lines
+    hDim("pumpD", g.pumpX-g.pumpR, g.pumpX+g.pumpR, g.baseBot+46,
+         "Pump dia " + U.len(dims.pumpDia), g.baseTop);
+    vDim("pumpS", g.pumpX+g.pumpR+42, g.headTop0-g.travelPx, g.headTop0,
          "Pump stroke " + U.len(derived(dims).strokeReal), 1);
-    dDim("handleL", g.pivotX, g.pivotY, g.hEndX, g.hEndY, "Handle " + U.len(dims.handleLen), -18);
-    dDim("pivotL", g.pivotX, g.pivotY, g.pinX, g.pinY, "Pivot-link " + U.len(dims.pivotLink), 16);
+    // handle label rides out near the grip, clear of the pump and the linkage
+    dDim("handleL", g.pivotX, g.pivotY, g.hEndX, g.hEndY,
+         "Handle " + U.len(dims.handleLen), 34, 0.85);   // positive offset sits above the handle
+    // the link is short, so its label stands well above the handle label's row
+    dDim("pivotL", g.pivotX, g.pivotY, g.pinX, g.pinY,
+         "Pivot-link " + U.len(dims.pivotLink), 58, 0.5);
   }
 
   /* callouts */
-  R.calloutRam.setAttribute("x", g.cx); R.calloutRam.setAttribute("y", g.ramTopY-24);
-  R.calloutRes.setAttribute("x", g.cx-g.bodyHalf+g.shell+g.resW/2);
-  R.calloutRes.setAttribute("y", g.resTop+14);
-  R.calloutRes2.setAttribute("x", g.cx+g.cylOut+g.resW/2);
-  R.calloutRes2.setAttribute("y", g.resTop+14);
-  R.calloutPump.setAttribute("x", g.pumpX); R.calloutPump.setAttribute("y", g.baseBot+16);
-  R.calloutHp.setAttribute("x", g.cx); R.calloutHp.setAttribute("y", g.baseBot+16);
+  R.calloutRam.setAttribute("x", g.cx-g.ramR-10);
+  R.calloutRam.setAttribute("y", g.ramTopY+68);
+  R.calloutRam.setAttribute("text-anchor","end");
+  const resMidY = (g.resTop + g.baseTop)/2;
+  const resLx = g.cx-g.bodyHalf+g.shell+g.resW/2, resRx = g.cx+g.cylOut+g.resW/2;
+  R.calloutRes.setAttribute("x", resLx);
+  R.calloutRes.setAttribute("y", resMidY);
+  R.calloutRes.setAttribute("transform","rotate(-90 "+resLx.toFixed(1)+" "+resMidY.toFixed(1)+")");
+  R.calloutRes2.setAttribute("x", resRx);
+  R.calloutRes2.setAttribute("y", resMidY);
+  R.calloutRes2.setAttribute("transform","rotate(-90 "+resRx.toFixed(1)+" "+resMidY.toFixed(1)+")");
+  R.calloutPump.setAttribute("x", g.pumpX); R.calloutPump.setAttribute("y", g.baseBot+20);
+  R.calloutHp.setAttribute("x", g.cx); R.calloutHp.setAttribute("y", g.baseBot+20);
 }
 
-function hDim(name,x1,x2,y,label){
+function hDim(name,x1,x2,y,label,fromY){
   const d=R.dimEls[name];
+  const a = (fromY===undefined) ? y-6 : fromY;   // extension lines reach the feature
   d.line.setAttribute("x1",x1); d.line.setAttribute("x2",x2);
   d.line.setAttribute("y1",y);  d.line.setAttribute("y2",y);
-  d.t1.setAttribute("x1",x1); d.t1.setAttribute("x2",x1); d.t1.setAttribute("y1",y-6); d.t1.setAttribute("y2",y+6);
-  d.t2.setAttribute("x1",x2); d.t2.setAttribute("x2",x2); d.t2.setAttribute("y1",y-6); d.t2.setAttribute("y2",y+6);
-  d.txt.setAttribute("x",(x1+x2)/2); d.txt.setAttribute("y",y-9); d.txt.textContent=label;
+  d.t1.setAttribute("x1",x1); d.t1.setAttribute("x2",x1); d.t1.setAttribute("y1",a); d.t1.setAttribute("y2",y+6);
+  d.t2.setAttribute("x1",x2); d.t2.setAttribute("x2",x2); d.t2.setAttribute("y1",a); d.t2.setAttribute("y2",y+6);
+  d.txt.setAttribute("x",(x1+x2)/2); d.txt.setAttribute("y",y-9);
+  d.txt.setAttribute("transform",""); d.txt.setAttribute("dy","0");
+  d.txt.textContent=label;
 }
 function vDim(name,x,y1,y2,label,side){
   const d=R.dimEls[name];
@@ -1076,14 +1093,15 @@ function vDim(name,x,y1,y2,label,side){
   d.txt.setAttribute("dy","-8");
   d.txt.textContent=label;
 }
-function dDim(name,x1,y1,x2,y2,label,off){
+function dDim(name,x1,y1,x2,y2,label,off,at){
   const d=R.dimEls[name];
+  const t = (at===undefined) ? 0.5 : at;
   const ang=Math.atan2(y2-y1,x2-x1), nx=Math.sin(ang)*off, ny=-Math.cos(ang)*off;
   d.line.setAttribute("x1",x1+nx); d.line.setAttribute("y1",y1+ny);
   d.line.setAttribute("x2",x2+nx); d.line.setAttribute("y2",y2+ny);
   d.t1.setAttribute("x1",x1); d.t1.setAttribute("y1",y1); d.t1.setAttribute("x2",x1+nx); d.t1.setAttribute("y2",y1+ny);
   d.t2.setAttribute("x1",x2); d.t2.setAttribute("y1",y2); d.t2.setAttribute("x2",x2+nx); d.t2.setAttribute("y2",y2+ny);
-  const mx=(x1+x2)/2+nx, my=(y1+y2)/2+ny;
+  const mx=x1+(x2-x1)*t+nx, my=y1+(y2-y1)*t+ny;
   d.txt.setAttribute("x",mx); d.txt.setAttribute("y",my);
   d.txt.setAttribute("transform",`rotate(${(ang*180/PI).toFixed(1)} ${mx} ${my})`);
   d.txt.setAttribute("dy","-6");
