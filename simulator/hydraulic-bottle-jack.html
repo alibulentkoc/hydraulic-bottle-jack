@@ -571,14 +571,19 @@ function layout(){
   // sized to contain it, so these controls change the drawing and not just the
   // numbers. Clamped for legibility, like every other radial exaggeration.
   const resHpx  = clamp(d.resHeight*0.9, 80, 150);
-  const bodyH   = resHpx + 14;
+  // ram travel scales with the entered stroke, so a long-stroke jack visibly
+  // extends further
+  const travelMax = clamp(d.ramStrokeMax*0.8, 50, 140);
+  const vScale  = travelMax/d.ramStrokeMax;
+  // The lifting cylinder must be tall enough to hold the oil column AND to keep
+  // the ram engaged at full extension, exactly as the pump cylinder is floored
+  // by its own travel. Without the second term a long stroke walks the ram out
+  // of the cylinder and the chamber draws outside the body.
+  const ENGAGE  = 34;
+  const bodyH   = Math.max(resHpx + 14, travelMax + ENGAGE + 10);
   const bodyTop = baseTop - bodyH;
   const ramBot0 = baseTop - 10;
-  // ram travel scales with the entered stroke, so a long-stroke jack visibly
-  // extends further. Ram length keeps a constant protrusion at zero stroke.
-  const travelMax = clamp(d.ramStrokeMax*0.85, 50, 150);
-  const vScale  = travelMax/d.ramStrokeMax;
-  const ramLenPx= bodyH + 34;
+  const ramLenPx= bodyH + 34;                 // constant protrusion at rest
 
   const ramBotY = ramBot0 - sim.ram*vScale;
   const ramTopY = ramBotY - ramLenPx;
@@ -613,7 +618,7 @@ function layout(){
   const xResL  = cx - cylOut - resW/2;          // centre of the left column (same volume)
   const xResRel= cx + cylOut + resW*0.28;       // release return riser
   const xResR  = cx + cylOut + resW*0.75;       // pump suction riser
-  const resTop = bodyTop + 14;
+  const resTop = baseTop - resHpx;            // oil column height as entered
 
   // three stacked galleries in the base, all on the pump side of the bore
   const yIn = 470, yRel = 484, yOut = 498;

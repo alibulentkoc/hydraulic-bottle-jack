@@ -30,8 +30,11 @@
   ram stroke, ram length keeps a constant protrusion at rest, and the handle
   pivot sits above the pump cylinder whatever the pump stroke and cylinder
   length, which removes the case where the handle passed through the cylinder.
-  Handle length is bounded so the grip stays on the canvas.
-- Five geometry invariants added for those: pivot above the pump cylinder,
+  Handle length is bounded so the grip stays on the canvas. The lifting cylinder
+  is likewise floored by the ram travel, so a long stroke lengthens the cylinder
+  instead of walking the ram out of it and drawing the chamber outside the body.
+- Seven geometry invariants added for those, including ram engagement at full
+  stroke and the chamber staying inside the cylinder: pivot above the pump cylinder,
   handle tip on canvas, ram protrusion at rest, load block on canvas, and the
   oil column contained by the body.
 - Animated demonstration added to the README.

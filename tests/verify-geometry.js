@@ -51,6 +51,9 @@ function check(tag){
       rec("ram protrudes at rest",     (g.bodyTop - (g.ramBot0 - g.ramLenPx)) - 20, tag);
       rec("load block on canvas",      g.ramTopY - 54, tag);
       rec("oil column inside body",    g.resTop - g.bodyTop - 6, tag);
+      // the ram must stay inside its cylinder at full extension
+      rec("ram engaged at full stroke", (g.bodyH - g.travelMax - 10) - 20, tag);
+      rec("chamber inside the cylinder", (g.ramBot0 - g.travelMax) - g.bodyTop - 10, tag);
     }
   }
 }
