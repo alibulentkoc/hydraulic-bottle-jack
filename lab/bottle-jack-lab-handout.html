@@ -250,8 +250,10 @@ have a second group member verify each reading before you move on.</div>
       micrometer. Three readings.</li>
   <li>Measure the <b>reservoir annulus</b>: inside diameter <span class="tool">D_i</span>, which is the
       outside of the lifting cylinder, and outside diameter <span class="tool">D_o</span>, which is the
-      inside of the jack body. <b>These are available only now.</b> You cannot return for them after
-      reassembly.</li>
+      inside of the jack body. Also measure the <b>height of the annular oil space</b>
+      <span class="tool">H</span>, from the floor of the reservoir to the fill plug or to the top of
+      the annulus, whichever limits the oil. <b>All three are available only now.</b> You cannot
+      return for them after reassembly.</li>
   <li>Measure the <b>full extension</b> of the lifting cylinder <span class="tool">L</span>, from the
       seated position to the mechanical stop.</li>
   <li>Inspect and record the condition of the ram seal, the check balls and seats, and the release valve
@@ -305,6 +307,8 @@ units, and the result for every question. An answer with no units is not an answ
   <tr><td class="lab">Reservoir inside dia (in)</td><td class="sym">D_i</td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
   <tr><td class="lab">Reservoir outside dia (in)</td><td class="sym">D_o</td>
+      <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
+  <tr><td class="lab">Reservoir oil column height (in)</td><td class="sym">H</td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
   <tr><td class="lab">Lifting cylinder extension (in)</td><td class="sym">L</td>
       <td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td><td class="fill"></td></tr>
@@ -423,13 +427,22 @@ Power = F_hand * d * n</div>
 
 <div class="q">
   <div class="hd"><span class="num">12</span><span class="ttl">Reservoir area and drop in fluid level</span></div>
-  <p class="ask">Determine the cross-sectional area of the donut-shaped reservoir, then find the drop in
-     fluid level when the lifting cylinder is fully extended.</p>
-  <div class="give">A_res = (pi/4) * (D_o^2 - D_i^2)
-V_lift = A_r * L
-drop = V_lift / A_res</div>
-  <div class="work"></div>
+  <p class="ask"><b>(a)</b> Determine the cross-sectional area of the donut-shaped reservoir, then find
+     the drop in fluid level when the lifting cylinder is fully extended.
+     <b>(b)</b> Using the height of the annular oil space, determine the maximum reservoir capacity and
+     show whether the reservoir can supply a full extension. Report the margin.</p>
+  <div class="give">A_res    = (pi/4) * (D_o^2 - D_i^2)
+V_lift   = A_r * L
+drop     = V_lift / A_res
+capacity = A_res * H
+margin   = capacity / V_lift        must exceed 1.0</div>
+  <div class="work tall"></div>
   <p class="ansline">A_res =<span></span>in^2      drop =<span></span>in</p>
+  <p class="ansline">capacity =<span></span>in^3      margin =<span></span>: 1</p>
+  <div class="note" style="margin-left:36px"><b>Two checks on your own numbers.</b> The drop cannot
+    exceed the oil column height, or the pump would draw air before full extension. And the annulus is
+    interrupted by the pump cylinder boss and the cast passages, so a clean donut overstates the true
+    capacity; treat your answer as an upper bound and say so.</div>
 </div>
 
 <div class="q">

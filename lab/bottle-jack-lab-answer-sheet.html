@@ -138,6 +138,7 @@ const M = [
   {k:"b",   sym:"b",   lab:"Pivot to operator hand",          v:13.78,  u:"in"},
   {k:"ID",  sym:"D_i", lab:"Reservoir donut inside dia",      v:2.25,   u:"in", flag:true},
   {k:"OD",  sym:"D_o", lab:"Reservoir donut outside dia",     v:3.50,   u:"in", flag:true},
+  {k:"H",   sym:"H",   lab:"Reservoir oil column height",     v:3.00,   u:"in", flag:true},
   {k:"n",   sym:"n",   lab:"Pumping rate",                    v:1,      u:"cycle/s"}
 ];
 const D = {};
@@ -172,6 +173,8 @@ function solve(){
   r.Ares = PI/4*(D.OD*D.OD - D.ID*D.ID);
   r.Vlift= r.Ar*D.L;
   r.drop = r.Ares>0 ? r.Vlift/r.Ares : NaN;
+  r.cap  = r.Ares*D.H;                       // upper bound on reservoir capacity
+  r.marg = r.Vlift>0 ? r.cap/r.Vlift : NaN;
   r.mult = r.Fh>0 ? D.W/r.Fh : Infinity;
   r.aRat = r.Ap>0 ? r.Ar/r.Ap : Infinity;
   r.lRat = D.a>0 ? D.b/D.a : Infinity;
@@ -288,16 +291,26 @@ const Q = [
        ". It is a consequence of the chord versus arc approximation, not a real loss."},
 
   {n:12, t:"Reservoir area and drop in fluid level",
-   ask:"Determine the cross-sectional area of the donut-shaped reservoir, then find the drop in fluid level when the cylinder is fully extended.",
+   ask:"(a) Determine the cross-sectional area of the donut-shaped reservoir and the drop in fluid level at full extension. (b) Using the height of the annular oil space, find the maximum reservoir capacity and show whether it can supply a full extension.",
    work:r=>[
      ["Annulus area", "A_res = (pi/4) * (D_o^2 - D_i^2)",
       "A_res = (pi/4) * (("+f(D.OD,3)+")^2 - ("+f(D.ID,3)+")^2) = "+f(r.Ares,4)+" in^2"],
      ["Volume transferred at full extension", "V_lift = A_r * L",
       "V_lift = "+f(r.Ar,5)+" in^2 * "+f(D.L,3)+" in = "+f(r.Vlift,4)+" in^3"],
      ["Level drop", "drop = V_lift / A_res",
-      "drop = "+f(r.Vlift,4)+" in^3 / "+f(r.Ares,4)+" in^2 = "+f(r.drop,3)+" in"]],
-   ans:r=>"A_res = "+f(r.Ares,4)+" in^2,   drop = "+f(r.drop,3)+" in",
-   rem:"Every cubic inch that appears under the ram left the reservoir, so the reservoir must hold at least V_lift above the pump inlet or the pump will draw air near full extension."}
+      "drop = "+f(r.Vlift,4)+" in^3 / "+f(r.Ares,4)+" in^2 = "+f(r.drop,3)+" in"],
+     ["Reservoir capacity", "capacity = A_res * H",
+      "capacity = "+f(r.Ares,4)+" in^2 * "+f(D.H,3)+" in = "+f(r.cap,3)+" in^3"],
+     ["Adequacy margin", "margin = capacity / V_lift    (must exceed 1.0)",
+      "margin = "+f(r.cap,3)+" / "+f(r.Vlift,4)+" = "+f(r.marg,2)+" : 1"]],
+   ans:r=>"A_res = "+f(r.Ares,4)+" in^2,   drop = "+f(r.drop,3)+" in,   capacity = "+
+          f(r.cap,2)+" in^3 ("+f(r.marg,2)+" : 1)",
+   rem:r=>"Every cubic inch that appears under the ram left the reservoir. Two checks follow. "+
+     "The level drop of "+f(r.drop,2)+" in cannot exceed the oil column height of "+f(D.H,2)+" in, "+
+     "or the pump draws air before full extension"+
+     (r.drop > D.H ? ", and here it does, so at least one of the three reservoir measurements is wrong." : ".")+
+     " The annulus is also interrupted by the pump cylinder boss and the cast passages, so a clean "+
+     "donut overstates capacity; treat "+f(r.cap,2)+" in^3 as an upper bound."}
 ];
 
 /* ---------- render ---------- */

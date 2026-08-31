@@ -313,7 +313,9 @@ const DEFAULTS = {
   handleLen:  350,    // mm
   pivotLink:   35,    // mm
   load:      5000,    // N
-  resFill:    400,    // mL, oil in reservoir at reset
+  bodyID:      76,    // mm, inside diameter of the jack body (reservoir outer)
+  cylOD:       56,    // mm, outside diameter of the lifting cylinder (reservoir inner)
+  resHeight:  110,    // mm, height of the annular oil column
   deadVol:     20     // mL, dead volume under the ram at zero stroke
 };
 
@@ -334,9 +336,11 @@ const SPECS = {
     {k:"pivotLink",    lab:"Pivot to link",       min:15, max:80,  q:"len"}
   ],
   sys: [
-    {k:"load",         lab:"Load on ram",         min:0,  max:60000, q:"force"},
-    {k:"resFill",      lab:"Reservoir oil",       min:100,max:900,   q:"vol"},
-    {k:"deadVol",      lab:"Dead volume under ram",min:0, max:100,   q:"vol"}
+    {k:"load",         lab:"Load on ram",              min:0,  max:60000, q:"force"},
+    {k:"bodyID",       lab:"Jack body inside dia",     min:34, max:200,   q:"len"},
+    {k:"cylOD",        lab:"Lifting cylinder outside dia", min:26, max:190, q:"len"},
+    {k:"resHeight",    lab:"Reservoir oil column height", min:20, max:250, q:"len"},
+    {k:"deadVol",      lab:"Dead volume under ram",    min:0,  max:100,   q:"vol"}
   ]
 };
 
@@ -371,8 +375,15 @@ function derived(d){
   const Fpump = Phold*Ap;                     // N
   const Fhand = Fpump/MA;                     // N
   const strokesToTop = risePerStroke>0 ? d.ramStrokeMax/risePerStroke : Infinity;
+  // reservoir is an annulus between the lifting cylinder and the jack body
+  const Ares = PI*(d.bodyID*d.bodyID - d.cylOD*d.cylOD)/4;   // mm^2
+  const resCap = Ares*d.resHeight;                            // mm^3
+  const vNeeded = Ar*d.ramStrokeMax;                          // mm^3 for a full extension
+  const margin = vNeeded>0 ? resCap/vNeeded : Infinity;
+  const dropFull = Ares>0 ? vNeeded/Ares : Infinity;          // mm of level drop at full stroke
   return {Ar,Ap,ratio,thetaMax,strokeReal,dispPerStroke,risePerStroke,MA,
-          ramLen,ramWeight,Phold,Fpump,Fhand,strokesToTop};
+          ramLen,ramWeight,Phold,Fpump,Fhand,strokesToTop,
+          Ares,resCap,vNeeded,margin,dropFull};
 }
 
 /* ============================================================
@@ -395,7 +406,7 @@ function resetSim(){
   sim.ram = clamp(dims.ramStart, 0, dims.ramStrokeMax);
   sim.vPump = D.Ap*DEAD_PUMP;
   const vHp = D.Ar*sim.ram + dims.deadVol*1000;
-  sim.vRes = dims.resFill*1000;
+  sim.vRes = D.resCap;
   sim.vTotal = sim.vRes + sim.vPump + vHp;
   sim.compress=0; sim.strokes=0; sim.halfUp=false;
   sim.releaseOpen=false; sim.inlet=false; sim.outlet=false; sim.relief=false;
@@ -532,7 +543,11 @@ function layout(){
   const cx = 232;
   const ramR   = clamp(d.ramDia*1.05, 17, 58);
   const boreR  = ramR + clamp((d.boreDia-d.ramDia)*1.1, 3, 9);
-  const cylWall= 12, resW = 40, shell = 9;
+  // radial exaggeration: real annuli are too thin to draw, so these are scaled
+  // and clamped for legibility. The hydraulic calculation never uses them.
+  const cylWall= clamp((d.cylOD - d.boreDia)/2 * 2.0, 9, 30);
+  const resW   = clamp((d.bodyID - d.cylOD)/2 * 4.0, 34, 72);
+  const shell = 9;
   const cylOut = boreR + cylWall;
   const bodyHalf = cylOut + resW + shell;
 
@@ -570,8 +585,8 @@ function layout(){
   const hEndY = pivotY  - handleLenPx*Math.sin(sim.theta);
 
   const xResL  = cx - cylOut - resW/2;          // centre of the left column (same volume)
-  const xResRel= cx + cylOut + 12;              // release return riser
-  const xResR  = cx + cylOut + 30;              // pump suction riser
+  const xResRel= cx + cylOut + resW*0.28;       // release return riser
+  const xResR  = cx + cylOut + resW*0.75;       // pump suction riser
   const resTop = bodyTop + 14;
 
   // three stacked galleries in the base, all on the pump side of the bore
@@ -871,8 +886,7 @@ function updateSVG(){
   R.hp.setAttribute("fill", sim.hpP>0.02 ? "var(--oil-high)" : "var(--oil-high-d)");
 
   /* reservoir level */
-  const resCapV = Math.max(dims.resFill*1000, 1);
-  const frac = clamp(sim.vRes/resCapV, 0, 1);
+  const frac = clamp(sim.vRes/Math.max(D.resCap,1), 0, 1);
   const resH = (g.baseTop-g.resTop);
   const lv = resH*frac;
   [["resL","resLline",g.cx-g.bodyHalf+g.shell],["resR","resRline",g.cx+g.cylOut]].forEach(([a,b,x])=>{
@@ -1162,6 +1176,8 @@ function syncInputs(){
 function onDimsChanged(key){
   // keep the drawing legal
   if(dims.boreDia < dims.ramDia+2){ dims.boreDia = dims.ramDia+2; }
+  if(dims.cylOD  < dims.boreDia+4){ dims.cylOD  = dims.boreDia+4; }
+  if(dims.bodyID < dims.cylOD+6)  { dims.bodyID = dims.cylOD+6; }
   if(dims.ramStart > dims.ramStrokeMax) dims.ramStart = dims.ramStrokeMax;
   const D = derived(dims);
   sim.ram = clamp(sim.ram, 0, dims.ramStrokeMax);
@@ -1169,7 +1185,11 @@ function onDimsChanged(key){
   sim.lift = dims.pivotLink*Math.sin(sim.theta);
   // oil bookkeeping stays conserved against the new geometry
   sim.vTotal = sim.vRes + sim.vPump + D.Ar*sim.ram + dims.deadVol*1000;
-  if(key==="resFill") { sim.vRes = dims.resFill*1000; sim.vTotal = sim.vRes+sim.vPump+D.Ar*sim.ram+dims.deadVol*1000; }
+  if(key==="bodyID"||key==="cylOD"||key==="resHeight"||key==="all"){
+    sim.vRes = D.resCap;
+    sim.vTotal = sim.vRes + sim.vPump + D.Ar*sim.ram + dims.deadVol*1000;
+  }
+  sim.vRes = clamp(sim.vRes, 0, D.resCap);
   syncInputs();
   buildSVG();
   updateDash();
@@ -1264,7 +1284,14 @@ const DASH_ROWS = [
   ["Inlet check valve", ()=>sim.inlet?"OPEN":"closed"],
   ["Outlet check valve",()=>(sim.outlet||sim.relief)?"OPEN":"closed"],
   ["Release valve",     ()=>sim.releaseOpen?"OPEN":"closed"],
-  ["Reservoir oil",     ()=>U.vol(sim.vRes)]
+  ["SEP"],
+  ["Reservoir annulus area", ()=>U.area(derived(dims).Ares)],
+  ["Reservoir capacity", ()=>U.vol(derived(dims).resCap)],
+  ["Oil in reservoir",  ()=>U.vol(sim.vRes)],
+  ["Oil level",         ()=>{const D=derived(dims);
+        return U.len(D.Ares>0?sim.vRes/D.Ares:0)+" / "+U.len(dims.resHeight);}],
+  ["Level drop at full stroke", ()=>U.len(derived(dims).dropFull)],
+  ["Capacity margin",   ()=>fmt(derived(dims).margin,2)+" : 1", true]
 ];
 
 function updateDash(){
@@ -1293,6 +1320,12 @@ function updateDash(){
   if(dims.pumpStroke > dims.pivotLink*0.98)
     msg = "Pump stroke cannot exceed the pivot-to-link distance. Stroke limited to "+U.len(D.strokeReal)+".";
   else if(sim.starved) msg = "Reservoir is empty. Add oil or lower the ram before pumping again.";
+  else if(D.margin < 1)
+    msg = "Reservoir holds "+U.vol(D.resCap)+" but a full extension needs "+U.vol(D.vNeeded)+
+          ". The pump will draw air after about "+fmt(D.resCap/Math.max(D.dispPerStroke,1e-9),0)+
+          " strokes.";
+  else if(D.dropFull > dims.resHeight)
+    msg = "Level would drop "+U.len(D.dropFull)+" in a "+U.len(dims.resHeight)+" oil column.";
   else if(D.Phold > RELIEF_P)
     msg = "Required pressure "+U.press(D.Phold)+" exceeds the "+U.press(RELIEF_P)+" relief setting. Use a larger ram or a smaller load.";
   alertBox.textContent=msg;

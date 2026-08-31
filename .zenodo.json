@@ -1,12 +1,14 @@
 {
   "title": "Interactive Hydraulic Bottle Jack Cross Section and Laboratory Materials",
-  "description": "<p>A browser-based, offline-capable simulation of a hydraulic bottle jack in cross section, together with a student laboratory handout and an instructor answer sheet for a disassembly and measurement activity conducted on drained jacks.</p><p>The simulator maintains an explicit hydraulic state machine and moves the ram only by the oil volume the pump actually delivers, so the animation follows the physics rather than approximating it. All dimensions are user-editable and the drawing is parametric. A verification suite covers volume conservation, check valve logic, linkage ratios, drawing geometry across the full range of every editable dimension, and interface behaviour in a headless browser.</p><p>Code is released under MIT; instructional content is released under CC BY 4.0.</p>",
+  "description": "<p>Live version: <a href=\"https://alibulentkoc.github.io/hydraulic-bottle-jack/\">https://alibulentkoc.github.io/hydraulic-bottle-jack/</a></p><p>A browser-based, offline-capable simulation of a hydraulic bottle jack in cross section, together with a student laboratory handout and an instructor answer sheet for a disassembly and measurement activity conducted on drained jacks.</p><p>The simulator maintains an explicit hydraulic state machine and moves the ram only by the oil volume the pump actually delivers, so the animation follows the physics rather than approximating it. All dimensions are user-editable, including the reservoir annulus geometry, and the drawing is parametric. A verification suite covers volume conservation, check valve logic, drawing geometry across the full range of every editable dimension, and interface behaviour in a headless browser.</p><p>Code is released under MIT; instructional content is released under CC BY 4.0.</p>",
   "upload_type": "software",
   "license": "MIT",
   "access_right": "open",
   "creators": [
     {
-      "name": "Koc, A. Bulent"
+      "name": "Koc, A. Bulent",
+      "orcid": "0000-0003-3633-1699",
+      "affiliation": "Agricultural Sciences Department, Agricultural Mechanization and Business Program, Clemson University"
     }
   ],
   "keywords": [
@@ -16,5 +18,12 @@
     "laboratory instruction",
     "interactive simulation",
     "measurement uncertainty"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://alibulentkoc.github.io/hydraulic-bottle-jack/",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    }
   ]
 }

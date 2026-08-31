@@ -14,13 +14,13 @@ authors:
     given-names: A. Bulent
     orcid: "https://orcid.org/0000-0003-3633-1699"
     affiliation: "Agricultural Sciences Department, Agricultural Mechanization and Business Program, Clemson University"
-version: 1.0.0
+version: 1.1.0
 date-released: "2026-08-30"
 doi: "10.5281/zenodo.22181633"
-url: "https://doi.org/10.5281/zenodo.22181633"
 license: MIT
 license-url: "https://opensource.org/licenses/MIT"
 repository-code: "https://github.com/alibulentkoc/hydraulic-bottle-jack"
+url: "https://alibulentkoc.github.io/hydraulic-bottle-jack/"
 keywords:
   - fluid power
   - hydraulics

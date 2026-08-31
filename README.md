@@ -12,6 +12,8 @@ full hydraulic cycle: draw fluid, pressurize it, do work, hold the load, return 
 fluid to tank. This repository holds an interactive cross section of that device
 and the laboratory materials built around it.
 
+**Run it now: <https://alibulentkoc.github.io/hydraulic-bottle-jack/>**
+
 Everything runs in a browser from a local file. No server, no build step, no
 network access, no dependencies at runtime.
 
@@ -144,7 +146,10 @@ version, rather than a single version DOI:
 > Laboratory Materials* [Software]. Zenodo.
 > https://doi.org/10.5281/zenodo.22181633
 
-Version 1.0.0: [10.5281/zenodo.22181633](https://doi.org/10.5281/zenodo.22181633)
+All versions (concept DOI, cite this one):
+[10.5281/zenodo.22181633](https://doi.org/10.5281/zenodo.22181633)
+
+Live version: <https://alibulentkoc.github.io/hydraulic-bottle-jack/>
 
 See `CITATION.cff`, or use the "Cite this repository" button on GitHub.
 
