@@ -37,6 +37,11 @@
   stroke and the chamber staying inside the cylinder: pivot above the pump cylinder,
   handle tip on canvas, ram protrusion at rest, load block on canvas, and the
   oil column contained by the body.
+- Reservoir now shows the oil still committed to a full extension as a shaded
+  band above the dashed level that would remain. The true drop is a fraction of
+  a millimetre per stroke and reads as static, so changing ram stroke or ram
+  diameter previously moved the numbers without moving the reservoir. The band
+  turns red when the reservoir cannot cover the remaining stroke.
 - Animated demonstration added to the README.
 
 ## 1.0.0 - 2026-08-30

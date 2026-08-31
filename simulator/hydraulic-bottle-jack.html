@@ -225,6 +225,7 @@
 
       <div class="legend">
         <span><i class="sw" style="background:#f5c231"></i>Reservoir oil (low pressure). The bottle is annular, so the two yellow columns are one connected volume at one level.</span>
+        <span><i class="sw" style="background:#c08f16;opacity:.45"></i>Oil still committed to a full extension; the dashed line is the level that would remain. It turns red when the reservoir cannot cover the stroke.</span>
         <span><i class="sw" style="background:#2fd98a"></i>Lifting oil (high pressure)</span>
         <span><i class="sw" style="background:#c3cbd1"></i>Ram</span>
         <span><i class="sw" style="background:#5c666e"></i>Body / structure</span>
@@ -789,6 +790,12 @@ function buildSVG(){
   // drawn under the ram, so it reads as passing behind the cylinder.
   R.resTie = el("line",{stroke:"var(--oil-low-d)","stroke-width":"2","stroke-dasharray":"5 6",
                         opacity:"0.65"},O);
+  // the band of oil still committed to reaching full extension, and the level
+  // that would be left once it is spent. The real drop is only a fraction of a
+  // millimetre per stroke, so without this the reservoir looks static.
+  R.demandL = el("rect",{opacity:"0.45"},O);
+  R.demandR = el("rect",{opacity:"0.45"},O);
+  R.demandLine = el("line",{"stroke-width":"1.8","stroke-dasharray":"7 4"},O);
 
   /* ---- check valves ---- */
   function valveSeat(x,y,dir,parent){
@@ -944,6 +951,26 @@ function updateSVG(){
   });
   R.resTie.setAttribute("x1", g.cx-g.cylOut); R.resTie.setAttribute("x2", g.cx+g.cylOut);
   R.resTie.setAttribute("y1", g.baseTop-lv);  R.resTie.setAttribute("y2", g.baseTop-lv);
+
+  // how far the level still has to fall to reach full extension
+  const mmPerPx  = dims.resHeight / Math.max(g.resHpx, 1);
+  const remain   = Math.max(dims.ramStrokeMax - sim.ram, 0);
+  const demandPx = (D.Ares > 0 ? (D.Ar*remain/D.Ares) : 0) / Math.max(mmPerPx, 1e-6);
+  const short    = demandPx > lv + 0.5;                 // reservoir cannot cover it
+  const bandH    = Math.max(Math.min(demandPx, lv), 0);
+  const yNow     = g.baseTop - lv;
+  [["demandL", g.cx-g.bodyHalf+g.shell], ["demandR", g.cx+g.cylOut]].forEach(function(e){
+    const el2 = R[e[0]];
+    el2.setAttribute("x", e[1]); el2.setAttribute("width", g.resW);
+    el2.setAttribute("y", yNow); el2.setAttribute("height", bandH);
+    el2.setAttribute("fill", short ? "var(--stop)" : "var(--oil-low-d)");
+    el2.setAttribute("opacity", bandH > 0.5 ? 0.45 : 0);
+  });
+  R.demandLine.setAttribute("x1", g.cx-g.bodyHalf+g.shell);
+  R.demandLine.setAttribute("x2", g.cx+g.cylOut+g.resW);
+  R.demandLine.setAttribute("y1", yNow+bandH); R.demandLine.setAttribute("y2", yNow+bandH);
+  R.demandLine.setAttribute("stroke", short ? "var(--stop)" : "var(--oil-low-d)");
+  R.demandLine.setAttribute("opacity", bandH > 0.5 ? 0.9 : 0);
 
   /* pump piston + chamber */
   R.pistHead.setAttribute("y", g.headTopY);
