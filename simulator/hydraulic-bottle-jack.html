@@ -274,6 +274,7 @@
           <div class="grp"><h3>Hydraulic system</h3><div id="grpSys"></div></div>
           <div class="applyrow">
             <button class="act" id="bApply">Apply values</button>
+            <button class="act" id="bFit">Fit reservoir</button>
             <button class="act" id="bDefaults">Restore defaults</button>
           </div>
           <p class="note">Type a value and press Enter, or edit several fields and use Apply values. Entries outside the allowed range are clamped, and switching unit system converts what is already there.</p>
@@ -1235,6 +1236,30 @@ buildControls("grpPump", SPECS.pump);
 buildControls("grpHandle", SPECS.handle);
 buildControls("grpSys", SPECS.sys);
 
+/* Size the reservoir so it can actually supply a full extension, with a 25 per
+   cent margin. Raise the oil column first, since that is what a taller jack
+   really does, and widen the body only once the column reaches its limit. */
+let autoFitNote = "";
+function fitReservoir(announce){
+  const D0 = derived(dims);
+  const need = D0.Ar*dims.ramStrokeMax*1.25 + dims.deadVol*1000;   // mm^3
+  const before = dims.resHeight;
+  const h = need / Math.max(D0.Ares, 1);
+  if(h <= 250){
+    dims.resHeight = clamp(Math.ceil(h), 20, 250);
+  } else {
+    dims.resHeight = 250;
+    const areaNeeded = need/250;
+    const bodyNeeded = Math.sqrt(dims.cylOD*dims.cylOD + 4*areaNeeded/PI);
+    dims.bodyID = clamp(Math.ceil(bodyNeeded), dims.cylOD+6, 200);
+  }
+  autoFitNote = announce
+    ? "Reservoir column raised from " + U.len(before) + " to " + U.len(dims.resHeight) +
+      " so it can supply the new stroke. Type your own value to override."
+    : "";
+  onDimsChanged("all");
+}
+
 function commitField(s){
   const n=$("n_"+s.k);
   const typed=parseFloat(n.value);
@@ -1263,7 +1288,11 @@ function syncInputs(){
   });
 }
 
+let fitting = false;
 function onDimsChanged(key){
+  // any edit the user makes clears a previous auto-fit notice; the fit itself
+  // re-enters with fitting set, so its own message survives
+  if(!fitting) autoFitNote = "";
   // keep the drawing legal
   if(dims.boreDia < dims.ramDia+2){ dims.boreDia = dims.ramDia+2; }
   if(dims.cylOD  < dims.boreDia+4){ dims.cylOD  = dims.boreDia+4; }
@@ -1283,6 +1312,16 @@ function onDimsChanged(key){
   syncInputs();
   buildSVG();
   updateDash();
+
+  // Changing the actuator can outrun the reservoir. Resize it rather than leave
+  // the jack in a state it could never reach, and say so rather than do it silently.
+  if(!fitting && (key==="ramStrokeMax" || key==="ramDia" || key==="boreDia" || key==="deadVol")){
+    if(derived(dims).margin < 1.05){
+      fitting = true;
+      fitReservoir(true);
+      fitting = false;
+    }
+  }
 }
 
 $("tDims").addEventListener("click",e=>{T.dims=!T.dims; setPressed(e.currentTarget,T.dims); updateSVG();});
@@ -1302,7 +1341,7 @@ bRel.addEventListener("click",()=>{
   bRel.textContent = "Release valve: " + (sim.releaseOpen?"open":"closed");
 });
 bReset.addEventListener("click",()=>{
-  Object.assign(dims, DEFAULTS);
+  Object.assign(dims, DEFAULTS); autoFitNote = "";
   syncInputs(); resetSim(); bPause.textContent="Pause"; buildSVG(); updateDash();
 });
 function setUnits(us){
@@ -1314,8 +1353,10 @@ function setUnits(us){
 $("uSI").addEventListener("click",()=>setUnits(false));
 $("uUS").addEventListener("click",()=>setUnits(true));
 $("bApply").addEventListener("click",applyAll);
+$("bFit").addEventListener("click",()=>fitReservoir(false));
 $("bDefaults").addEventListener("click",()=>{
-  Object.assign(dims, DEFAULTS); syncInputs(); buildSVG(); updateDash();
+  Object.assign(dims, DEFAULTS); autoFitNote = "";
+  syncInputs(); buildSVG(); updateDash();
 });
 
 /* handle dragging */
@@ -1435,19 +1476,22 @@ function updateDash(){
                              " deg (set by stroke and pivot distance)";
 
   // warnings
-  let msg="";
-  if(dims.pumpStroke > dims.pivotLink*0.98)
-    msg = "Pump stroke cannot exceed the pivot-to-link distance. Stroke limited to "+U.len(D.strokeReal)+".";
-  else if(sim.starved) msg = "Reservoir is empty. Add oil or lower the ram before pumping again.";
-  else if(D.margin < 1)
-    msg = "Reservoir holds "+U.vol(D.resCap)+" but a full extension needs "+U.vol(D.vNeeded)+
-          ". The pump will draw air after about "+fmt(D.resCap/Math.max(D.dispPerStroke,1e-9),0)+
-          " strokes.";
-  else if(D.dropFull > dims.resHeight)
-    msg = "Level would drop "+U.len(D.dropFull)+" in a "+U.len(dims.resHeight)+" oil column.";
-  else if(D.Phold > RELIEF_P)
-    msg = "Required pressure "+U.press(D.Phold)+" exceeds the "+U.press(RELIEF_P)+" relief setting. Use a larger ram or a smaller load.";
-  alertBox.textContent=msg;
+  let msg = autoFitNote;
+  if(!msg){
+    if(dims.pumpStroke > dims.pivotLink*0.98)
+      msg = "Pump stroke cannot exceed the pivot-to-link distance. Stroke limited to "+U.len(D.strokeReal)+".";
+    else if(sim.starved) msg = "Reservoir is empty. Add oil or lower the ram before pumping again.";
+    else if(D.margin < 1)
+      msg = "Reservoir holds "+U.vol(D.resCap)+" but a full extension needs "+U.vol(D.vNeeded)+
+            ". The pump will draw air after about "+fmt(D.resCap/Math.max(D.dispPerStroke,1e-9),0)+
+            " strokes. Use Fit reservoir to size it for the stroke.";
+    else if(D.dropFull > dims.resHeight)
+      msg = "Level would drop "+U.len(D.dropFull)+" in a "+U.len(dims.resHeight)+" oil column.";
+    else if(D.Phold > RELIEF_P)
+      msg = "Required pressure "+U.press(D.Phold)+" exceeds the "+U.press(RELIEF_P)+
+            " relief setting. Use a larger ram or a smaller load.";
+  }
+  alertBox.textContent = msg;
 
   // ledger
   const vh = D.Ar*sim.ram + dims.deadVol*1000;

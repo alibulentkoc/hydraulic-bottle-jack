@@ -40,4 +40,9 @@ v1.2.0 - Browser compatibility, label layout, and reservoir geometry
   a millimetre per stroke and reads as static, so changing ram stroke or ram
   diameter previously moved the numbers without moving the reservoir. The band
   turns red when the reservoir cannot cover the remaining stroke.
+- The reservoir now follows the lifting cylinder. Raising the ram stroke or bore
+  past what the oil can supply resizes the oil column to cover it with a 25 per
+  cent margin, and says so in the panel rather than doing it silently. A typed
+  value always wins, so a measured jack can still be entered and shown to be
+  inadequate. A Fit reservoir button applies the same sizing on demand.
 - Animated demonstration added to the README.
