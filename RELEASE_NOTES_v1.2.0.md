@@ -45,4 +45,11 @@ v1.2.0 - Browser compatibility, label layout, and reservoir geometry
   cent margin, and says so in the panel rather than doing it silently. A typed
   value always wins, so a measured jack can still be entered and shown to be
   inadequate. A Fit reservoir button applies the same sizing on demand.
+- New instructor grading tool, lab/bottle-jack-lab-grader.html. Enter the master
+  dimensions of a jack and what a group reported; it audits each dimension
+  against a per-feature tolerance and recomputes every answer twice, once from
+  the master values and once from the reported ones, so method can be credited
+  separately from measurement. Raises flags for readings that match the master
+  exactly, for a level drop exceeding the oil column, and for the arc-versus-chord
+  discrepancy in question 13, and carries a suggested mark weighting.
 - Animated demonstration added to the README.

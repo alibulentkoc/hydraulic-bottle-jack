@@ -26,7 +26,8 @@ network access, no dependencies at runtime.
 | `simulator/hydraulic-bottle-jack.html` | Interactive parametric cross section |
 | `lab/bottle-jack-lab-handout.html` | Student handout: objectives, principles, procedure, data tables, questions 2 to 15 |
 | `lab/bottle-jack-lab-answer-sheet.html` | Instructor answer sheet: live formulas, substitutions, and results |
-| `tests/` | Verification suite, 130 checks |
+| `lab/bottle-jack-lab-grader.html` | Instructor grading tool: measurement audit against master dimensions |
+| `tests/` | Verification suite, 158 checks |
 
 Open any of the three files directly in a browser. The two laboratory documents
 are formatted to print.
@@ -89,6 +90,27 @@ the materials are built around that rather than in spite of it:
   across every jack in the room, from which students recover the working pressure
   a manufacturer designs a product family around.
 
+### Grading when the answer sheet is public
+
+The answer sheet is a calculator, not an answer key: its numbers depend entirely
+on the dimensions typed into it, so a student who obtains it still has to measure
+a real jack. What it does remove is the value of grading arithmetic.
+
+The grading tool addresses that. Measure each jack once yourself, enter those as
+master dimensions, then enter what a group reported. Every dimension is checked
+against the master within a tolerance you set, and every derived answer is
+computed twice: from your master dimensions, and from theirs. The second column
+is what lets you credit correct method on imperfect data, which is the usual
+case, and spot the opposite pattern of answers that do not follow from the
+numbers reported beside them.
+
+It also raises specific flags: dimensions far outside tolerance, a suspicious
+number of readings matching the master exactly, a reported level drop that
+exceeds the reported oil column, and the arc-versus-chord discrepancy that
+question 13 must account for. A suggested weighting puts thirty per cent of the
+marks on measurement technique and twenty on the uncertainty analysis, leaving
+fifteen for the calculations a tool can do.
+
 The handout states eight core principles up front, including several that students
 rarely articulate on their own: that a pair of check valves is what turns
 reciprocating motion into one-way flow, that a seated ball holds a load at zero
@@ -108,7 +130,7 @@ npm install     # jsdom, for the interface checks only
 npm test
 ```
 
-130 checks in six suites:
+158 checks in six suites:
 
 - **physics** (19): volume conservation across pump cycles and through the release
   valve, area-ratio scaling, load holding, stroke limiting, relief behaviour at
@@ -117,11 +139,11 @@ npm test
   collides, evaluated at the extremes of every user-editable dimension.
 - **answer sheet** (12): internal consistency of the laboratory calculations,
   including that ideal speed reduction equals force multiplication exactly.
-- **interface** (17): all three documents loaded in a headless DOM, controls
+- **interface** (22): all three documents loaded in a headless DOM, controls
   exercised, unit round-trips checked.
 - **labels** (10): no annotation overlaps another or leaves the canvas, checked
   at both dimension extremes and in both unit systems.
-- **compatibility** (48): the source stays inside a conservative browser feature
+- **compatibility** (64): the source stays inside a conservative browser feature
   floor, and every feature that could fail silently is feature detected.
 
 The suite runs on every push through GitHub Actions.

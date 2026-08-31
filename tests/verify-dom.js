@@ -2,7 +2,7 @@
    Catches load-time and handler errors that a syntax check cannot. */
 const fs = require("fs");
 const { JSDOM, VirtualConsole } = require("jsdom");
-const { SIM, SHEET, HANDOUT } = require("./extract.js");
+const { SIM, SHEET, HANDOUT, GRADER } = require("./extract.js");
 
 const R = [];
 const ok = (name, cond, note) => R.push([cond, name, note || ""]);
@@ -40,6 +40,22 @@ module.exports = new Promise(resolve => {
     const after = d.querySelectorAll(".ans")[1].textContent;
     ok("answer sheet recomputes on input", before !== after);
     ok("answer sheet stays error free after edit", errs.length === 0, errs.join("; "));
+  }
+
+  /* grading tool: audit verdicts and the two answer columns */
+  {
+    const { w, d, errs } = open(GRADER);
+    ok("grader loads without errors", errs.length === 0, errs.join("; "));
+    ok("grader renders every dimension row", d.querySelectorAll("#audit tr").length === 11);
+    ok("grader renders every answer row", d.querySelectorAll("#answers tr").length === 19);
+    const n = d.getElementById("r_Dr");
+    n.value = "1.605";
+    n.dispatchEvent(new w.Event("input", { bubbles: true }));
+    ok("grader flags a bore outside tolerance",
+       d.querySelectorAll(".verdict.v-bad").length > 0);
+    ok("grader recomputes the reported column",
+       /2\.02/.test(d.querySelectorAll("#answers tr")[1].textContent));
+    ok("grader stays error free after edit", errs.length === 0, errs.join("; "));
   }
 
   /* simulator: animation loop, unit switching, typed entry */

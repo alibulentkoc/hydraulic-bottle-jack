@@ -3,9 +3,10 @@
    feature floor: ES6 (2015) syntax, no ES2017+ library methods, no CSS or SVG
    feature that fails silently or illegibly when unsupported. */
 const fs = require("fs");
-const { SIM, SHEET, HANDOUT } = require("./extract.js");
+const { SIM, SHEET, HANDOUT, GRADER } = require("./extract.js");
 
-const FILES = [["simulator", SIM], ["answer sheet", SHEET], ["handout", HANDOUT]];
+const FILES = [["simulator", SIM], ["answer sheet", SHEET], ["handout", HANDOUT],
+               ["grader", GRADER]];
 
 /* Comments explain which features are avoided and why, so they name the very
    patterns being banned. Strip them before scanning, or the prose fails the

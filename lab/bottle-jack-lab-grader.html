@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydraulic Bottle Jack - Instructor Grading Tool</title>
+<style>
+  :root{
+    --paper:#fbfaf7; --ink:#1b2128; --ink-2:#4a545e; --ink-3:#7c8791;
+    --rule:#d6d2c8; --rule-2:#b9b3a5;
+    --ok:#14794c; --ok-bg:#eaf5ef;
+    --warn:#8a5a12; --warn-bg:#fbf3e2;
+    --bad:#9d2f28; --bad-bg:#fbeeed;
+    --mono: ui-monospace,"SFMono-Regular","Cascadia Mono","Consolas","Liberation Mono",monospace;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#eceae4;color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.5}
+  .sheet{max-width:1040px;margin:0 auto;background:var(--paper);padding:32px 40px 56px;
+         box-shadow:0 0 0 1px var(--rule)}
+
+  header{border-bottom:2.5px solid var(--ink);padding-bottom:13px;margin-bottom:18px}
+  header h1{font-family:var(--serif);font-size:26px;font-weight:600;margin:0 0 4px}
+  header .sub{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+
+  .note{background:#f3f1ea;border-left:3px solid var(--rule-2);padding:10px 14px;margin:14px 0;
+        font-size:13.5px;color:var(--ink-2)}
+  .note b{color:var(--ink)}
+
+  h2.band{font-family:var(--mono);font-size:11px;letter-spacing:.19em;text-transform:uppercase;
+    color:var(--ink);border-bottom:1.5px solid var(--ink);padding-bottom:6px;margin:28px 0 12px}
+
+  .idrow{display:flex;flex-wrap:wrap;margin-bottom:6px}
+  .idrow label{font-size:12.5px;color:var(--ink-2);margin:0 18px 8px 0}
+  .idrow input{font-family:var(--mono);font-size:13px;padding:4px 7px;border:1px solid var(--rule-2);
+    border-radius:2px;background:#fff;color:var(--ink);margin-left:7px;width:150px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+     text-align:left;border-bottom:1.5px solid var(--ink);padding:7px 8px 7px 0;vertical-align:bottom;color:var(--ink-2)}
+  td{border-bottom:1px solid var(--rule);padding:5px 8px 5px 0;vertical-align:middle}
+  td.sym{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+  td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+  input.val{width:88px;font-family:var(--mono);font-size:13px;text-align:right;padding:4px 6px;
+    border:1px solid var(--rule-2);border-radius:2px;background:#fff;color:var(--ink)}
+  input.val.master{background:#f4f1e8}
+  .tolcell input{width:62px}
+
+  .verdict{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;
+    letter-spacing:.06em;padding:2px 8px;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+  .v-ok{color:var(--ok);background:var(--ok-bg)}
+  .v-warn{color:var(--warn);background:var(--warn-bg)}
+  .v-bad{color:var(--bad);background:var(--bad-bg)}
+
+  .summary{display:flex;flex-wrap:wrap;margin:16px 0 4px}
+  .card{border:1px solid var(--rule-2);border-radius:4px;padding:12px 16px;margin:0 12px 12px 0;min-width:186px}
+  .card .lab{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+  .card .big{font-family:var(--mono);font-size:24px;font-weight:600;margin-top:3px}
+  .card .sub{font-size:12.5px;color:var(--ink-2)}
+
+  .flags{margin:10px 0 0;padding:0;list-style:none}
+  .flags li{padding:8px 12px;margin-bottom:7px;border-radius:3px;font-size:13.5px;border:1px solid}
+  .f-bad{background:var(--bad-bg);border-color:var(--bad);color:#7d2620}
+  .f-warn{background:var(--warn-bg);border-color:var(--warn);color:#6f4a10}
+  .f-ok{background:var(--ok-bg);border-color:var(--ok);color:#0f5c3a}
+
+  .toolbar{max-width:1040px;margin:16px auto 0;display:flex;justify-content:flex-end}
+  .toolbar > * + *{margin-left:9px}
+  .toolbar button{font-family:var(--mono);font-size:12px;padding:8px 14px;background:#fff;
+    border:1px solid var(--rule-2);border-radius:3px;cursor:pointer;color:var(--ink)}
+  .toolbar button:hover{background:#f3f1ea}
+  :focus{outline:1px dotted var(--rule-2);outline-offset:2px}
+
+  @media print{
+    body{background:#fff}
+    .sheet{box-shadow:none;max-width:none;padding:0 0 20px}
+    .toolbar{display:none}
+    input{border:0;border-bottom:1px solid #999;border-radius:0;background:transparent}
+    table,.card{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button id="bPrint">Print</button>
+  <button id="bCopyMaster">Copy master to reported</button>
+  <button id="bClear">Clear reported</button>
+</div>
+
+<div class="sheet">
+
+<header>
+  <h1>Instructor Grading Tool</h1>
+  <div class="sub">Hydraulic bottle jack laboratory - measurement audit and answer check</div>
+</header>
+
+<p>Enter the master dimensions you measured for the jack this group was assigned, then the values
+they reported. Each dimension is checked against your master within the tolerance you set, and every
+derived answer is recomputed twice: once from your master dimensions, and once from theirs.</p>
+
+<div class="note"><b>Why the second column matters.</b> A group whose measurement is off will get a
+different answer, and that answer can still be arithmetically correct. Separating the two lets you
+credit correct method on wrong data, which is the usual case, and lets you spot the opposite pattern:
+answers that do not follow from the numbers reported alongside them.</div>
+
+<h2 class="band">Identification</h2>
+<div class="idrow" id="idrow"></div>
+
+<h2 class="band">Measurement audit</h2>
+<table>
+  <thead><tr>
+    <th style="width:30%">Dimension</th><th style="width:9%">Symbol</th>
+    <th style="width:14%">Master</th><th style="width:14%">Reported</th>
+    <th style="width:11%">Tolerance</th><th style="width:11%">Deviation</th><th>Verdict</th>
+  </tr></thead>
+  <tbody id="audit"></tbody>
+</table>
+
+<div class="summary" id="summary"></div>
+<ul class="flags" id="flags"></ul>
+
+<h2 class="band">Answer check</h2>
+<p style="font-size:13.5px;color:var(--ink-2);margin:0 0 10px">
+  <b>From master</b> is the correct answer for this jack. <b>From reported</b> is what this group
+  should have obtained from their own measurements; that is the figure to grade their arithmetic
+  against.</p>
+<table>
+  <thead><tr>
+    <th style="width:34%">Quantity</th><th style="width:10%">Units</th>
+    <th style="width:18%">From master</th><th style="width:18%">From reported</th>
+    <th>Difference</th>
+  </tr></thead>
+  <tbody id="answers"></tbody>
+</table>
+
+<h2 class="band">Suggested marking</h2>
+<div class="note" style="border-left-color:var(--ok)">
+  The answer sheet is a calculator, so arithmetic carries little information. These weights put the
+  marks on what a calculator cannot supply: the measurements themselves, the uncertainty analysis in
+  question 14, the corrected flow-path sketch, and the class study in question 15.
+</div>
+<table>
+  <thead><tr><th style="width:62%">Component</th><th style="width:14%">Weight</th><th>Source</th></tr></thead>
+  <tbody>
+    <tr><td>Measurement data and technique, including reading spread and instrument choice</td>
+        <td class="num">30</td><td>Tables 2 and 3, audit above</td></tr>
+    <tr><td>Uncertainty propagation and identification of the dominant term</td>
+        <td class="num">20</td><td>Question 14</td></tr>
+    <tr><td>Corrected flow-path sketch and component condition notes</td>
+        <td class="num">15</td><td>Part C</td></tr>
+    <tr><td>Calculations, questions 2 to 12</td>
+        <td class="num">15</td><td>Answer check above</td></tr>
+    <tr><td>Interpretation of power comparison, including the arc discrepancy</td>
+        <td class="num">10</td><td>Question 13</td></tr>
+    <tr><td>Class-pooled capacity against area study</td>
+        <td class="num">10</td><td>Question 15</td></tr>
+  </tbody>
+</table>
+
+</div>
+
+<script>
+"use strict";
+
+/* ---------- the dimensions, identical to the answer sheet ---------- */
+const M = [
+  {k:"dp", sym:"d_p", lab:"Pump cylinder bore",              v:0.315, u:"in", tol:0.005},
+  {k:"sp", sym:"s_p", lab:"Pump piston stroke",              v:0.787, u:"in", tol:0.010},
+  {k:"Dr", sym:"D_r", lab:"Lifting cylinder bore",           v:1.575, u:"in", tol:0.005},
+  {k:"W",  sym:"W",   lab:"Rated lift load",                 v:1124,  u:"lb", tol:1},
+  {k:"L",  sym:"L",   lab:"Lifting cylinder full extension", v:3.937, u:"in", tol:0.030},
+  {k:"a",  sym:"a",   lab:"Pivot to pump rod end",           v:1.378, u:"in", tol:0.015},
+  {k:"b",  sym:"b",   lab:"Pivot to operator hand",          v:13.78, u:"in", tol:0.250},
+  {k:"ID", sym:"D_i", lab:"Reservoir donut inside dia",      v:2.25,  u:"in", tol:0.015},
+  {k:"OD", sym:"D_o", lab:"Reservoir donut outside dia",     v:3.50,  u:"in", tol:0.015},
+  {k:"H",  sym:"H",   lab:"Reservoir oil column height",     v:3.00,  u:"in", tol:0.060},
+  {k:"n",  sym:"n",   lab:"Pumping rate",                    v:1,     u:"cycle/s", tol:0}
+];
+
+const master = {}, reported = {}, tol = {};
+M.forEach(function(m){ master[m.k]=m.v; reported[m.k]=m.v; tol[m.k]=m.tol; });
+
+const HP = 6600, PI = Math.PI;
+const f = function(v,n){ return isFinite(v) ? Number(v).toFixed(n) : "-"; };
+
+/* ---------- the model, identical to the answer sheet ---------- */
+function solve(D){
+  const r = {};
+  r.Ap = PI/4*D.dp*D.dp;
+  r.Ar = PI/4*D.Dr*D.Dr;
+  r.Vp = r.Ap*D.sp;
+  r.h  = r.Vp/r.Ar;
+  r.P  = D.W/r.Ar;
+  r.Fp = r.P*r.Ap;
+  r.T  = r.Fp*D.a;
+  r.Fh = r.T/D.b;
+  r.Q  = r.Vp*D.n;
+  r.Phyd = r.P*r.Q/HP;
+  r.N  = r.h>0 ? D.L/r.h : Infinity;
+  r.t  = r.N/D.n;
+  r.v  = D.L/r.t;
+  r.Plin = D.W*r.v/HP;
+  r.sinT = D.a>0 ? D.sp/D.a : 0;
+  r.th = Math.asin(Math.min(r.sinT,1))*180/PI;
+  r.arc = 2*PI*D.b*r.th/360;
+  r.Pop = r.Fh*r.arc*D.n/HP;
+  r.Ares = PI/4*(D.OD*D.OD - D.ID*D.ID);
+  r.Vlift = r.Ar*D.L;
+  r.drop = r.Ares>0 ? r.Vlift/r.Ares : NaN;
+  r.cap = r.Ares*D.H;
+  r.marg = r.Vlift>0 ? r.cap/r.Vlift : NaN;
+  r.mult = r.Fh>0 ? D.W/r.Fh : Infinity;
+  r.aRat = r.Ap>0 ? r.Ar/r.Ap : Infinity;
+  r.lRat = D.a>0 ? D.b/D.a : Infinity;
+  r.sIdeal = r.v>0 ? (D.sp*r.lRat)/r.v : Infinity;
+  return r;
+}
+
+/* ---------- what to report, and how precisely ---------- */
+const ANSWERS = [
+  ["Q2",  "Displaced volume per stroke", "in^3",  "Vp",  5],
+  ["Q3",  "Lifting cylinder area",       "in^2",  "Ar",  4],
+  ["Q3",  "Lift per pump stroke",        "in",    "h",   5],
+  ["Q4",  "Pressure at rated load",      "psi",   "P",   1],
+  ["Q5",  "Force on the pump piston",    "lb",    "Fp",  2],
+  ["Q6",  "Torque at the handle pivot",  "lb-in", "T",   2],
+  ["Q7",  "Force at the operator hand",  "lb",    "Fh",  2],
+  ["Q8",  "Hydraulic power",             "hp",    "Phyd",5],
+  ["Q9",  "Strokes to full extension",   "",      "N",   1],
+  ["Q10", "Extension speed",             "in/s",  "v",   5],
+  ["Q10", "Output linear power",         "hp",    "Plin",5],
+  ["Q11", "Handle angle per stroke",     "deg",   "th",  2],
+  ["Q11", "Hand travel per stroke",      "in",    "arc", 3],
+  ["Q11", "Operator linear power",       "hp",    "Pop", 5],
+  ["Q12", "Reservoir annulus area",      "in^2",  "Ares",4],
+  ["Q12", "Level drop at full extension","in",    "drop",3],
+  ["Q12", "Reservoir capacity",          "in^3",  "cap", 2],
+  ["Q13", "Force multiplication",        ": 1",   "mult",1],
+  ["Q13", "Speed reduction",             ": 1",   "sIdeal",1]
+];
+
+/* ---------- build the page ---------- */
+const $ = function(id){ return document.getElementById(id); };
+
+(function idFields(){
+  const host = $("idrow");
+  const fields = [["Group","group"],["Jack unit number","unit"],["Date","date"],["Grader","grader"]];
+  let html = "";
+  for(let i=0;i<fields.length;i++)
+    html += '<label>'+fields[i][0]+'<input type="text" id="id_'+fields[i][1]+'"></label>';
+  host.innerHTML = html;
+})();
+
+(function auditRows(){
+  const host = $("audit");
+  let html = "";
+  M.forEach(function(m){
+    html += '<tr>'+
+      '<td>'+m.lab+'</td>'+
+      '<td class="sym">'+m.sym+'</td>'+
+      '<td class="num"><input class="val master" type="number" step="any" id="m_'+m.k+'" value="'+m.v+'"> '+
+        '<span style="color:var(--ink-3);font-size:11px">'+m.u+'</span></td>'+
+      '<td class="num"><input class="val" type="number" step="any" id="r_'+m.k+'" value="'+m.v+'"></td>'+
+      '<td class="num tolcell">'+(m.tol>0 ?
+        '<input class="val" type="number" step="any" id="t_'+m.k+'" value="'+m.tol+'">' :
+        '<span style="color:var(--ink-3)">-</span>')+'</td>'+
+      '<td class="num" id="d_'+m.k+'">-</td>'+
+      '<td id="v_'+m.k+'"></td>'+
+    '</tr>';
+  });
+  host.innerHTML = html;
+  M.forEach(function(m){
+    ["m_","r_","t_"].forEach(function(pre){
+      const el = $(pre+m.k);
+      if(el) el.addEventListener("input", function(){
+        const v = parseFloat(el.value);
+        if(!isFinite(v)) return;
+        if(pre==="m_") master[m.k]=v; else if(pre==="r_") reported[m.k]=v; else tol[m.k]=v;
+        render();
+      });
+    });
+  });
+})();
+
+function render(){
+  /* --- measurement audit --- */
+  let bad = 0, warn = 0, worstKey = null, worstRatio = 0;
+  M.forEach(function(m){
+    const dev = reported[m.k] - master[m.k];
+    const t = tol[m.k];
+    const cell = $("d_"+m.k), vc = $("v_"+m.k);
+    if(t <= 0){
+      cell.textContent = f(dev,3);
+      vc.innerHTML = '<span class="verdict v-ok">given</span>';
+      return;
+    }
+    const ratio = Math.abs(dev)/t;
+    cell.textContent = (dev>=0?"+":"") + f(dev,3);
+    if(ratio > worstRatio){ worstRatio = ratio; worstKey = m.lab; }
+    if(ratio <= 1){
+      vc.innerHTML = '<span class="verdict v-ok">within tolerance</span>';
+    } else if(ratio <= 3){
+      warn++;
+      vc.innerHTML = '<span class="verdict v-warn">'+f(ratio,1)+' x tolerance</span>';
+    } else {
+      bad++;
+      vc.innerHTML = '<span class="verdict v-bad">'+f(ratio,1)+' x tolerance</span>';
+    }
+  });
+
+  const rm = solve(master), rr = solve(reported);
+  const pctErr = function(a,b){ return (isFinite(a)&&isFinite(b)&&b!==0) ? 100*(a-b)/b : NaN; };
+
+  $("summary").innerHTML =
+    card("Dimensions out of tolerance", String(bad+warn) + " of " + M.filter(function(m){return m.tol>0;}).length,
+         bad ? bad+" beyond three times tolerance" : (warn?"all within three times tolerance":"none"),
+         bad ? "v-bad" : warn ? "v-warn" : "v-ok") +
+    card("Largest deviation", worstRatio>0 ? f(worstRatio,1)+" x tol" : "-", worstKey || "",
+         worstRatio>3 ? "v-bad" : worstRatio>1 ? "v-warn" : "v-ok") +
+    card("Effect on lift per stroke", f(pctErr(rr.h, rm.h),1)+" %", "reported against master",
+         Math.abs(pctErr(rr.h,rm.h))>10 ? "v-bad" : Math.abs(pctErr(rr.h,rm.h))>4 ? "v-warn" : "v-ok") +
+    card("Effect on hand force", f(pctErr(rr.Fh, rm.Fh),1)+" %", "reported against master",
+         Math.abs(pctErr(rr.Fh,rm.Fh))>10 ? "v-bad" : Math.abs(pctErr(rr.Fh,rm.Fh))>4 ? "v-warn" : "v-ok");
+
+  /* --- flags worth reading before marking --- */
+  const flags = [];
+  if(bad === 0 && warn === 0)
+    flags.push(["f-ok","Every dimension is within tolerance of the master. Grade the analysis on its merits."]);
+  if(bad > 0)
+    flags.push(["f-bad", bad + " dimension" + (bad>1?"s are":" is") +
+      " more than three times tolerance from the master. Check the assigned unit number before" +
+      " assuming a measurement error, then ask the group how that reading was taken."]);
+  const checkable = M.filter(function(m){ return m.tol>0; }).length;
+  const exact = M.filter(function(m){ return m.tol>0 && reported[m.k] === master[m.k]; }).length;
+  if(exact >= 6 && exact < checkable)
+    flags.push(["f-warn", exact + " reported dimensions match the master exactly. Real gauge readings" +
+      " rarely agree to the last digit across that many features; confirm the raw three-reading data" +
+      " was collected and initialled at the bench."]);
+  if(Math.abs(reported.a - Math.round(reported.a)) < 1e-9 && reported.sp/reported.a > 0.9)
+    flags.push(["f-warn","Pivot to rod end was reported as a whole number and the implied handle angle" +
+      " is near its limit. A rounded lever arm is the usual cause of a mismatch between the measured" +
+      " handle sweep and asin(s_p / a)."]);
+  if(rr.marg < 1)
+    flags.push(["f-warn","On the reported dimensions the reservoir holds less than one full extension" +
+      " (margin " + f(rr.marg,2) + "). This is a real finding if their measurements are sound, and a" +
+      " sign of bad reservoir dimensions if not. Question 12(b) should say which."]);
+  if(rr.drop > reported.H)
+    flags.push(["f-bad","The reported level drop of " + f(rr.drop,2) + " in exceeds the reported oil" +
+      " column height of " + f(reported.H,2) + " in, which is impossible. At least one of the three" +
+      " reservoir dimensions is wrong."]);
+  flags.push(["f-ok","The arc method in question 11 overstates operator power by theta/sin(theta), here " +
+    f((rr.th*PI/180)/Math.max(rr.sinT,1e-9),3) + ". Full credit on question 13 requires accounting" +
+    " for this rather than reporting a power loss."]);
+
+  $("flags").innerHTML = flags.map(function(x){
+    return '<li class="'+x[0]+'">'+x[1]+'</li>';
+  }).join("");
+
+  /* --- answer check --- */
+  $("answers").innerHTML = ANSWERS.map(function(a){
+    const q=a[0], lab=a[1], u=a[2], key=a[3], dp=a[4];
+    const vm = rm[key], vr = rr[key];
+    const d = pctErr(vr, vm);
+    const cls = !isFinite(d) ? "" : Math.abs(d)>10 ? "v-bad" : Math.abs(d)>4 ? "v-warn" : "v-ok";
+    return '<tr><td><span style="font-family:var(--mono);font-size:11px;color:var(--ink-3);'+
+      'margin-right:8px">'+q+'</span>'+lab+'</td>'+
+      '<td class="sym">'+u+'</td>'+
+      '<td class="num">'+f(vm,dp)+'</td>'+
+      '<td class="num">'+f(vr,dp)+'</td>'+
+      '<td class="num">'+(isFinite(d) ? '<span class="verdict '+cls+'">'+(d>=0?"+":"")+f(d,1)+' %</span>' : "-")+'</td></tr>';
+  }).join("");
+}
+
+function card(lab, big, sub, cls){
+  const colour = cls==="v-bad" ? "var(--bad)" : cls==="v-warn" ? "var(--warn)" : "var(--ok)";
+  return '<div class="card"><div class="lab">'+lab+'</div>'+
+         '<div class="big" style="color:'+colour+'">'+big+'</div>'+
+         '<div class="sub">'+sub+'</div></div>';
+}
+
+$("bPrint").addEventListener("click", function(){ window.print(); });
+$("bCopyMaster").addEventListener("click", function(){
+  M.forEach(function(m){ reported[m.k] = master[m.k]; $("r_"+m.k).value = master[m.k]; });
+  render();
+});
+$("bClear").addEventListener("click", function(){
+  M.forEach(function(m){ $("r_"+m.k).value = ""; });
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

@@ -9,6 +9,7 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const SIM   = path.join(ROOT, "simulator", "hydraulic-bottle-jack.html");
 const SHEET = path.join(ROOT, "lab", "bottle-jack-lab-answer-sheet.html");
+const GRADER = path.join(ROOT, "lab", "bottle-jack-lab-grader.html");
 
 function script(file){
   const html = fs.readFileSync(file, "utf8");
@@ -67,5 +68,5 @@ function load(code, label){
   return m.exports;
 }
 
-module.exports = { physics, geometry, answerSheet, SIM, SHEET,
+module.exports = { physics, geometry, answerSheet, SIM, SHEET, GRADER,
                    HANDOUT: path.join(ROOT, "lab", "bottle-jack-lab-handout.html") };
