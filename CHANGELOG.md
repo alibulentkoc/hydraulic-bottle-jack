@@ -131,6 +131,11 @@
   linkage measurements that factor is theta / sin(theta); with a measured angle
   that disagrees with asin(s_p / a) it can fall either side of one. The mismatch
   warning now states that consequence. A check asserts the three powers agree.
+- New two-page in-class exercise, lab/bottle-jack-in-class-exercise.html and its
+  A4 PDF: one measured jack with its dimensions marked on a figure drawn by the
+  simulation, the remaining givens listed beneath, ten calculations to work by
+  hand, a check against the simulation's laboratory panel, and three exploration
+  prompts on the force-distance trade and on power equality.
 - Animated demonstration added to the README.
 
 ## 1.0.0 - 2026-08-30
