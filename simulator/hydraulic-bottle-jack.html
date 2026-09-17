@@ -158,6 +158,7 @@
     background:#11151a;color:var(--ink);border:1px solid var(--rule-2);border-radius:3px;padding:5px 7px;
   }
   .ctl input[type=number]:focus{border-color:var(--oil-high);background:#0d1216}
+  .ctl input[readonly]{background:#171c21;color:var(--ink-dim);border-style:dashed;cursor:default}
   .ctl .unit{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);width:32px}
   .applyrow{display:flex;margin:14px 0 2px}
   .applyrow > * + *{margin-left:8px}
@@ -262,16 +263,12 @@
       <section class="card">
         <h2>Dimensions</h2>
         <div class="body">
-          <div class="grp"><h3>Main ram</h3><div id="grpRam"></div>
+          <div class="grp"><h3>Measured on the jack</h3><div id="grpMeas"></div>
             <div class="derived" id="dRam"></div>
-          </div>
-          <div class="grp"><h3>Pump</h3><div id="grpPump"></div>
             <div class="derived" id="dPump"></div>
-          </div>
-          <div class="grp"><h3>Handle</h3><div id="grpHandle"></div>
             <div class="derived" id="dHandle"></div>
           </div>
-          <div class="grp"><h3>Hydraulic system</h3><div id="grpSys"></div></div>
+          <div class="grp"><h3>Simulation only</h3><div id="grpSim"></div></div>
           <div class="applyrow">
             <button class="act" id="bApply">Apply values</button>
             <button class="act" id="bFit">Fit reservoir</button>
@@ -290,15 +287,34 @@
       </section>
 
       <section class="card">
+        <h2>Laboratory calculations</h2>
+        <div class="body">
+          <div class="ctl" style="margin-bottom:10px">
+            <div class="row"><label for="n_rate">Pump rate  n</label>
+              <span class="val"><input type="number" id="n_rate" step="any" value="1">
+              <span class="unit">/s</span></span></div>
+          </div>
+          <table class="dash"><tbody id="labtab"></tbody></table>
+          <p class="note">Questions 2 to 13 of the handout, worked from the values above.
+             Pressure here is W / A_r, the load alone, as the handout has it; the lifting
+             pressure in Live values also carries the ram's own weight.</p>
+          <p class="note">For an ideal machine, hand power, hydraulic power and lifting power are
+             one number: the ideal Power_in row equals Power_hyd and Power_out exactly. The arc
+             method of question 11 departs from it by a theta / s_p, which is theta / sin(theta)
+             when s_p, a and theta agree with each other and something else when they do not.</p>
+        </div>
+      </section>
+
+      <section class="card">
         <h2>Governing relationships</h2>
         <div class="body">
           <div class="eqs">
             A = pi * D^2 / 4<br>
-            P = F / A_ram<br>
-            V = A_pump * s_pump<br>
-            A_pump * s_pump = A_ram * s_ram<br>
-            <b>s_ram = s_pump * (A_pump / A_ram)</b><br>
-            MA = L_handle / L_pivot-to-link
+            P = W / A_r<br>
+            V_p = A_p * s_p<br>
+            A_p * s_p = A_r * h<br>
+            <b>h = s_p * (A_p / A_r)</b><br>
+            MA = b / a
           </div>
           <p class="note">Force is multiplied by the area ratio and distance is divided by it. Watch the ram rise per stroke shrink as you enlarge the ram: that is the same trade, seen as motion.</p>
         </div>
@@ -320,6 +336,7 @@ const DEFAULTS = {
   ramStrokeMax:100,   // mm
   pumpDia:      8,    // mm
   pumpStroke:  20,    // mm
+  theta:      34.8,   // deg, handle swept angle as measured
   pumpCylLen:  60,    // mm
   handleLen:  350,    // mm
   pivotLink:   35,    // mm
@@ -331,27 +348,28 @@ const DEFAULTS = {
 };
 
 const SPECS = {
-  ram: [
-    {k:"ramDia",       lab:"Ram diameter",        min:20, max:110, q:"len"},
-    {k:"boreDia",      lab:"Cylinder bore",       min:22, max:120, q:"len"},
-    {k:"ramStart",     lab:"Initial ram position",min:0,  max:100, q:"len"},
-    {k:"ramStrokeMax", lab:"Maximum ram stroke",  min:20, max:200, q:"len"}
+  // Order follows the handout's data sheet, Table 2 then Table 3 then Table 4,
+  // which is the sequence a student writes the measurements down in. Reading
+  // down the sheet and typing down this panel stay in step.
+  measured: [
+    {k:"load",         lab:"Rated lift load  W",             min:0,  max:60000, q:"force"},
+    {k:"pumpStroke",   lab:"Pump piston stroke  s_p",        min:5,  max:45,  q:"len"},
+    {k:"theta",        lab:"Handle swept angle  theta",      min:5,  max:85,  q:"angle"},
+    {k:"pivotLink",    lab:"Pivot to pump rod end  a",       min:15, max:80,  q:"len"},
+    {k:"handleLen",    lab:"Pivot to operator hand  b",      min:150,max:700, q:"len"},
+    {k:"ramDia",       lab:"Lifting cylinder bore  D_r",     min:20, max:110, q:"len"},
+    {k:"pumpDia",      lab:"Pump cylinder bore  d_p",        min:4,  max:26,  q:"len"},
+    {k:"cylOD",        lab:"Reservoir inside dia  D_i",      min:12, max:190, q:"len"},
+    {k:"bodyID",       lab:"Reservoir outside dia  D_o",     min:14, max:200, q:"len"},
+    {k:"resHeight",    lab:"Reservoir oil column height  H", min:20, max:250, q:"len"},
+    {k:"ramStrokeMax", lab:"Lifting cylinder extension  L",  min:20, max:200, q:"len"}
   ],
-  pump: [
-    {k:"pumpDia",      lab:"Pump piston diameter",min:4,  max:26,  q:"len"},
-    {k:"pumpStroke",   lab:"Pump stroke",         min:5,  max:45,  q:"len"},
-    {k:"pumpCylLen",   lab:"Pump cylinder length",min:30, max:110, q:"len"}
-  ],
-  handle: [
-    {k:"handleLen",    lab:"Handle length",       min:150,max:700, q:"len"},
-    {k:"pivotLink",    lab:"Pivot to link",       min:15, max:80,  q:"len"}
-  ],
-  sys: [
-    {k:"load",         lab:"Load on ram",              min:0,  max:60000, q:"force"},
-    {k:"bodyID",       lab:"Jack body inside dia",     min:34, max:200,   q:"len"},
-    {k:"cylOD",        lab:"Lifting cylinder outside dia", min:26, max:190, q:"len"},
-    {k:"resHeight",    lab:"Reservoir oil column height", min:20, max:250, q:"len"},
-    {k:"deadVol",      lab:"Dead volume under ram",    min:0,  max:100,   q:"vol"}
+  // No counterpart on the bench: these exist for the drawing and the model only.
+  simOnly: [
+    {k:"boreDia",      lab:"Cylinder bore, drawing only",    min:22, max:120, q:"len"},
+    {k:"ramStart",     lab:"Initial ram position",           min:0,  max:100, q:"len"},
+    {k:"pumpCylLen",   lab:"Pump cylinder length",           min:30, max:110, q:"len"},
+    {k:"deadVol",      lab:"Dead volume under ram",          min:0,  max:100, q:"vol"}
   ]
 };
 
@@ -378,10 +396,13 @@ function derived(d){
   const Ar = PI*d.ramDia*d.ramDia/4;          // mm^2
   const Ap = PI*d.pumpDia*d.pumpDia/4;        // mm^2
   const ratio = Ar/Ap;
-  // handle angular stroke follows from the linkage: s_pump = L_link * sin(theta_max)
-  const sinMax = clamp(d.pumpStroke/d.pivotLink, 0.02, 0.98);
-  const thetaMax = Math.asin(sinMax);
-  const strokeReal = d.pivotLink*sinMax;      // achievable pump stroke, mm
+  // Three measured quantities describe the linkage: pump stroke s_p, lever arm a,
+  // and swept angle theta. They are over-determined, exactly as on the bench, so
+  // the handle sweeps the measured theta and the piston travels the measured s_p.
+  // The angle the linkage implies, asin(s_p / a), is reported as a cross-check.
+  const thetaMax = clamp(d.theta, 5, 85)*PI/180;
+  const thetaGeom = Math.asin(clamp(d.pumpStroke/d.pivotLink, 0, 1));
+  const strokeReal = d.pumpStroke;            // mm, as measured
   const dispPerStroke = Ap*strokeReal;        // mm^3
   const risePerStroke = dispPerStroke/Ar;     // mm
   const MA = d.handleLen/d.pivotLink;
@@ -398,9 +419,59 @@ function derived(d){
   const vNeeded = Ar*d.ramStrokeMax;                          // mm^3 for a full extension
   const margin = vNeeded>0 ? resCap/vNeeded : Infinity;
   const dropFull = Ares>0 ? vNeeded/Ares : Infinity;          // mm of level drop at full stroke
-  return {Ar,Ap,ratio,thetaMax,strokeReal,dispPerStroke,risePerStroke,MA,
+  return {Ar,Ap,ratio,thetaMax,thetaGeom,strokeReal,dispPerStroke,risePerStroke,MA,
           ramLen,ramWeight,Phold,Fpump,Fhand,strokesToTop,
           Ares,resCap,vNeeded,margin,dropFull};
+}
+
+/* ------------------------------------------------------------
+   Laboratory calculations, questions 2 to 13 of the handout.
+   Worked from the entered geometry with the same formulae the
+   answer sheet uses. Pressure here is W / A_r, the load alone, as
+   the handout has it; the dashboard figure additionally carries
+   the ram's own weight, so the two differ slightly.
+   Everything is SI internally: mm, mm^2, mm^3, N, MPa, W.
+   ------------------------------------------------------------ */
+function labCalc(d, n){
+  const D = derived(d);
+  const r = {};
+  r.Ap = D.Ap;                                  // mm^2
+  r.Ar = D.Ar;                                  // mm^2
+  r.Vp = r.Ap*d.pumpStroke;                     // mm^3 per full stroke
+  r.h  = r.Vp/r.Ar;                             // mm of lift per stroke
+  r.P  = d.load/r.Ar;                           // MPa
+  r.Fp = r.P*r.Ap;                              // N
+  r.T  = r.Fp*d.pivotLink;                      // N mm
+  r.Fh = r.T/d.handleLen;                       // N
+  r.Q  = r.Vp*n;                                // mm^3/s
+  r.Phyd = r.P*r.Q/1000;                        // W
+  r.N  = r.h > 0 ? d.ramStrokeMax/r.h : Infinity;
+  r.t  = r.N/n;                                 // s
+  r.v  = r.t > 0 ? d.ramStrokeMax/r.t : 0;      // mm/s
+  r.Plin = d.load*r.v/1000;                     // W
+  r.th = D.thetaMax*180/PI;                     // deg swept per stroke, as measured
+  r.thGeom = D.thetaGeom*180/PI;                // deg the linkage implies
+  r.arc = 2*PI*d.handleLen*r.th/360;            // mm of hand travel
+  r.Pop = r.Fh*r.arc*n/1000;                    // W, arc method as the handout prescribes
+  // Ideal input power: the hand moves s_p * (b/a) per stroke, the straight-line
+  // travel the lever ratio implies, so F_hand * that * n equals F_p * s_p * n,
+  // which is the hydraulic power exactly. Power in = power out for an ideal machine.
+  r.lRat = d.pivotLink > 0 ? d.handleLen/d.pivotLink : Infinity;
+  r.dIdeal = d.pumpStroke*r.lRat;               // mm
+  r.PopIdeal = r.Fh*r.dIdeal*n/1000;            // W, equals r.Phyd
+  // The arc figure departs from the ideal by a*theta/s_p: theta/sin(theta) when
+  // the three linkage measurements are consistent, something else when not.
+  r.arcRatio = r.PopIdeal > 0 ? r.Pop/r.PopIdeal : NaN;
+  r.Ares = D.Ares;                              // mm^2
+  r.Vlift = r.Ar*d.ramStrokeMax;                // mm^3
+  r.drop = r.Ares > 0 ? r.Vlift/r.Ares : NaN;   // mm
+  r.cap = D.resCap;                             // mm^3
+  r.marg = r.Vlift > 0 ? r.cap/r.Vlift : NaN;
+  r.aRat = r.Ap > 0 ? r.Ar/r.Ap : Infinity;
+  r.lRat = d.pivotLink > 0 ? d.handleLen/d.pivotLink : Infinity;
+  r.mult = r.Fh > 0 ? d.load/r.Fh : Infinity;
+  r.sIdeal = r.v > 0 ? (d.pumpStroke*r.lRat)/r.v : Infinity;
+  return r;
 }
 
 /* ============================================================
@@ -451,7 +522,7 @@ function step(dt){
   }
   sim.theta = clamp(sim.theta, 0, D.thetaMax);
 
-  const lift = dims.pivotLink*Math.sin(sim.theta);   // mm above bottom of stroke
+  const lift = dims.pumpStroke*Math.sin(sim.theta)/Math.sin(D.thetaMax);   // mm above bottom of stroke
   const dLift = lift - sim.lift;
   sim.lift = lift;
 
@@ -572,10 +643,10 @@ function layout(){
   // the drawn oil column follows the entered reservoir height, and the body is
   // sized to contain it, so these controls change the drawing and not just the
   // numbers. Clamped for legibility, like every other radial exaggeration.
-  const resHpx  = clamp(d.resHeight*0.9, 80, 150);
+  const resHpx  = clamp(d.resHeight*1.2, 80, 150);
   // ram travel scales with the entered stroke, so a long-stroke jack visibly
   // extends further
-  const travelMax = clamp(d.ramStrokeMax*0.8, 50, 140);
+  const travelMax = clamp(d.ramStrokeMax*1.1, 50, 140);
   const vScale  = travelMax/d.ramStrokeMax;
   // The lifting cylinder must be tall enough to hold the oil column AND to keep
   // the ram engaged at full extension, exactly as the pump cylinder is floored
@@ -595,7 +666,7 @@ function layout(){
   const pumpR  = clamp(d.pumpDia*2.6, 15, 27);   // floor keeps both ports inside the bore
   // offset the pump axis outward if the link is too short to clear the pivot post
   const pumpX  = pivotX + Math.max(LpPx, pumpR + 32);
-  const travelPx = LpPx*Math.sin(D.thetaMax);
+  const travelPx = 2.0*d.pumpStroke;                 // same px per mm as LpPx
   const pumpCylLen = clamp(d.pumpCylLen*1.35, travelPx+46, 168);
   const pumpTop = baseTop - pumpCylLen;
   // a long pump cylinder reaches above the old fixed pivot height, which put the
@@ -609,7 +680,7 @@ function layout(){
   const pinY = pivotY  - LpPx*Math.sin(sim.theta);
   // piston travel is drawn straight from the physical lift (Lp*sin(theta)) at a
   // fixed 2.0 px/mm, so the drawing can never disagree with the pumped volume
-  const headTopY = headTop0 - LpPx*Math.sin(sim.theta);
+  const headTopY = headTop0 - travelPx*Math.sin(sim.theta)/Math.sin(D.thetaMax);
   const headBotY = headTopY + headH;
 
   let handleLenPx = clamp(d.handleLen*0.52, 115, 258);
@@ -811,8 +882,8 @@ function buildSVG(){
   R.ballIn  = el("circle",{r:"5.2",fill:"var(--ball)",stroke:"#7a5c14","stroke-width":"1"},R.moving);
   R.ballOut = el("circle",{r:"5.2",fill:"var(--ball)",stroke:"#7a5c14","stroke-width":"1"},R.moving);
   R.dirIn   = haloText({"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
-                 "text-anchor":"middle",x:g.inletBall[0],y:g.inletBall[1]-13},R.flowLayer);
-  R.dirIn.textContent="SUCTION";
+                 "text-anchor":"middle",x:g.inletBall[0]-6,y:g.inletBall[1]-9},R.flowLayer);
+  R.dirIn.textContent="INLET";
   R.dirOut  = haloText({"font-family":"var(--mono)","font-size":"9.5",fill:"#e2e8ec","paint-order":"stroke",stroke:"#10161a","stroke-width":"3",
                  "text-anchor":"middle",x:g.outletBall[0],y:g.outletBall[1]-13},R.flowLayer);
   R.dirOut.textContent="DELIVERY";
@@ -1024,7 +1095,7 @@ function updateSVG(){
   R.handLabel.setAttribute("opacity", pushing?1:0.55);
   R.handLabel.setAttribute("x", fx0 - 4);
   R.handLabel.setAttribute("y", fy0 - 9);
-  R.handLabel.textContent = "F hand " + U.force(D.Fhand);
+  R.handLabel.textContent = "F_hand = " + U.force(D.Fhand);
 
   /* check balls */
   const ibx = g.inletBall[0] + (sim.inlet ? 5 : 0);
@@ -1112,25 +1183,26 @@ function updateSVG(){
   /* dimensions */
   R.dimsLayer.setAttribute("opacity", T.dims ? 1 : 0);
   if(T.dims){
-    hDim("ramD", g.cx-g.ramR, g.cx+g.ramR, g.ramTopY+34, "Ram dia " + U.len(dims.ramDia));
+    hDim("ramD", g.cx-g.ramR, g.cx+g.ramR, g.ramTopY+34, "D_r = " + U.len(dims.ramDia));
     vDim("ramS", g.cx+g.bodyHalf+16, g.ramBot0-dims.ramStrokeMax*g.vScale, g.ramBot0,
-         "Stroke " + U.len(dims.ramStrokeMax), 1);
+         "L = " + U.len(dims.ramStrokeMax), 1);
     // pump diameter moves to a clear lane below the casting, tied back by extension lines
     hDim("pumpD", g.pumpX-g.pumpR, g.pumpX+g.pumpR, g.baseBot+46,
-         "Pump dia " + U.len(dims.pumpDia), g.baseTop);
+         "d_p = " + U.len(dims.pumpDia), g.baseTop);
     vDim("pumpS", g.pumpX+g.pumpR+42, g.headTop0-g.travelPx, g.headTop0,
-         "Pump stroke " + U.len(derived(dims).strokeReal), 1);
+         "s_p = " + U.len(derived(dims).strokeReal), 1);
     // handle label rides out near the grip, clear of the pump and the linkage
     dDim("handleL", g.pivotX, g.pivotY, g.hEndX, g.hEndY,
-         "Handle " + U.len(dims.handleLen), 34, 0.85);   // positive offset sits above the handle
+         "b = " + U.len(dims.handleLen), 34, 0.85);   // positive offset sits above the handle
     // the link is short, so its label stands well above the handle label's row
     dDim("pivotL", g.pivotX, g.pivotY, g.pinX, g.pinY,
-         "Pivot-link " + U.len(dims.pivotLink), 58, 0.5);
+         "a = " + U.len(dims.pivotLink), 58, 0.5);
   }
 
   /* callouts */
-  R.calloutRam.setAttribute("x", g.cx-g.ramR-10);
-  R.calloutRam.setAttribute("y", g.ramTopY+68);
+  // beside the cap, clear of both the load block above and the D_r dimension below
+  R.calloutRam.setAttribute("x", g.cx-g.ramR-14);
+  R.calloutRam.setAttribute("y", g.ramTopY-1);
   R.calloutRam.setAttribute("text-anchor","end");
   const resMidY = (g.resTop + g.baseTop)/2;
   const resLx = g.cx-g.bodyHalf+g.shell+g.resW/2, resRx = g.cx+g.cylOut+g.resW/2;
@@ -1193,7 +1265,10 @@ const U = {
   volN: v=> usUnits ? fmt(v/16387,2)         : fmt(v/1000,1),
   volU: ()=> usUnits ? "in^3" : "mL",
   force:v=> usUnits ? fmt(v*0.224809,0)+" lbf" : (v>=1000? fmt(v/1000,2)+" kN" : fmt(v,0)+" N"),
-  press:v=> usUnits ? fmt(v*145.038,0)+" psi"  : fmt(v,2)+" MPa"
+  press:v=> usUnits ? fmt(v*145.038,0)+" psi"  : fmt(v,2)+" MPa",
+  power:v=> usUnits ? fmt(v/745.7,5)+" hp"     : fmt(v,2)+" W",
+  torque:v=> usUnits ? fmt(v*0.00885075,1)+" lb-in" : fmt(v/1000,2)+" N-m",
+  speed:v=> usUnits ? fmt(v/25.4,4)+" in/s"    : fmt(v,3)+" mm/s"
 };
 
 /* ============================================================
@@ -1210,11 +1285,12 @@ function setPressed(b,v){ b.setAttribute("aria-pressed", v?"true":"false"); }
 const QTY = {
   len:   {si:"mm", us:"in",   toUS:v=>v/25.4,     toSI:v=>v*25.4,     dp:[1,3], stepUS:0.05},
   force: {si:"N",  us:"lbf",  toUS:v=>v*0.224809, toSI:v=>v/0.224809, dp:[0,0], stepUS:10},
-  vol:   {si:"mL", us:"in^3", toUS:v=>v/16.387,   toSI:v=>v*16.387,   dp:[0,2], stepUS:0.5}
+  vol:   {si:"mL", us:"in^3", toUS:v=>v/16.387,   toSI:v=>v*16.387,   dp:[0,2], stepUS:0.5},
+  angle: {si:"deg",us:"deg",  toUS:v=>v,          toSI:v=>v,          dp:[1,1], stepUS:0.5}
 };
 const toField = (v,q)=> usUnits ? QTY[q].toUS(v) : v;
 const toStore = (v,q)=> usUnits ? QTY[q].toSI(v) : v;
-const fieldStep = q=> usUnits ? QTY[q].stepUS : (q==="len"?0.5:(q==="force"?50:5));
+const fieldStep = q=> usUnits ? QTY[q].stepUS : (q==="len"?0.5:(q==="force"?50:(q==="angle"?0.5:5)));
 const fieldDp   = q=> QTY[q].dp[usUnits?1:0];
 
 function buildControls(groupId, list){
@@ -1231,10 +1307,10 @@ function buildControls(groupId, list){
     n.addEventListener("blur", ()=>commitField(s));
   });
 }
-buildControls("grpRam", SPECS.ram);
-buildControls("grpPump", SPECS.pump);
-buildControls("grpHandle", SPECS.handle);
-buildControls("grpSys", SPECS.sys);
+buildControls("grpMeas", SPECS.measured);
+buildControls("grpSim", SPECS.simOnly);
+
+
 
 /* Size the reservoir so it can actually supply a full extension, with a 25 per
    cent margin. Raise the oil column first, since that is what a taller jack
@@ -1251,7 +1327,7 @@ function fitReservoir(announce){
     dims.resHeight = 250;
     const areaNeeded = need/250;
     const bodyNeeded = Math.sqrt(dims.cylOD*dims.cylOD + 4*areaNeeded/PI);
-    dims.bodyID = clamp(Math.ceil(bodyNeeded), dims.cylOD+6, 200);
+    dims.bodyID = clamp(Math.ceil(bodyNeeded), Math.max(dims.cylOD+6, 34), 200);
   }
   autoFitNote = announce
     ? "Reservoir column raised from " + U.len(before) + " to " + U.len(dims.resHeight) +
@@ -1293,15 +1369,14 @@ function onDimsChanged(key){
   // any edit the user makes clears a previous auto-fit notice; the fit itself
   // re-enters with fitting set, so its own message survives
   if(!fitting) autoFitNote = "";
-  // keep the drawing legal
-  if(dims.boreDia < dims.ramDia+2){ dims.boreDia = dims.ramDia+2; }
-  if(dims.cylOD  < dims.boreDia+4){ dims.cylOD  = dims.boreDia+4; }
-  if(dims.bodyID < dims.cylOD+6)  { dims.bodyID = dims.cylOD+6; }
+  // Measured values are kept exactly as typed. The drawing clamps its own radii
+  // inside layout(), and an impossible combination is reported, not corrected.
+  if(dims.boreDia < dims.ramDia+2){ dims.boreDia = dims.ramDia+2; }   // drawing-only field
   if(dims.ramStart > dims.ramStrokeMax) dims.ramStart = dims.ramStrokeMax;
   const D = derived(dims);
   sim.ram = clamp(sim.ram, 0, dims.ramStrokeMax);
   sim.theta = clamp(sim.theta, 0, D.thetaMax);
-  sim.lift = dims.pivotLink*Math.sin(sim.theta);
+  sim.lift = dims.pumpStroke*Math.sin(sim.theta)/Math.sin(D.thetaMax);
   // oil bookkeeping stays conserved against the new geometry
   sim.vTotal = sim.vRes + sim.vPump + D.Ar*sim.ram + dims.deadVol*1000;
   if(key==="bodyID"||key==="cylOD"||key==="resHeight"||key==="all"){
@@ -1353,10 +1428,11 @@ function setUnits(us){
 $("uSI").addEventListener("click",()=>setUnits(false));
 $("uUS").addEventListener("click",()=>setUnits(true));
 $("bApply").addEventListener("click",applyAll);
+$("n_rate").addEventListener("input",updateLab);
 $("bFit").addEventListener("click",()=>fitReservoir(false));
 $("bDefaults").addEventListener("click",()=>{
-  Object.assign(dims, DEFAULTS); autoFitNote = "";
-  syncInputs(); buildSVG(); updateDash();
+  Object.assign(dims, DEFAULTS);
+  onDimsChanged("all");          // refills the reservoir to the restored capacity
 });
 
 /* handle dragging */
@@ -1419,33 +1495,33 @@ function bindHandleDrag(){
    9. DASHBOARD
    ============================================================ */
 const DASH_ROWS = [
-  ["Ram diameter",      ()=>U.len(dims.ramDia)],
-  ["Ram area",          ()=>U.area(derived(dims).Ar)],
-  ["Pump diameter",     ()=>U.len(dims.pumpDia)],
-  ["Pump area",         ()=>U.area(derived(dims).Ap)],
-  ["Area ratio A_ram/A_pump", ()=>fmt(derived(dims).ratio,1)+" : 1"],
-  ["Handle advantage",  ()=>fmt(derived(dims).MA,1)+" : 1"],
+  ["Ram diameter  D_r",      ()=>U.len(dims.ramDia)],
+  ["Ram area  A_r",          ()=>U.area(derived(dims).Ar)],
+  ["Pump diameter  d_p",     ()=>U.len(dims.pumpDia)],
+  ["Pump area  A_p",         ()=>U.area(derived(dims).Ap)],
+  ["Area ratio  A_r / A_p", ()=>fmt(derived(dims).ratio,1)+" : 1"],
+  ["Handle advantage  b / a",  ()=>fmt(derived(dims).MA,1)+" : 1"],
   ["Handle arc (max)",  ()=>fmt(derived(dims).thetaMax*180/PI,1)+" deg"],
   ["Handle angle now",  ()=>fmt(sim.theta*180/PI,1)+" deg", true],
   ["SEP"],
   ["Ram position",      ()=>U.len(sim.ram)+" / "+U.len(dims.ramStrokeMax), true],
-  ["Displacement per stroke", ()=>U.vol(derived(dims).dispPerStroke)],
-  ["Ram rise per stroke",()=>U.len(derived(dims).risePerStroke)],
-  ["Full strokes to top",()=>fmt(derived(dims).strokesToTop,1)],
+  ["Displacement per stroke  V_p", ()=>U.vol(derived(dims).dispPerStroke)],
+  ["Ram rise per stroke  h",()=>U.len(derived(dims).risePerStroke)],
+  ["Full strokes to top  N",()=>fmt(derived(dims).strokesToTop,1)],
   ["Completed strokes", ()=>String(sim.strokes)],
   ["SEP"],
-  ["Lifting pressure",  ()=>U.press(sim.hpP), true],
+  ["Lifting pressure  P",  ()=>U.press(sim.hpP), true],
   ["Pump pressure",     ()=>U.press(Math.max(sim.pumpP,0))],
-  ["Applied load",      ()=>U.force(dims.load)],
+  ["Applied load  W",      ()=>U.force(dims.load)],
   ["Ram self weight",   ()=>U.force(derived(dims).ramWeight)],
-  ["Force at pump piston", ()=>U.force(derived(dims).Fpump)],
-  ["Estimated hand force", ()=>U.force(derived(dims).Fhand), true],
+  ["Force at pump piston  F_p", ()=>U.force(derived(dims).Fpump)],
+  ["Estimated hand force  F_hand", ()=>U.force(derived(dims).Fhand), true],
   ["SEP"],
   ["Inlet check valve", ()=>sim.inlet?"OPEN":"closed"],
-  ["Outlet check valve",()=>(sim.outlet||sim.relief)?"OPEN":"closed"],
+  ["Delivery check valve",()=>(sim.outlet||sim.relief)?"OPEN":"closed"],
   ["Release valve",     ()=>sim.releaseOpen?"OPEN":"closed"],
   ["SEP"],
-  ["Reservoir annulus area", ()=>U.area(derived(dims).Ares)],
+  ["Reservoir annulus area  A_res", ()=>U.area(derived(dims).Ares)],
   ["Reservoir capacity", ()=>U.vol(derived(dims).resCap)],
   ["Oil in reservoir",  ()=>U.vol(sim.vRes)],
   ["Oil level",         ()=>{const D=derived(dims);
@@ -1453,6 +1529,76 @@ const DASH_ROWS = [
   ["Level drop at full stroke", ()=>U.len(derived(dims).dropFull)],
   ["Capacity margin",   ()=>fmt(derived(dims).margin,2)+" : 1", true]
 ];
+
+/* Laboratory answers are carried to four significant figures, as the handout
+   asks, rather than the two decimals that suit a dimension label. */
+function sig(v, n){
+  if(!isFinite(v)) return "-";
+  if(v === 0) return "0";
+  const places = Math.max(0, (n || 4) - 1 - Math.floor(Math.log(Math.abs(v))/Math.LN10));
+  return v.toFixed(Math.min(places, 6));
+}
+const L = {
+  len:  v=> usUnits ? sig(v/25.4)+" in"     : sig(v)+" mm",
+  area: v=> usUnits ? sig(v/645.16)+" in^2" : sig(v)+" mm^2",
+  vol:  v=> usUnits ? sig(v/16387)+" in^3"  : sig(v/1000)+" mL",
+  force:v=> usUnits ? sig(v*0.224809)+" lb" : sig(v)+" N",
+  press:v=> usUnits ? sig(v*145.038)+" psi" : sig(v)+" MPa",
+  power:v=> usUnits ? sig(v/745.7,4)+" hp"  : sig(v)+" W",
+  speed:v=> usUnits ? sig(v/25.4)+" in/s"   : sig(v)+" mm/s",
+  torque:v=> usUnits ? sig(v*0.00885075)+" lb-in" : sig(v/1000)+" N-m"
+};
+
+/* one row per question: the formula, then the result in the selected units */
+const LAB_ROWS = [
+  ["2",  "A_p = pi d_p^2 / 4",            r=>L.area(r.Ap)],
+  ["2",  "V_p = A_p s_p",                 r=>L.vol(r.Vp)],
+  ["3",  "A_r = pi D_r^2 / 4",            r=>L.area(r.Ar)],
+  ["3",  "h = V_p / A_r",                 r=>L.len(r.h), true],
+  ["4",  "P = W / A_r",                   r=>L.press(r.P), true],
+  ["5",  "F_p = P A_p",                   r=>L.force(r.Fp)],
+  ["6",  "T = F_p a",                     r=>L.torque(r.T)],
+  ["7",  "F_hand = T / b",                r=>L.force(r.Fh), true],
+  ["8",  "Q = V_p n",                     r=>L.vol(r.Q)+"/s"],
+  ["8",  "Power_hyd = P Q",               r=>L.power(r.Phyd), true],
+  ["9",  "N = L / h",                     r=>sig(r.N,4)+" strokes"],
+  ["9",  "t = N / n",                     r=>sig(r.t,4)+" s"],
+  ["10", "v = L / t",                     r=>L.speed(r.v)],
+  ["10", "Power_out = W v",               r=>L.power(r.Plin), true],
+  ["11", "theta, as measured",            r=>fmt(r.th,2)+" deg"],
+  ["11", "  check: arcsin(s_p / a)",      r=>fmt(r.thGeom,2)+" deg"],
+  ["11", "d = 2 pi b theta / 360",        r=>L.len(r.arc)],
+  ["11", "Power_in = F_hand d n  (arc method)", r=>L.power(r.Pop)],
+  ["11", "Power_in, ideal = F_hand s_p (b/a) n", r=>L.power(r.PopIdeal), true],
+  ["11", "  arc / ideal = a theta / s_p", r=>sig(r.arcRatio,3)],
+  ["12", "A_res = pi (D_o^2 - D_i^2) / 4",r=>L.area(r.Ares)],
+  ["12", "drop = A_r L / A_res",          r=>L.len(r.drop)],
+  ["12", "capacity = A_res H",            r=>L.vol(r.cap)],
+  ["12", "margin = capacity / V_lift",    r=>fmt(r.marg,2)+" : 1", true],
+  ["13", "force factor = W / F_hand",     r=>sig(r.mult,4)+" : 1", true],
+  ["13", "  = (A_r / A_p)(b / a)",        r=>sig(r.aRat,3)+" x "+sig(r.lRat,3)],
+  ["13", "speed factor = s_p (b/a) / v",  r=>sig(r.sIdeal,4)+" : 1", true]
+];
+
+function updateLab(){
+  const n = Math.max(parseFloat(($("n_rate")||{}).value) || 1, 0.01);
+  const r = labCalc(dims, n);
+  const tb = $("labtab");
+  if(!tb) return;
+  if(tb.childElementCount === 0){
+    tb.innerHTML = LAB_ROWS.map(function(row,i){
+      return '<tr'+(row[3]?' class="hi"':'')+'>'+
+        '<td><span style="color:var(--ink-faint);font-family:var(--mono);font-size:10.5px;'+
+        'margin-right:7px">Q'+row[0]+'</span>'+
+        '<span style="font-family:var(--mono);font-size:11.5px">'+row[1]+'</span></td>'+
+        '<td id="lb'+i+'">-</td></tr>';
+    }).join("");
+  }
+  LAB_ROWS.forEach(function(row,i){
+    const c = $("lb"+i);
+    if(c) c.textContent = row[2](r);
+  });
+}
 
 function updateDash(){
   const tb=$("dash");
@@ -1470,16 +1616,22 @@ function updateDash(){
   });
 
   const D=derived(dims);
-  $("dRam").textContent  = "A_ram = pi*D^2/4 = "+U.area(D.Ar);
-  $("dPump").textContent = "A_pump = "+U.area(D.Ap)+" | rise per stroke = "+U.len(D.risePerStroke);
-  $("dHandle").textContent = "MA = "+fmt(D.MA,1)+" : 1 | handle arc "+fmt(D.thetaMax*180/PI,1)+
-                             " deg (set by stroke and pivot distance)";
+  $("dRam").textContent  = "A_r = pi*D_r^2/4 = "+U.area(D.Ar);
+  $("dPump").textContent = "A_p = "+U.area(D.Ap)+" | h = "+U.len(D.risePerStroke)+" per stroke";
+  $("dHandle").textContent = "MA = b/a = "+fmt(D.MA,1)+" : 1 | linkage implies theta = asin(s_p/a) = "+
+                             fmt(D.thetaGeom*180/PI,1)+" deg";
 
   // warnings
   let msg = autoFitNote;
   if(!msg){
-    if(dims.pumpStroke > dims.pivotLink*0.98)
-      msg = "Pump stroke cannot exceed the pivot-to-link distance. Stroke limited to "+U.len(D.strokeReal)+".";
+    if(dims.bodyID <= dims.cylOD)
+      msg = "Reservoir outside diameter D_o must exceed the inside diameter D_i, or the annulus has no area.";
+    else if(dims.cylOD <= dims.ramDia)
+      msg = "Reservoir inside diameter D_i is the outside of the lifting cylinder, so it must exceed the bore D_r.";
+    else if(Math.abs(D.thetaMax - D.thetaGeom)*180/PI > 2)
+      msg = "Measured swept angle "+fmt(dims.theta,1)+" deg differs from the "+fmt(D.thetaGeom*180/PI,1)+
+            " deg the linkage implies from s_p and a. One of the three measurements is off, and until"+
+            " they agree the arc-method operator power in Q11 will not match the hydraulic power.";
     else if(sim.starved) msg = "Reservoir is empty. Add oil or lower the ram before pumping again.";
     else if(D.margin < 1)
       msg = "Reservoir holds "+U.vol(D.resCap)+" but a full extension needs "+U.vol(D.vNeeded)+
@@ -1503,6 +1655,8 @@ function updateDash(){
   $("lPump").textContent = U.volN(sim.vPump)+" "+U.volU();
   $("lHp").textContent   = U.volN(vh)+" "+U.volU();
   $("ledTotal").textContent = "total "+U.vol(tot);
+
+  updateLab();
 
   const [name,color,copy]=stateCopy();
   const pill=$("statePill");

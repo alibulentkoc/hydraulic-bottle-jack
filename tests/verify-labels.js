@@ -54,11 +54,11 @@ module.exports = new Promise(resolve => {
     scan("defaults");
     set("ramDia",110); set("boreDia",120); set("cylOD",190); set("bodyID",200);
     set("pumpDia",26); set("pumpStroke",45); set("handleLen",700); set("pivotLink",80);
-    set("ramStrokeMax",200); set("load",60000);
+    set("ramStrokeMax",200); set("load",60000); set("theta",85);
     scan("all dimensions maximum");
     click("bDefaults");
     set("ramDia",20); set("pumpDia",4); set("pumpStroke",5); set("handleLen",150);
-    set("pivotLink",15); set("ramStrokeMax",20); set("cylOD",26); set("bodyID",34);
+    set("pivotLink",15); set("ramStrokeMax",20); set("cylOD",12); set("bodyID",14); set("theta",5);
     scan("all dimensions minimum");
     click("bDefaults"); click("uUS");
     scan("customary units");

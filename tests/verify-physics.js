@@ -76,9 +76,18 @@ ok("check valves are never both open", both === 0, "violations " + both);
 ok("inlet valve opens on the suction stroke", sawIn > 150);
 ok("outlet valve opens on the delivery stroke", sawOut > 150);
 
-setDims({ pumpStroke: 45, pivotLink: 20 });
-ok("pump stroke is clamped by the linkage", derived(dims).strokeReal <= 20,
-   derived(dims).strokeReal.toFixed(2) + " mm");
+// the three linkage measurements are independent inputs, as on the bench:
+// the piston travels the measured stroke whatever angle was measured
+setDims({ pumpStroke: 30, theta: 60 });
+ok("piston travels the measured stroke, not a linkage projection",
+   Math.abs(derived(dims).strokeReal - 30) < 1e-9, derived(dims).strokeReal.toFixed(2) + " mm");
+setDims({ pumpStroke: 30, theta: 25 });
+ok("changing the measured angle does not change displacement",
+   Math.abs(derived(dims).dispPerStroke - derived(dims).Ap*30) < 1e-9);
+setDims({ pumpStroke: 20, pivotLink: 35, theta: 55 });
+ok("linkage cross-check reports the implied angle",
+   Math.abs(derived(dims).thetaGeom*180/Math.PI - 34.85) < 0.05,
+   (derived(dims).thetaGeom*180/Math.PI).toFixed(2) + " deg implied vs 55 measured");
 
 setDims({ load: 5000 });
 const Dp = derived(dims);

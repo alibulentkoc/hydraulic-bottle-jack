@@ -56,8 +56,8 @@ module.exports = new Promise(resolve => {
   {
     const { w, d, errs } = open(GRADER);
     ok("grader loads without errors", errs.length === 0, errs.join("; "));
-    ok("grader renders every dimension row", d.querySelectorAll("#audit tr").length === 11);
-    ok("grader renders every answer row", d.querySelectorAll("#answers tr").length === 19);
+    ok("grader renders every dimension row", d.querySelectorAll("#audit tr").length === 12);
+    ok("grader renders every answer row", d.querySelectorAll("#answers tr").length === 20);
     const n = d.getElementById("r_Dr");
     n.value = "1.605";
     n.dispatchEvent(new w.Event("input", { bubbles: true }));

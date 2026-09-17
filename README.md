@@ -29,7 +29,7 @@ network access, no dependencies at runtime.
 | `lab/bottle-jack-lab-grader.html` | Instructor grading tool: measurement audit against master dimensions |
 | `lab/bottle-jack-lab-handout-A4.pdf` | The handout as a print-ready A4 PDF, ten pages, with page numbers |
 | `tools/build-pdf.py` | Rebuilds that PDF from the handout |
-| `tests/` | Verification suite, 156 checks |
+| `tests/` | Verification suite, 181 checks |
 
 Open any of the three files directly in a browser. The two laboratory documents
 are formatted to print.
@@ -104,6 +104,10 @@ the numbers itself and is the file to hand out if you would rather not rely on a
 print dialog. Rebuild it with `python3 tools/build-pdf.py`, which needs
 `weasyprint`.
 
+The simulator also works the handout's questions 2 to 13 from whatever geometry
+is entered, with each formula shown beside its result, so a group can check their
+arithmetic against their own measurements rather than against a reference jack.
+
 ### Grading when the answer sheet is public
 
 The answer sheet is a calculator, not an answer key: its numbers depend entirely
@@ -124,6 +128,12 @@ exceeds the reported oil column, and the arc-versus-chord discrepancy that
 question 13 must account for. A suggested weighting puts thirty per cent of the
 marks on measurement technique, which the answer sheet cannot supply.
 
+The handout is the reference for terminology and for the order of the fields. The
+simulator, the answer sheet and the grading tool present the same quantities under
+the same names, in the order of the handout's data tables, so a student reading
+down a filled data sheet types down the panel without hunting. Fields that exist
+only for the drawing sit below, under their own heading.
+
 The handout states eight core principles up front, including several that students
 rarely articulate on their own: that a pair of check valves is what turns
 reciprocating motion into one-way flow, that a seated ball holds a load at zero
@@ -143,9 +153,9 @@ npm install     # jsdom, for the interface checks only
 npm test
 ```
 
-156 checks in six suites:
+181 checks in eight suites:
 
-- **physics** (19): volume conservation across pump cycles and through the release
+- **physics** (21): volume conservation across pump cycles and through the release
   valve, area-ratio scaling, load holding, stroke limiting, relief behaviour at
   full extension, mutual exclusion of the check valves, lever ratios.
 - **geometry** (24): no hydraulic passage crosses another and nothing clips or

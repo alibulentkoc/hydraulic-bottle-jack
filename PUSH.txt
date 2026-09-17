@@ -33,6 +33,8 @@ These files must appear as new (??). If any is missing, stop and redo step 1:
     lab/bottle-jack-lab-handout-A4.pdf
     tests/verify-labels.js
     tests/verify-compat.js
+    tests/verify-order.js
+    tests/verify-lab-panel.js
     tools/build-pdf.py
     RELEASE_NOTES_v1.2.0.md
 
@@ -46,7 +48,7 @@ STEP 3  Commit and push
 --------------------------------------------------------------------------
 STEP 4  Check before tagging
 --------------------------------------------------------------------------
-  - Actions tab shows a green run (156 checks in six suites)
+  - Actions tab shows a green run (181 checks in eight suites)
   - the demo GIF appears at the top of the README
   - https://alibulentkoc.github.io/hydraulic-bottle-jack/ loads after Ctrl+F5
     and now lists five items including the A4 PDF

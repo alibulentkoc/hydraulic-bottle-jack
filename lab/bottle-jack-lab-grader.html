@@ -164,16 +164,17 @@ answers that do not follow from the numbers reported alongside them.</div>
 
 /* ---------- the dimensions, identical to the answer sheet ---------- */
 const M = [
-  {k:"dp", sym:"d_p", lab:"Pump cylinder bore",              v:0.315, u:"in", tol:0.005},
-  {k:"sp", sym:"s_p", lab:"Pump piston stroke",              v:0.787, u:"in", tol:0.010},
-  {k:"Dr", sym:"D_r", lab:"Lifting cylinder bore",           v:1.575, u:"in", tol:0.005},
   {k:"W",  sym:"W",   lab:"Rated lift load",                 v:1124,  u:"lb", tol:1},
-  {k:"L",  sym:"L",   lab:"Lifting cylinder full extension", v:3.937, u:"in", tol:0.030},
+  {k:"sp", sym:"s_p", lab:"Pump piston stroke",              v:0.787, u:"in", tol:0.010},
+  {k:"th", sym:"theta", lab:"Handle swept angle",             v:34.8,  u:"deg", tol:2.0},
   {k:"a",  sym:"a",   lab:"Pivot to pump rod end",           v:1.378, u:"in", tol:0.015},
   {k:"b",  sym:"b",   lab:"Pivot to operator hand",          v:13.78, u:"in", tol:0.250},
+  {k:"Dr", sym:"D_r", lab:"Lifting cylinder bore",           v:1.575, u:"in", tol:0.005},
+  {k:"dp", sym:"d_p", lab:"Pump cylinder bore",              v:0.315, u:"in", tol:0.005},
   {k:"ID", sym:"D_i", lab:"Reservoir donut inside dia",      v:2.25,  u:"in", tol:0.015},
   {k:"OD", sym:"D_o", lab:"Reservoir donut outside dia",     v:3.50,  u:"in", tol:0.015},
   {k:"H",  sym:"H",   lab:"Reservoir oil column height",     v:3.00,  u:"in", tol:0.060},
+  {k:"L",  sym:"L",   lab:"Lifting cylinder full extension", v:3.937, u:"in", tol:0.030},
   {k:"n",  sym:"n",   lab:"Pumping rate",                    v:1,     u:"cycle/s", tol:0}
 ];
 
@@ -201,7 +202,8 @@ function solve(D){
   r.v  = D.L/r.t;
   r.Plin = D.W*r.v/HP;
   r.sinT = D.a>0 ? D.sp/D.a : 0;
-  r.th = Math.asin(Math.min(r.sinT,1))*180/PI;
+  r.thGeom = Math.asin(Math.min(r.sinT,1))*180/PI;
+  r.th = D.th;
   r.arc = 2*PI*D.b*r.th/360;
   r.Pop = r.Fh*r.arc*D.n/HP;
   r.Ares = PI/4*(D.OD*D.OD - D.ID*D.ID);
@@ -229,7 +231,8 @@ const ANSWERS = [
   ["Q9",  "Strokes to full extension",   "",      "N",   1],
   ["Q10", "Extension speed",             "in/s",  "v",   5],
   ["Q10", "Output linear power",         "hp",    "Plin",5],
-  ["Q11", "Handle angle per stroke",     "deg",   "th",  2],
+  ["Q11", "Handle angle, as measured",   "deg",   "th",  2],
+  ["Q11", "Angle implied by linkage",    "deg",   "thGeom", 2],
   ["Q11", "Hand travel per stroke",      "in",    "arc", 3],
   ["Q11", "Operator linear power",       "hp",    "Pop", 5],
   ["Q12", "Reservoir annulus area",      "in^2",  "Ares",4],

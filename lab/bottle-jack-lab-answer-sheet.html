@@ -130,16 +130,17 @@ replace the example values before recording results.</p>
 
 /* ---------- measured inputs (defaults are the simulator's example jack) ---------- */
 const M = [
-  {k:"dp",  sym:"d_p", lab:"Pump cylinder bore",              v:0.315,  u:"in"},
-  {k:"sp",  sym:"s_p", lab:"Pump piston stroke",              v:0.787,  u:"in"},
-  {k:"Dr",  sym:"D_r", lab:"Lifting cylinder bore",           v:1.575,  u:"in"},
   {k:"W",   sym:"W",   lab:"Rated lift load",                 v:1124,   u:"lb"},
-  {k:"L",   sym:"L",   lab:"Lifting cylinder full extension", v:3.937,  u:"in"},
+  {k:"sp",  sym:"s_p", lab:"Pump piston stroke",              v:0.787,  u:"in"},
+  {k:"th",  sym:"theta", lab:"Handle swept angle",            v:34.8,   u:"deg"},
   {k:"a",   sym:"a",   lab:"Pivot to pump rod end",           v:1.378,  u:"in"},
   {k:"b",   sym:"b",   lab:"Pivot to operator hand",          v:13.78,  u:"in"},
+  {k:"Dr",  sym:"D_r", lab:"Lifting cylinder bore",           v:1.575,  u:"in"},
+  {k:"dp",  sym:"d_p", lab:"Pump cylinder bore",              v:0.315,  u:"in"},
   {k:"ID",  sym:"D_i", lab:"Reservoir donut inside dia",      v:2.25,   u:"in", flag:true},
   {k:"OD",  sym:"D_o", lab:"Reservoir donut outside dia",     v:3.50,   u:"in", flag:true},
   {k:"H",   sym:"H",   lab:"Reservoir oil column height",     v:3.00,   u:"in", flag:true},
+  {k:"L",   sym:"L",   lab:"Lifting cylinder full extension", v:3.937,  u:"in"},
   {k:"n",   sym:"n",   lab:"Pumping rate",                    v:1,      u:"cycle/s"}
 ];
 const D = {};
@@ -168,9 +169,13 @@ function solve(){
   r.v    = D.L/r.t;                    // in/s
   r.Plin = D.W*r.v/HP;                 // hp
   r.sinT = D.a>0 ? D.sp/D.a : 0;
-  r.th   = Math.asin(Math.min(r.sinT,1))*180/PI;   // deg swept per stroke
+  r.thGeom = Math.asin(Math.min(r.sinT,1))*180/PI; // deg implied by the linkage
+  r.th   = D.th;                                   // deg as measured, per Table 3
   r.arc  = 2*PI*D.b*r.th/360;          // in of hand travel
-  r.Pop  = r.Fh*r.arc*D.n/HP;          // hp
+  r.Pop  = r.Fh*r.arc*D.n/HP;          // hp, arc method as question 11 prescribes
+  r.dIdeal = D.sp*r.lRat;              // straight-line hand travel the lever ratio implies
+  r.PopIdeal = r.Fh*r.dIdeal*D.n/HP;   // equals Phyd exactly: power in = power out
+  r.arcRatio = r.PopIdeal>0 ? r.Pop/r.PopIdeal : NaN;
   r.Ares = PI/4*(D.OD*D.OD - D.ID*D.ID);
   r.Vlift= r.Ar*D.L;
   r.drop = r.Ares>0 ? r.Vlift/r.Ares : NaN;
@@ -277,19 +282,32 @@ const Q = [
   {n:11, t:"Operator input linear power",
    ask:"Using the same rate, the operator force, and the arc distance the hand travels, determine the linear power exerted by the operator. Neglect the return stroke.",
    work:r=>[
-     ["Angle swept per stroke", "sin(theta) = s_p / a   ->   theta = arcsin(s_p / a)",
-      "theta = arcsin("+f(D.sp,3)+" / "+f(D.a,3)+") = arcsin("+f(r.sinT,4)+") = "+f(r.th,2)+" deg"],
+     ["Angle swept per stroke", "theta from Table 3, measured with the angle gauge",
+      "theta = "+f(r.th,2)+" deg, as measured"],
+     ["Cross-check against the linkage", "sin(theta) = s_p / a   ->   theta = arcsin(s_p / a)",
+      "theta = arcsin("+f(D.sp,3)+" / "+f(D.a,3)+") = "+f(r.thGeom,2)+" deg"+
+      (Math.abs(r.th-r.thGeom) > 2
+        ? "   -> differs by "+f(Math.abs(r.th-r.thGeom),1)+" deg; one of theta, s_p or a is off"
+        : "   (agrees with the measured angle)")],
      ["Arc travelled by the hand", "d = 2 * pi * b * theta / 360",
       "d = 2 * pi * "+f(D.b,2)+" in * "+f(r.th,2)+" / 360 = "+f(r.arc,3)+" in"],
      ["Operator power", "Power = F_hand * d * n",
       "Power = "+f(r.Fh,2)+" lb * "+f(r.arc,3)+" in * "+f(D.n,2)+" /s = "+f(r.Fh*r.arc*D.n,3)+" in-lb/s"],
      ["Convert", "Power = (in-lb/s) / 6600",
-      "Power = "+f(r.Fh*r.arc*D.n,3)+" / 6600 = "+f(r.Pop,6)+" hp"]],
-   ans:r=>"theta = "+f(r.th,2)+" deg,   d = "+f(r.arc,3)+" in,   Power_in = "+f(r.Pop,5)+" hp",
-   rem:r=>"The arc is longer than the straight-line displacement the lever ratio implies, "+
-       "so this method returns a slightly larger input power than questions 8 and 10. "+
-       "The ratio is theta/sin(theta), here about "+f((r.th*PI/180)/Math.max(r.sinT,1e-9),3)+
-       ". It is a consequence of the chord versus arc approximation, not a real loss."},
+      "Power = "+f(r.Fh*r.arc*D.n,3)+" / 6600 = "+f(r.Pop,6)+" hp"],
+     ["Ideal check", "d_ideal = s_p (b / a)   ->   Power_ideal = F_hand d_ideal n",
+      "d_ideal = "+f(D.sp,3)+" * ("+f(D.b,2)+" / "+f(D.a,3)+") = "+f(r.dIdeal,3)+" in   ->   Power_ideal = "+
+      f(r.PopIdeal,6)+" hp, equal to the hydraulic power"],
+     ["Arc against ideal", "ratio = a theta / s_p",
+      "ratio = "+f(D.a,3)+" * "+f(r.th*PI/180,4)+" rad / "+f(D.sp,3)+" = "+f(r.arcRatio,3)]],
+   ans:r=>"theta = "+f(r.th,2)+" deg,   d = "+f(r.arc,3)+" in,   Power_in = "+f(r.Pop,5)+" hp  (ideal "+f(r.PopIdeal,5)+" hp)",
+   rem:r=>"For an ideal machine the operator's power equals the hydraulic power exactly, and the "+
+       "ideal check above shows it: F_hand times the straight-line travel s_p (b / a) is F_p times s_p. "+
+       "The arc method departs from that by a theta / s_p, here "+f(r.arcRatio,3)+". With consistent "+
+       "measurements that factor is theta / sin(theta), a few per cent above one, so the arc figure "+
+       "slightly overstates. A measured angle that disagrees with asin(s_p / a) moves the factor either "+
+       "way; a value below one means the measured angle is smaller than the stroke and lever arm "+
+       "require. Neither case is a power loss. Both are geometry."},
 
   {n:12, t:"Reservoir area and drop in fluid level",
    ask:"(a) Determine the cross-sectional area of the donut-shaped reservoir and the drop in fluid level at full extension. (b) Using the height of the annular oil space, find the maximum reservoir capacity and show whether it can supply a full extension.",
