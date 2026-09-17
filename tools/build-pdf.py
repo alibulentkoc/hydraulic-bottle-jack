@@ -37,6 +37,8 @@ PAGE_NUMBERS = CSS(string="""
 
 for src, out in [(SRC, OUT),
                  (os.path.join(ROOT, "lab", "bottle-jack-in-class-exercise.html"),
-                  os.path.join(ROOT, "lab", "bottle-jack-in-class-exercise-A4.pdf"))]:
+                  os.path.join(ROOT, "lab", "bottle-jack-in-class-exercise-A4.pdf")),
+                 (os.path.join(ROOT, "lab", "bottle-jack-in-class-exercise-solutions.html"),
+                  os.path.join(ROOT, "lab", "bottle-jack-in-class-exercise-solutions-A4.pdf"))]:
     HTML(filename=src).write_pdf(out, stylesheets=[PAGE_NUMBERS])
     print("wrote", os.path.relpath(out, ROOT), "-", round(os.path.getsize(out)/1024), "kB")

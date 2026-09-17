@@ -135,7 +135,8 @@
   A4 PDF: one measured jack with its dimensions marked on a figure drawn by the
   simulation, the remaining givens listed beneath, ten calculations to work by
   hand, a check against the simulation's laboratory panel, and three exploration
-  prompts on the force-distance trade and on power equality.
+  prompts on the force-distance trade and on power equality. Worked solutions
+  accompany it as a separate document.
 - Animated demonstration added to the README.
 
 ## 1.0.0 - 2026-08-30

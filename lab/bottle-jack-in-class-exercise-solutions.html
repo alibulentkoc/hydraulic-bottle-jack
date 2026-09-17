@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In-Class Exercise: Solutions</title>
+<style>
+  :root{--ink:#111418;--ink-2:#3d454d;--ink-3:#6b737b;--paper:#fffefb;
+    --serif:"Latin Modern Roman","CMU Serif","Nimbus Roman","Times New Roman",Times,Georgia,serif;
+    --mono:"Latin Modern Mono","CMU Typewriter Text",ui-monospace,"Consolas","Liberation Mono",monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:#e9e7e1;color:var(--ink);font-family:var(--serif);font-size:15.5px;line-height:1.32}
+  .page{max-width:178mm;margin:0 auto;background:var(--paper);padding:16mm 16mm 18mm;box-shadow:0 0 0 1px #d8d5cc}
+  h1{font-size:22px;font-weight:600;margin:0 0 2px;line-height:1.25}
+  .sub{font-style:italic;color:var(--ink-2);margin:0 0 12px}
+  h2{font-size:16.5px;font-weight:600;margin:14px 0 6px}
+  h3{font-size:15.5px;font-weight:600;margin:12px 0 3px}
+  p{margin:0 0 6px;text-align:justify;hyphens:auto}
+  p.w{font-family:var(--mono);font-size:12.8px;line-height:1.45;text-align:left;margin:0 0 4px 14px;color:var(--ink-2)}
+  .given{font-family:var(--mono);font-size:12.8px;color:var(--ink-2);margin:0 0 4px}
+  .toolbar{max-width:178mm;margin:12px auto 0;display:flex;justify-content:flex-end}
+  .toolbar button{font-size:12.5px;padding:6px 12px;background:#fff;border:.8px solid #c9c6bd;border-radius:2px;cursor:pointer}
+  @page{size:A4 portrait;margin:14mm 16mm 16mm}
+  @media print{body{background:#fff;font-size:10.5pt} .page{box-shadow:none;max-width:none;padding:0;background:transparent}
+    .toolbar{display:none} h2,h3{break-after:avoid} p.w{font-size:9.3pt}}
+</style></head><body>
+<div class="toolbar"><button onclick="window.print()">Print</button></div>
+<div class="page">
+<h1>In-Class Exercise: Solutions</h1>
+<p class="sub">Hydraulic Bottle Jack, Mechanical and Hydraulic Systems</p>
+<p>Worked from the dimensions marked on the exercise figure. Units are inches, pounds, psi and
+horsepower, with 1 hp = 6600 in-lb/s. All values are ideal: no friction, no leakage.</p>
+<h2>Given</h2>
+<p class="given">W = 4000 lb, D_r = 2.00 in, d_p = 0.50 in, s_p = 0.70 in, L = 7.00 in, a = 1.00 in, b = 12.00 in,
+theta = 44.4 deg, D_i = 2.10 in, D_o = 3.50 in, H = 6.00 in, n = 1 cycle/s</p>
+<h2>Calculate</h2>
+<h3>1. Areas</h3>
+<p class="w">A_p = pi d_p^2 / 4 = pi (0.50)^2 / 4 = 0.1963 in^2</p>
+<p class="w">A_r = pi D_r^2 / 4 = pi (2.00)^2 / 4 = 3.1416 in^2</p>
+<h3>2. Volume displaced per stroke</h3>
+<p class="w">V_p = A_p s_p = 0.1963 x 0.70 = 0.1374 in^3</p>
+<h3>3. Lift per stroke</h3>
+<p class="w">h = V_p / A_r = 0.1374 / 3.1416 = 0.04375 in</p>
+<p class="w">Conservation of volume: the oil is incompressible, so the volume leaving the pump appears under the ram. Equivalently h = s_p (A_p / A_r) = 0.70 / 16 = 0.04375 in.</p>
+<h3>4. Pressure at the rated load</h3>
+<p class="w">P = W / A_r = 4000 / 3.1416 = 1273.2 psi</p>
+<h3>5. Force on the pump piston</h3>
+<p class="w">F_p = P A_p = 1273.2 x 0.1963 = 250.0 lb</p>
+<p class="w">Pascal's principle: with the delivery ball open the pump chamber and the lifting chamber are one body of fluid at one pressure, so the same P acts on both pistons.</p>
+<h3>6. Torque and hand force</h3>
+<p class="w">T = F_p a = 250.0 x 1.00 = 250.0 lb-in</p>
+<p class="w">F_hand = T / b = 250.0 / 12.00 = 20.83 lb</p>
+<h3>7. Strokes, time, and speed</h3>
+<p class="w">N = L / h = 7.00 / 0.04375 = 160.0 strokes</p>
+<p class="w">t = N / n = 160.0 / 1 = 160.0 s</p>
+<p class="w">v = L / t = 7.00 / 160.0 = 0.04375 in/s</p>
+<h3>8. Power</h3>
+<p class="w">Q = V_p n = 0.1374 in^3/s</p>
+<p class="w">Power_hyd = P Q = 1273.2 x 0.1374 = 175.00 in-lb/s = 0.02652 hp</p>
+<p class="w">Power_out = W v = 4000 x 0.04375 = 175.00 in-lb/s = 0.02652 hp</p>
+<p class="w">d = 2 pi b theta / 360 = 2 pi (12.00)(44.4) / 360 = 9.299 in</p>
+<p class="w">Power_in = F_hand d n = 20.83 x 9.299 = 193.73 in-lb/s = 0.02935 hp</p>
+<h3>9. Reservoir</h3>
+<p class="w">A_res = pi (D_o^2 - D_i^2) / 4 = pi (3.50^2 - 2.10^2) / 4 = 6.1575 in^2</p>
+<p class="w">V_lift = A_r L = 3.1416 x 7.00 = 21.991 in^3</p>
+<p class="w">drop = V_lift / A_res = 21.991 / 6.1575 = 3.571 in</p>
+<p class="w">capacity = A_res H = 6.1575 x 6.00 = 36.95 in^3</p>
+<p class="w">margin = capacity / V_lift = 36.95 / 21.991 = 1.68. The reservoir holds one full extension with 68 percent to spare, and the drop of 3.57 in fits inside the 6.00 in column.</p>
+<h3>10. Force multiplication</h3>
+<p class="w">W / F_hand = 4000 / 20.83 = 192.0</p>
+<p class="w">(A_r / A_p)(b / a) = (3.1416 / 0.1963) (12.00 / 1.00) = 16.0 x 12.0 = 192.0</p>
+<p class="w">The two agree. Sixteen comes from the hydraulics and twelve from the lever, and they simply multiply.</p>
+
+<h2>Explore</h2>
+<h3>Explore 1. Lifting cylinder bore 4.00 in</h3>
+<p class="w">A_r = pi (4.00)^2 / 4 = 12.566 in^2, four times larger.</p>
+<p class="w">h = V_p / A_r = 0.1374 / 12.566 = 0.01094 in, one quarter of before.</p>
+<p class="w">N = L / h = 7.00 / 0.01094 = 640 strokes, four times as many.</p>
+<p class="w">P = W / A_r = 318.3 psi, F_p = 62.50 lb, F_hand = 5.21 lb, one quarter of before.</p>
+<p class="w">One principle covers all three: the area ratio. The same pressure over four times the area carries the load with a quarter of the force, and the same volume over four times the area rises a quarter as far. Force is multiplied by exactly what distance is divided by.</p>
+<h3>Explore 2. Pump bore 0.25 in</h3>
+<p class="w">A_p = pi (0.25)^2 / 4 = 0.04909 in^2, one quarter of before. P is unchanged at 1273.2 psi because pressure is set by the load.</p>
+<p class="w">F_p = P A_p = 62.50 lb, F_hand = F_p a / b = 5.21 lb, one quarter of before.</p>
+<p class="w">The price: h = A_p s_p / A_r = 0.01094 in and N = 640 strokes. Halving the pump bore quarters the effort and quadruples the strokes.</p>
+<h3>Explore 3. The three powers</h3>
+<p class="w">Power_hyd = 0.02652 hp and Power_out = 0.02652 hp are equal, as they must be: P Q = (W / A_r)(A_r v) = W v.</p>
+<p class="w">Power_in from the arc is 0.02935 hp, larger by 1.107.</p>
+<p class="w">That factor is theta / sin(theta) = 0.7749 / 0.6997 = 1.108: the hand travels an arc of b theta while the lever only needs the straight-line displacement s_p (b / a) = 8.40 in to move the rod its stroke. The ideal input power, F_hand times that straight-line travel, is 0.02652 hp, equal to the other two. The excess is geometry in the arc approximation, not a loss. Note a sin(theta) = 1.00 x 0.6997 = 0.700 in, which matches s_p = 0.70, so the three linkage measurements are consistent.</p>
+
+</div></body></html>

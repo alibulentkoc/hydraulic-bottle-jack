@@ -26,6 +26,7 @@ network access, no dependencies at runtime.
 | `simulator/hydraulic-bottle-jack.html` | Interactive parametric cross section |
 | `lab/bottle-jack-lab-handout.html` | Student handout, typeset as a LaTeX-style article: objectives, principles, procedure, data tables, questions 2 to 13 |
 | `lab/bottle-jack-in-class-exercise.html` | Two-page in-class exercise: one measured jack, dimensions on the figure, ten calculations, checked against the simulation |
+| `lab/bottle-jack-in-class-exercise-solutions.html` | Worked solutions to the in-class exercise, including the exploration prompts |
 | `lab/bottle-jack-lab-answer-sheet.html` | Instructor answer sheet: live formulas, substitutions, and results |
 | `lab/bottle-jack-lab-grader.html` | Instructor grading tool: measurement audit against master dimensions |
 | `lab/bottle-jack-lab-handout-A4.pdf` | The handout as a print-ready A4 PDF, ten pages, with page numbers |
